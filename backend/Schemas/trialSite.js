@@ -30,6 +30,13 @@ let websiteSchema=new mongoose.Schema({
             container_name:String,
             container_type:{type:String,default:undefined},
             container_location:{type:String,default:"#"},
+            enclosing_container:{
+                classList:[String],
+                style:{
+                    property:String,
+                    value:String
+                }
+            },
             classList:[String],
             Inner:[
                 {
