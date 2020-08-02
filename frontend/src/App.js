@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
 import Nav from './Components/Navbar'
 import { Switch } from 'react-router-dom';
 import {

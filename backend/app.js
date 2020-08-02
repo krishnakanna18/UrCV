@@ -1,4 +1,5 @@
 const express=require("express");
+const Tool = require("./Schemas/toolSchema");
       app=express();
       bodyParser=require("body-parser");
       fetch=require("node-fetch");
@@ -8,6 +9,10 @@ const express=require("express");
       Website=require("./Schemas/website");
       fs=require("fs");
       path=require("path");
+      Container=require('./Schemas/containerSchema')    //Container model and functions associated with it
+      Template=require('./Schemas/templateSchema')      //Template model and functions associated with it
+      Tools=require('./Schemas/toolSchema')
+
 app.use(cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
@@ -125,79 +130,90 @@ app.post('/update/:id',(req,res)=>{
       console.log(req.session,"Accesss tok");
       res.send("Saved");
 })
-app.get('/deploy/:id',(req,res)=>{
-      Website.findById("5f1960e6ae19995738827339",(err,result)=>{
-            let website=[result]
-            // let contents=fs.readFileSync(path.join(__dirname,'./Schemas/website.js'));
-            let cont=`const vari=${JSON.stringify([result])}\n`;
-            console.log(cont);
-            fs.writeFileSync(path.join(__dirname,'/deploySites/index2.js'),cont);
+// app.get('/deploy/:id',(req,res)=>{
+//       Website.findById("5f1960e6ae19995738827339",(err,result)=>{
+//             let website=[result]
+//             // let contents=fs.readFileSync(path.join(__dirname,'./Schemas/website.js'));
+//             let cont=`const vari=${JSON.stringify([result])}\n`;
+//             console.log(cont);
+//             fs.writeFileSync(path.join(__dirname,'/deploySites/index2.js'),cont);
 
-      })
+//       })
       
+// })
+
+app.get('/template/:id',async(req,res)=>{
+      try{
+            res.json(await Template.retrieve("5f215e4eca32cc5faca29122"))
+      }
+      catch(e){
+            res.send("SOrry OOps")
+
+      }
 })
 
-app.get('/trail-template',(req,res)=>{
-      
+app.get('/tools',async(req,res)=>{
+      let skills=await Tool.find();
+      res.json(JSON.parse(JSON.stringify(skills)))
 })
-app.get('/gitauth',(req,res)=>{
-      console.log(req.query.code,"THe code");
-      const code=req.query.code;
-      const client_id='ed386413882419f33d05'
-      const client_secret='02cebfa889b903c377871f53f29687acad8bcc5e'
-      fetch(`https://github.com/login/oauth/access_token?client_id=${client_id}&client_secret=${client_secret}&code=${code}`,{
-            method:'post',
-            headers:{
-                  accept: 'application/json'
-            }
-      })
-      .then(res=>{
-            console.log(res);
-            return res.json()})
-      .then(resu=>{
-            // console.log(res);
-            // console.log(res.acess_token);
-            const accessToken=resu.access_token;
-            req.session.accessToken=accessToken;
-            console.log(req.session);
-            res.redirect('http://localhost:3000/test/Dev')
+// app.get('/gitauth',(req,res)=>{
+//       console.log(req.query.code,"THe code");
+//       const code=req.query.code;
+//       const client_id='ed386413882419f33d05'
+//       const client_secret='02cebfa889b903c377871f53f29687acad8bcc5e'
+//       fetch(`https://github.com/login/oauth/access_token?client_id=${client_id}&client_secret=${client_secret}&code=${code}`,{
+//             method:'post',
+//             headers:{
+//                   accept: 'application/json'
+//             }
+//       })
+//       .then(res=>{
+//             console.log(res);
+//             return res.json()})
+//       .then(resu=>{
+//             // console.log(res);
+//             // console.log(res.acess_token);
+//             const accessToken=resu.access_token;
+//             req.session.accessToken=accessToken;
+//             console.log(req.session);
+//             res.redirect('http://localhost:3000/test/Dev')
 
-            fetch(`https://api.github.com/user`,{
-                  headers: {
-				// Include the token in the Authorization header
-				Authorization: 'token ' + accessToken
-			}
-            })
-            .then(res=>{
+//             fetch(`https://api.github.com/user`,{
+//                   headers: {
+// 				// Include the token in the Authorization header
+// 				Authorization: 'token ' + accessToken
+// 			}
+//             })
+//             .then(res=>{
                   
-                 return res.json()})
-            .then(async(res)=>{
+//                  return res.json()})
+//             .then(async(res)=>{
                 
-                  const user=res.login;
-                  const contents = fs.readFileSync(path.join(__dirname,'/deploySites/index2.html'), {encoding: 'base64'});
-                  fetch(`https://api.github.com/repos/${user}/${user}.github.io/contents/index2.html`,{
-                  method:"put",
-                  body:JSON.stringify({
-                        message:"Deploy in trial",
-                        content:`${contents}`
-                  }),
-                  headers:{
-                        Authorization: 'token ' + accessToken,
-                        accept:"application/vnd.github.v3+json"
-                  }
-            }).then(res=>res.json()).then(res=>{
-                  console.log(res);
-            }).catch(err=>{
-                  console.log(err);
-            })                 
-            })
+//                   const user=res.login;
+//                   const contents = fs.readFileSync(path.join(__dirname,'/deploySites/index2.html'), {encoding: 'base64'});
+//                   fetch(`https://api.github.com/repos/${user}/${user}.github.io/contents/index2.html`,{
+//                   method:"put",
+//                   body:JSON.stringify({
+//                         message:"Deploy in trial",
+//                         content:`${contents}`
+//                   }),
+//                   headers:{
+//                         Authorization: 'token ' + accessToken,
+//                         accept:"application/vnd.github.v3+json"
+//                   }
+//             }).then(res=>res.json()).then(res=>{
+//                   console.log(res);
+//             }).catch(err=>{
+//                   console.log(err);
+//             })                 
+//             })
             
-      }).catch(err=>{
-            console.log(err);
-      })
-      // res.redirect('http://localhost:3000/test/Dev')
+//       }).catch(err=>{
+//             console.log(err);
+//       })
+//       // res.redirect('http://localhost:3000/test/Dev')
      
-})
+// })
 
 app.listen(process.env.PORT||9000,(err)=>{
       if(err)

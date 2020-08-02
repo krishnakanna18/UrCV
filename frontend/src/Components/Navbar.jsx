@@ -2,8 +2,9 @@ import React,{Component} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Popper from 'popper.js'
-import Template from '../Templates/exports';
-import App from '../Templates/dev/1/app';
+// import Template from '../Templates/exports';
+// import App from '../Templates/dev/1/app';
+import Trial from '../Templates/trial';
 import {
     BrowserRouter as Router,
     Route,
@@ -59,9 +60,9 @@ class Navbar extends Component {
                         </button>
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul className="navbar-nav navbar-right mr-auto">
-                            <li className="nav-item">
+                            {/* <li className="nav-item">
                                     <a  className="nav-link" href={`https://github.com/login/oauth/authorize?client_id=ed386413882419f33d05&scope=public_repo`}>Go to git</a>
-                                </li>
+                                </li> */}
                                 <li className="nav-item">
                                     <Link  style={{color:"white"}} className="nav-link" to="/design">MakeCV<span className="sr-only">(current)</span></Link>
                                 </li>
@@ -72,17 +73,9 @@ class Navbar extends Component {
                                     <Link  style={{color:"white"}}  className="nav-link" to='/test/Actor'>Where the link is the route will be</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="http://localhost:9000/deploy/5f144743e0b00b4e394ad56e">Write Site 1</a>
+                                    <Link  className="nav-link" to={`/template/test`}>Template-Test</Link>
                                 </li>
-                                <li className="nav-item">
-                                    <Link  className="nav-link" to={`/test/Dev1`}>Web1</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link  className="nav-link" to={`/test/Dev2`}>Web2</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link  className="nav-link" to='/workings'>Check its working</Link>
-                                </li>
+
 
                             </ul>
                         </div>
@@ -118,13 +111,15 @@ class Navbar extends Component {
                         }}></Route>
                         {/* <Route exact path='/thetest' component={obj["Dev"]}>
                         </Route> */}
-                        <Route exact path='/test/Dev1' component={()=><App number={'1'}/>}>
+                        {/* <Route exact path='/test/Dev1' component={()=><App number={'1'}/>}>
                         </Route>
                         <Route exact path='/test/Dev2' component={()=><App number={'2'}/>}>
-                        </Route>
-                        <Route exact path='/test/:prof' component={(props)=> <Template {...props}/>}>
-                        </Route>
+                        </Route> */}
+                        {/* <Route exact path='/test/:prof' component={(props)=> <Template {...props}/>}>
+                        </Route> */}
                         <Route exact path='/workings' component={CustomTextInput}>
+                        </Route>
+                        <Route exact path='/template/test' component={Trial}>
                         </Route>
                         <Route exact path='/deploy'></Route>
                         {/* <Route exact path='/gitauth' component={Git}>
@@ -138,6 +133,8 @@ class Navbar extends Component {
          );
     }
 }
+
+
 class CustomTextInput extends React.Component {
     constructor(props) {
       super(props);

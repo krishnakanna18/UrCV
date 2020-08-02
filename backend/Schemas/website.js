@@ -1,86 +1,114 @@
 const mongoose=require("mongoose");
 const fs=require('fs')
-mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
-let tools=new mongoose.Schema({
-    tool:String,
-    logo:String
-})
-let Tool=mongoose.model("Tools",tools)
-// let info=fs.readFileSync('/home/krishna/Documents/UrCV/backend/Schemas/tools.json',JSON);
-// let datas=JSON.parse(info);
-// for(let data of datas){
-//     Tool.create(data,(err,res)=>{
-//         if(err)
-//             throw err;
-//         console.log(res)
-//     })
-// }
-Tool.find({},(err,res,fields)=>{
-    console.log(res.length);
-})
-
-// let websiteSchema=new mongoose.Schema({
-//     avatar:String,
-//     wbname:String,
-//     template:{
-//         tname:String,
-//         tid:String
-//     },
-//     menu:[
-//         {
-//             title:String,
-//             href:String,
-//             classList:[String],
-//             icon:String
-//         }
-//     ],
-//     footer:[
-//         {
-//             title:String,
-//             href:String,
-//             classList:[String],
-//             icon:String
-//         }
-//     ],
-//     Containers:[
-//         {
-//             container_id:Number,
-//             bgImage:String,
-//             container_name:String,
-//             container_type:{type:String,default:undefined},
-//             container_location:{type:String,default:"#"},
-//             classList:[String],
-//             Inner:[
-//                 {
-//                     component_id:Number,
-//                     classList:[String],
-//                     img:{type:String,default:undefined},
-//                     Title:String,
-//                     Sub:{type:String,default:undefined},
-//                     Desc:String,
-//                     styles:{
-//                         Title: [{
-//                             property: String,
-//                             value:String
-//                         }],
-//                         Sub: [{
-//                             property: String,
-//                             value:String
-
-//                         }],
-//                         Desc: [{
-//                             property: String,
-//                             value:String
-
-//                         }]
-//                     }    
-//                 }
-//             ]
-//         }
-//     ],
-//     isdeployed:Boolean
+mongoose.connect("mongodb://localhost:27017/trial", {useNewUrlParser: true , useUnifiedTopology: true } );
+// let tools=new mongoose.Schema({
+//     tool:String,
+//     logo:String
 // })
-// let Website=mongoose.model('Websites',websiteSchema);
+// let Tool=mongoose.model("Tools",tools)
+// // let info=fs.readFileSync('/home/krishna/Documents/UrCV/backend/Schemas/tools.json',JSON);
+// // let datas=JSON.parse(info);
+// // for(let data of datas){
+// //     Tool.create(data,(err,res)=>{
+// //         if(err)
+// //             throw err;
+// //         console.log(res)
+// //     })
+// // }
+// Tool.find({},(err,res,fields)=>{
+//     console.log(res.length);
+// })
+// Team.find({name:"RCB"}).then((res)=>{
+//     console.log(res);
+// }).catch((err)=>{
+//     throw err;
+// })
+// let search=async()=>{
+//     let team= await Team.findOne({name:"RCB"});
+//     for(let player of team.players){
+//         console.log(await Player.findById(player));
+
+//     }
+// }
+// search();
+// Team.findOneAndUpdate({name:"RCB"},{$push:{players:"5f1e7e41b33cfd20d0447012"}},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
+//     if(err)
+//         throw err;
+//     console.log(res);
+
+// })
+// Team.findOne({name:"RCB"}).populate('players').exec((err,res)=>{
+//     if(err)
+//         throw err;
+//     console.log(res.players[1]);
+//     res.save((err,result)=>{
+//         console.log(result);
+
+//     });
+
+// })
+let websiteSchema=new mongoose.Schema({
+    avatar:String,
+    wbname:String,
+    template:{
+        tname:String,
+        tid:String
+    },
+    menu:[
+        {
+            title:String,
+            href:String,
+            classList:[String],
+            icon:String
+        }
+    ],
+    footer:[
+        {
+            title:String,
+            href:String,
+            classList:[String],
+            icon:String
+        }
+    ],
+    Containers:[
+        {
+            container_id:Number,
+            bgImage:String,
+            container_name:String,
+            container_type:{type:String,default:undefined},
+            container_location:{type:String,default:"#"},
+            classList:[String],
+            Inner:[
+                {
+                    component_id:Number,
+                    classList:[String],
+                    img:{type:String,default:undefined},
+                    Title:String,
+                    Sub:{type:String,default:undefined},
+                    Desc:String,
+                    styles:{
+                        Title: [{
+                            property: String,
+                            value:String
+                        }],
+                        Sub: [{
+                            property: String,
+                            value:String
+
+                        }],
+                        Desc: [{
+                            property: String,
+                            value:String
+
+                        }]
+                    }    
+                }
+            ]
+        }
+    ],
+    isdeployed:Boolean
+})
+let Website=mongoose.model('Websites',websiteSchema);
 // Website.create({
 //     avatar:"http://seanhalpin.io/assets/img/content/home/hello/me.svg",
 //     wbname:"test",
@@ -211,6 +239,6 @@ Tool.find({},(err,res,fields)=>{
 //     else
 //         console.log(res);
 // })
-// module.exports=Website;
+module.exports=Website;
 // "5f1a9817612b3481b198bc64" Site ID in db
 // "5f1d3678d1df2fc168e83d7a"
