@@ -1,5 +1,4 @@
 const express=require("express");
-const Tool = require("./Schemas/toolSchema");
       app=express();
       bodyParser=require("body-parser");
       fetch=require("node-fetch");
@@ -11,92 +10,112 @@ const Tool = require("./Schemas/toolSchema");
       path=require("path");
       Container=require('./Schemas/containerSchema')    //Container model and functions associated with it
       Template=require('./Schemas/templateSchema')      //Template model and functions associated with it
-      Tools=require('./Schemas/toolSchema')
+      Tool = require("./Schemas/toolSchema");           //Tool model and functions associated with it
+      session=require("express-session")
 
 app.use(cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(express.static(__dirname+'public'));
 mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
-app.use(require('express-session')({
-    resave: true,
-    secret:"There is a third world",
-    saveUninitialized:true,
-    cookie : {
-        maxAge: 1000* 60 * 60 *24 * 365,
-    }
-}
-))
-//Middleware to save the previous request
+
+app.use(session({
+      resave:true,
+      secret:"There is a third world",
+      saveUninitialized:true,
+      cookie : {
+            maxAge: 1000* 60 * 60 *24 * 365,
+        }
+
+}))
+
+//Middleware to disable the cache ---FINAL
+let disableCache=(req,res,next)=>{
+      res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+      next();
+  
+  }
+app.use(disableCache)
+
+//Middleware to save the previous request ----FINAL
 const savePrev=(req,res,next)=>{
-      req.session.back=req.url;
+      req.session.redirectTo=req.url;
       next();
 }
-const fileToBase64 = (filename, filepath) => {
-      return new Promise(resolve => {
-      //   var file = new File([filename], filepath);
-      //   console.log(file);
-        let file1=new File([""],'./index.html')
-        var reader = new FileReader();
-        // Read file content on file loaded event
-        reader.onload = function(event) {
-          resolve(event.target.result);
-        };
-        
-        // Convert data to base64 
-        reader.readAsDataURL(file);
-      });
-    };
-// app.use(savePrev);
 
-//Middleware to check if the user is logged in
-const isLoggedin=(req,res,next)=>{
-      if(req.session.loggedin===true){
-            next();
-            res.locals.userid=req.session.userid;
-            res.locals.loggedin=true;
+//Store the user details in each of the request for the logged in user ---FINAL
+let loggedinUserDetails=(req,res,next)=>{
+      let loggedin=0;
+      let username="";
+      if(req.session.loggedin==true){
+          console.log("Logged in and done");
+          loggedin=1;
+          username=req.session.username;
+          console.log(username);
       }
-      else
-            res.redirect(200,"/user/login");
+      res.locals={username:username,loggedin:loggedin};
 
+      next();
+  }
+app.use(loggedinUserDetails);
+
+
+//Check if the user is logged in
+let isLoggedin=(req,res,next)=>{
+      if(req.session.loggedin)
+          next();
+      else
+      {     
+            res.json({"log_data":"Not logged in",...res.locals})
+      //     res.redirect("/users/login");
+      }
+  }
+
+
+//Check if the user is not already logged in
+let notLoggedin=(req,res,next)=>{
+      if(req.session.loggedin==undefined || req.session.loggedin==null)
+          next();
+      else
+          res.json({log_data:"Already logged in",...res.locals})
+  
 }
 
-//Root API
-app.get('/',savePrev,(req,res)=>{
-      if(req.session.loggedin===true)
-      {
-            res.json({
-                  loggedin:true
-            })
-      }
-      else
-            res.json({
-                  loggedin:false
-            })      
+
+app.get('/',savePrev,isLoggedin,(req,res)=>{
+      console.log(req.session,"In root")
+      res.json({log_data:"logged in",...res.locals})
 })
 
-//Sample sites
-app.get('/sites/1',savePrev,async (req,res)=>{
-      Website.findById("5f144743e0b00b4e394ad56e")
-      .then(site=>{
-            // console.log(site);
-            res.json(site);
-      })
+app.get('/user/login',notLoggedin,savePrev,(req,res)=>{
+      req.session.username="Krishna"
+      req.session.loggedin=true
+      console.log(req.session)
+      res.json({log_data:'Logged in',...res.locals})
 })
-app.get('/sites/2',savePrev,async (req,res)=>{
-      Website.findById("5f144d3667f307549f31cb41")
-      .then(site=>{
-            // console.log(site);
-            res.json(site);
-      })
+
+app.get('/user/logout',isLoggedin,savePrev,(req,res)=>{
+      req.session.destroy();
+      res.json({log_data:"Destroyed",...res.locals})
 })
-// app.get('/sites/1',savePrev,async (req,res)=>{
-//       Website.findById("5f0d9e42b0697035f344592e")
-//       .then(site=>{
-//             console.log(site);
-//             res.json(site);
-//       })
+
+
+//Root API
+// app.get('/',savePrev,(req,res)=>{
+//       if(req.session.loggedin===true)
+//       {
+//             res.json({
+//                   loggedin:true
+//             })
+//       }
+//       else
+//             res.json({
+//                   loggedin:false
+//             })      
 // })
+
+
+
 app.get('/infinite/:id',(req,res)=>{
       let sliced=parseInt(req.params.id);
 
@@ -130,6 +149,7 @@ app.post('/update/:id',(req,res)=>{
       console.log(req.session,"Accesss tok");
       res.send("Saved");
 })
+
 // app.get('/deploy/:id',(req,res)=>{
 //       Website.findById("5f1960e6ae19995738827339",(err,result)=>{
 //             let website=[result]
@@ -142,20 +162,28 @@ app.post('/update/:id',(req,res)=>{
       
 // })
 
+
+//Get the template with its id
 app.get('/template/:id',async(req,res)=>{
       try{
-            res.json(await Template.retrieve("5f215e4eca32cc5faca29122"))
+            let test="5f215e4eca32cc5faca29122"
+            res.json(await Template.retrieve(`${test}`))
       }
       catch(e){
-            res.send("SOrry OOps")
+            res.send("SOrry OOps")                 
+            //Error page to be added...................Coldn't find the page you are looking for
 
       }
 })
 
+
+//Get the tools and their logo        ---FINAL
 app.get('/tools',async(req,res)=>{
       let skills=await Tool.find();
       res.json(JSON.parse(JSON.stringify(skills)))
 })
+
+
 // app.get('/gitauth',(req,res)=>{
 //       console.log(req.query.code,"THe code");
 //       const code=req.query.code;
@@ -215,7 +243,7 @@ app.get('/tools',async(req,res)=>{
      
 // })
 
-app.listen(process.env.PORT||9000,(err)=>{
+app.listen(process.env.PORT||9000,(err)=>{    // ---FINAL
       if(err)
             throw err;
       else

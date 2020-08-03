@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './trial.css'
+import '../../public/trial.css'
 import Editor from '../Editors/Editor'
 import Div from '../TagComponents/Div'
 import Img from '../TagComponents/Img'
@@ -10,7 +10,7 @@ import Link from '../TagComponents/Link'
 class Template extends Component {
     constructor(){
         super();
-        this.state={Template:"",fetched:0,
+        this.state={template:"",fetched:0,
         editor:{
             enabled:false,
             index:"",
@@ -21,7 +21,7 @@ class Template extends Component {
     async componentDidMount(){
         let result=await fetch('http://localhost:9000/template/1')
         let template=await result.json()
-        this.setState({Template:template,fetched:1})
+        this.setState({template:template,fetched:1})
     }
 
     tree(container,index){
@@ -57,7 +57,7 @@ class Template extends Component {
     }
 
     siteDisplay(){
-        let template=this.state.Template
+        let template=this.state.template
         // console.log(template,"Render")
         if(this.state.fetched===1){
             return(
@@ -85,14 +85,15 @@ class Template extends Component {
 
         for(let i=0; i< template.children.length; i++){
             let res=this.searchElement(index+`:${i}`,target,template.children[i])
-            if(res!=undefined)
+            if(res!==undefined)
                 return res  
         }
     }
 
     //helper function for searching an element given its index
+    //Returns the element at index if found or undefined
     search=(index)=>{
-        let template={...this.state.Template}
+        let template={...this.state.template}
         let result
         for(let i=0; i<template.containers.length; i++){
             result=this.searchElement(`${i}`,index,template.containers[i])
@@ -117,6 +118,7 @@ class Template extends Component {
         return 0
     }
 
+
     
     deleteElement=(current,index,parent,template)=>{
         if(current===parent){
@@ -130,7 +132,33 @@ class Template extends Component {
 
     }
 
+    //Function for upadting an element in index target with component
+    updateElement=(index,target,template,component)=>{
+        if(index===target){
+            template=component
+            return 1
+        }
 
+        for(let i=0; i< template.children.length; i++)
+            if(this.updateElement(index+`:${i}`,target,template.children[i],component)===1)
+                return 1 
+        return 0
+    }
+
+    //Helper function for upaditing the element at index with component  ; 
+    //Returns:  Updated template 
+    update=(index,component)=>{
+        let template={...this.state.template}
+        for(let i=0; i<template.containers.length; i++){
+            if(this.updateElement(`${i}`,index,template.containers[i],component)==1)
+                return template   
+        }
+        return template
+
+    }
+
+
+    //TestFunctions
     addContainer=()=>{
         let classes="img-responsive rounded-circle"
         let image={
@@ -154,7 +182,7 @@ class Template extends Component {
             children:[image,text],
             tag:"div"
         }
-        let template={...this.state.Template}
+        let template={...this.state.template}
         // console.log(template,"Before template")
         // for(let i=0; i<template.containers.length; i++)
         //     this.insertElement(cont,`${i}`,'0:0',template.containers[i])
@@ -164,35 +192,43 @@ class Template extends Component {
         
         // for(let i=0; i<template.containers.length; i++)
         //     this.deleteElement(`${i}`,'1','0',template.containers[i])
-        let res=""
-        for(let i=0; i<template.containers.length; i++){
-            res=this.searchElement(`${i}`,'1:0',template.containers[i])
-            if(res!==undefined)
-                break
-        }
-        console.log(res)
+        // let res=""
+        // for(let i=0; i<template.containers.length; i++){
+        //     res=this.searchElement(`${i}`,'1:0',template.containers[i])
+        //     if(res!==undefined)
+        //         break
+        // }
+        // console.log(res)
 
-
-        this.setState({Template:template})
+        this.setState({template:template})
         
         
     }
 
+    
     enableEditor=(index,classes)=>{
         let {editor}=this.state
         if(editor.enabled==0 || editor.index!==index){
              document.getElementById('editor').style.display="block"
-             document.getElementById('site-container').classList.remove('col-lg-11')
+             document.getElementById('site-container').classList.remove('col-lg-10')
              document.getElementById('site-container').classList.add('col-lg-9')
              this.setState({editor:{enabled:1,index:`${index}`,type:classes}})
             }
 
         else if(editor.enabled==1 || editor.index===index){
             document.getElementById('editor').style.display="none"
-            document.getElementById('site-container').classList.add('col-lg-11')
+            document.getElementById('site-container').classList.add('col-lg-10')
              document.getElementById('site-container').classList.remove('col-lg-9')
             this.setState({editor:{enabled:0,index:"",type:""}})
            }
+        // this.addContainer()
+    }
+
+    disableEditor=()=>{
+        document.getElementById('editor').style.display="none"
+        document.getElementById('site-container').classList.add('col-lg-10')
+         document.getElementById('site-container').classList.remove('col-lg-9')
+        this.setState({editor:{enabled:0,index:"",type:""}})
 
     }
 
@@ -201,8 +237,8 @@ class Template extends Component {
        let {editor,editor:{type}}=this.state;
 
        let editorType
-       if(type.includes('skill-box'))
-            editorType="skill"
+       if(type.includes('skills'))
+            editorType="skills"
        else if(type.includes('menu'))
             editorType="menu"
        else if(type.includes('project'))
@@ -214,12 +250,10 @@ class Template extends Component {
         // console.log(editorComponent)
 
         return(
-            <Editor index={`${editor.index}`} component={editorComponent} type={`${editorType}`} >
+            <Editor index={`${editor.index}`} component={editorComponent} type={editorType} disableEditor={this.disableEditor} >
 
             </Editor>
         )
-
-
 
     }
 
@@ -227,15 +261,13 @@ class Template extends Component {
         return ( 
             <React.Fragment> 
                 <div className="d-flex flex-lg-row flex-column">
-                    <div className="col-lg-3 container-fluid" style={{display:"none"}} id="editor">
+                    <div className="col-xl-2 col-lg-3  ml-n2 container-fluid " style={{display:"none"}} id="editor">
                             {this.state.editor.enabled===1?
                                 this.editorDisplay()
-                                // <Editor index={`${this.state.editor.index}`} >
-                                // </Editor>
                             :""}
-                            {/* {this.editorDisplay()} */}
                     </div>
-                    <div className="col-lg-11 col-12  container-fluid" id="site-container">
+                    <div className="col-lg-10 mt-5  col-12 d-flex flex-column  container-fluid" id="site-container">
+                    
                         <div className=" mt-5 pt-5 container-fluid  " id="site" style={{overflow:"auto"}}>
                             {this.siteDisplay()}
                         </div>

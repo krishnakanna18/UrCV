@@ -372,19 +372,19 @@ let retrieve=async(id)=>{
 
 // module.exports=Website;
 // "5f1a9817612b3481b198bc64" Site ID in db
-// Container.find({}).then((res)=>{
-//     fs.writeFileSync('./website.json',JSON.stringify(res))
-// })
+Container.find({}).then((res)=>{
+    fs.writeFileSync('./website.json',JSON.stringify(res))
+})
 // let obj={
 //     temp:"tempo"
 // }
-let data=fs.readFileSync('./siteobjects.js');
-// console.log(JSON.parse(data))
-let containers=JSON.parse(data);
-Container.insertMany(containers,(err,res)=>{
-    if(err)
-        throw err;
-    console.log(res)
-})
+// let data=fs.readFileSync('./siteobjects.js');
+// // console.log(JSON.parse(data))
+// let containers=JSON.parse(data);
+// Container.insertMany(containers,(err,res)=>{
+//     if(err)
+//         throw err;
+//     console.log(res)
+// })
 
 // console.log(obj.name)

@@ -2,6 +2,7 @@ body{
     overflow-x: hidden;
     max-width: 100%;
     scroll-behavior: smooth;
+    background-color: #f0f3f8
 }
 p{
     color: #545454;
@@ -56,15 +57,30 @@ hr{
 }
 
 #site{
-    border: solid;
-    border-radius: 25px;
+    /* border: solid;
     border-width: 6px;
-    border-color: #45b29a;
+    border-color: #edeeef; */
+    border-radius: 15px;
+    background-color: white;
 }
 
 #editor{
-    border: solid;
-    border-width: 6px;
-    border-color: #45b29a;
-    position: sticky;
+    /* border: solid;
+    border-width: 8px;
+    border-color:#edeeef; */
+    background-color: white;
 }
+
+.overlay{
+  border: solid;
+  border-width: 3px;
+  border-color: violet;
+  /* top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; */
+  background-color: rgba(135, 206, 360,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
