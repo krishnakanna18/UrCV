@@ -3,13 +3,13 @@ const express=require("express");
       bodyParser=require("body-parser");
       fetch=require("node-fetch");
       cors=require("cors");
-      mysql=require("mysql");
       mongoose=require("mongoose");
-      Website=require("./Schemas/website");
       fs=require("fs");
       path=require("path");
-      Container=require('./Schemas/containerSchema')    //Container model and functions associated with it
+      bcrypt=require("bcryptjs");
       Template=require('./Schemas/templateSchema')      //Template model and functions associated with it
+      Website=require("./Schemas/websiteSchema");       //Website model and functions associated with it
+      User=require("./Schemas/userSchema")              //User model and functions associated with it
       Tool = require("./Schemas/toolSchema");           //Tool model and functions associated with it
       session=require("express-session")
 
@@ -33,15 +33,28 @@ app.use(session({
 let disableCache=(req,res,next)=>{
       res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
       next();
-  
   }
 app.use(disableCache)
+
+let allowCredentials=(req,res,next)=>{
+      // let headers=["localhost:9000","localhost:3000"]
+      // if(headers.indexOf(req.headers.origin)>-1)
+      // {
+      //       res.setHeader('Access-Control-Allow-Origin',req.headers.origin );
+      // }
+      res.set("Access-Control-Allow-Credentials",true);
+      // console.log(req.headers.origin)
+      // res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+      next();
+}
+app.use(allowCredentials)
 
 //Middleware to save the previous request ----FINAL
 const savePrev=(req,res,next)=>{
       req.session.redirectTo=req.url;
       next();
 }
+
 
 //Store the user details in each of the request for the logged in user ---FINAL
 let loggedinUserDetails=(req,res,next)=>{
@@ -66,8 +79,8 @@ let isLoggedin=(req,res,next)=>{
           next();
       else
       {     
-            res.json({"log_data":"Not logged in",...res.locals})
-      //     res.redirect("/users/login");
+            // res.status(404).json({"log_data":"Not logged in",...res.locals})
+            res.status(401).send("Not logged in");
       }
   }
 
@@ -77,43 +90,94 @@ let notLoggedin=(req,res,next)=>{
       if(req.session.loggedin==undefined || req.session.loggedin==null)
           next();
       else
-          res.json({log_data:"Already logged in",...res.locals})
+          res.status(404).json({log_data:"Already logged in",...res.locals})
   
 }
 
 
 app.get('/',savePrev,isLoggedin,(req,res)=>{
       console.log(req.session,"In root")
-      res.json({log_data:"logged in",...res.locals})
+      res.status(200).json({log_data:"logged in",...res.locals})
 })
 
-app.get('/user/login',notLoggedin,savePrev,(req,res)=>{
-      req.session.username="Krishna"
+
+//Login post method --- Input sanitization required
+app.post('/user/login',notLoggedin,async(req,res)=>{
+      let username=req.body.username;
+      let user=await User.findOne({username:username})
+      if(user===null){
+            res.status(404).json({log_data:"Username doesn't exists"})
+            return}
+      let match=await bcrypt.compare(req.body.password,user.password)
+      if(match===false){
+            res.status(401).json({log_data:"Password incorrect"})
+            return}
       req.session.loggedin=true
-      console.log(req.session)
-      res.json({log_data:'Logged in',...res.locals})
+      req.session.username=username
+      req.session.save()
+      res.status(200).json({log_data:"Logged in Successfully",username,loggedin:true})
+
 })
 
-app.get('/user/logout',isLoggedin,savePrev,(req,res)=>{
+
+//Signup post method ----- Input sanitization required
+app.post('/user/signup',notLoggedin,async(req,res)=>{
+      let name=req.body.name;
+      let username=req.body.username;
+      let uname=await User.findOne({username:username})
+      console.log(uname)
+      if(uname!==null){
+            res.status(409).json({log_data:"Username already exists"})
+            return
+      }
+      if(username===""){
+            res.status(404).json({log_data:"Invalid Username"})
+            return
+      }
+      username=username.toLowerCase()
+      if(req.body.password===""){
+            res.status(404).json({log_data:"Password cannot be empty"})
+            return
+      }
+      let password=await bcrypt.hash(req.body.password,10);
+      try{
+      let user=await User.create({
+            name,
+            username,
+            password
+      })
+      }
+      catch(err){
+            res.send(404).json({log_data:"Server error"})
+      }
+      req.session.loggedin=true
+      req.session.username=username
+      req.session.save()
+      res.status(202).json({log_data:"Account Created Successfully",username,loggedin:true})
+})
+
+
+//User logout method destroys the session created ---- FINAL
+app.post('/user/logout',isLoggedin,(req,res)=>{
       req.session.destroy();
-      res.json({log_data:"Destroyed",...res.locals})
+      res.status(200).json({log_data:"Logged out"})
 })
 
 
-//Root API
-// app.get('/',savePrev,(req,res)=>{
-//       if(req.session.loggedin===true)
-//       {
-//             res.json({
-//                   loggedin:true
-//             })
-//       }
-//       else
-//             res.json({
-//                   loggedin:false
-//             })      
-// })
+app.post('/website/create',async(req,res)=>{
+      let id=req.body.template_id;
+      let template=req.body.template;
+      let website_id=await Website.makeSite(id,template)
+      let user=await User.findOneAndUpdate({username:req.session.username},{$set:{wesbite:`${website_id}`}},{new: true, upsert: true, setDefaultsOnInsert: true})
+      res.json(user)
 
+})
+
+app.get('/user',async(req,res)=>{
+      let user=await User.findById(req.query.id)
+      res.json(user)
+
+})
 
 
 app.get('/infinite/:id',(req,res)=>{
@@ -176,6 +240,18 @@ app.get('/template/:id',async(req,res)=>{
       }
 })
 
+
+// app.get('/website',async(req,res)=>{
+//       let template=await Template.findById("5f215e4eca32cc5faca29122")
+//       let site=await Website.makeSite()
+//       res.json({Template:template,Website:site})
+// })
+
+app.get('/website/ret',isLoggedin,async(req,res)=>{
+      let site=await Website.retrieve("5f2953d47896ab6f7c0078b2");
+      let template=await Template.retrieve("5f215e4eca32cc5faca29122");
+      res.json({Template:template,Website:site})
+})
 
 //Get the tools and their logo        ---FINAL
 app.get('/tools',async(req,res)=>{

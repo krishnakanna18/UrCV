@@ -372,9 +372,9 @@ let retrieve=async(id)=>{
 
 // module.exports=Website;
 // "5f1a9817612b3481b198bc64" Site ID in db
-Container.find({}).then((res)=>{
-    fs.writeFileSync('./website.json',JSON.stringify(res))
-})
+// Container.find({}).then((res)=>{
+//     fs.writeFileSync('./website.json',JSON.stringify(res))
+// })
 // let obj={
 //     temp:"tempo"
 // }

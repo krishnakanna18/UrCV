@@ -39,7 +39,7 @@ class Editor extends Component {
         {
                 return(
                     <ContainerEditor>
-
+                        
                     </ContainerEditor>
                 )
                 }
@@ -68,7 +68,7 @@ class Editor extends Component {
                         </button>
                         </div>
                     </div>
-                    <div class="mt-5 pt-2 container">
+                    <div className="mt-5 pt-2">
                          {this.displayEditor()}
                     </div>
                 </div>

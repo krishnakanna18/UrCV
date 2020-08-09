@@ -8,7 +8,7 @@ class Img extends Component{
         if(this.props.styles!==undefined)
             style=this.props.styles
         return(
-            <img src={`${this.props.contents.src}`}  style={style} className={`${classes}`} id={`${this.props.index}`} 
+            <img src={`${this.props.contents.src}`} alt="Verify" style={style} className={`${classes}`} id={`${this.props.index}`} 
                 // onMouseEnter={(e)=>{
                 // console.log(e.target)
                 // }}

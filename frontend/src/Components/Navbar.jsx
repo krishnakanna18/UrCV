@@ -29,6 +29,28 @@ import { cssNumber } from 'jquery';
 //         })
 //     }
 // }
+class Log extends Component{
+    constructor(){
+        super()
+        this.state={User:""}
+    }
+    async componentDidMount(){
+        let userdetails=await fetch('localhost:9000/')
+        let user=await userdetails.json();
+        this.setState({User:user})
+        console.log(user)
+
+    }
+    async render(){
+
+        return(
+            <div>
+                {this.state.User!==""?this.state.User.username:"Log in"}
+            </div>
+        )
+    }
+
+}
 class Navbar extends Component {
     constructor(){
         super();
@@ -75,6 +97,10 @@ class Navbar extends Component {
                                 <li className="nav-item">
                                     <Link  className="nav-link" to={`/template/test`}>Template-Test</Link>
                                 </li>
+                                <li className="nav-item">
+                                    <Link  className="nav-link" to={`/template/test`}></Link>
+                                </li>
+
 
 
                             </ul>

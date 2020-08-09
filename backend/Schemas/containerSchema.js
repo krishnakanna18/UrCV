@@ -21,6 +21,7 @@ let insert=async(...args)=>{
 }
 
 
+//Recursively populate the children of the containers and return it
 let retrieve=async(id)=>{
     let current=await Container.findById(id).populate('children');
     if(current.children.length==0)
@@ -28,6 +29,7 @@ let retrieve=async(id)=>{
     current.children=await Promise.all(current.children.map(async(child)=>await retrieve(child._id)))
     return current
 }
+
 
 let Container=mongoose.model('containers',containerSchema)
 Container.retrieve=retrieve
