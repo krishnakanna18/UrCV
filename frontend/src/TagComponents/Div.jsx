@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 class Div extends Component{
     render(){
+        console.log(this.props.key,"DIV KEY")
         let classes=""
         let style={}
         if(this.props.classes!==undefined)

@@ -14,29 +14,53 @@ class Skillset extends Component {
                         isInner:false,
                         level:""                        
                     }}
+        console.log(this.props.index)
+        
     }
 
 
     //Extract the skills from the skill-box specified as node
-    extractSkills=(node,set)=>{
+    extractSkills=(node,set,index,bs_dom)=>{
         if(node.children===undefined || node.children.length===0){
             if(node.contents.text!==undefined)
                 {set.push(node.contents.text)
-                    console.log(node.id)
+                 bs_dom.push(
+                    <div  className="col" key={`${index}`} style={{backgroundColor:"#F5FFFA	"}}>
+                        <div className="d-flex flex-row justify-content-between">
+                            <span className="pt-2 pb-2">{node.contents.text}</span>
+                            <div className="d-flex justify-content-end" >
+                                <button type="btn"  style={{  padding: 0,border:"none", backgroundColor:"#F5FFFA"}} >
+                                    <img className="img-fluid" src="https://img.icons8.com/ios/24/000000/up.png"/>
+                                </button>
+                                <button type="btn"  style={{  padding:0,border:"none",backgroundColor:"#F5FFFA"}} >
+                                    <img className="img-fluid" src="https://img.icons8.com/ios/24/000000/down.png"/>
+                                </button>
+                                <button type="button" className="close" aria-label="Close" onClick={()=>this.deleteSkill(index)} >
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                 )
+                    console.log(index)
                 return
                 }
         }
-        for(let child of node.children)
-            this.extractSkills(child,set)
+        // for(let child of node.children)
+        //     this.extractSkills(child,set)
+        for(let i=0; i<node.children.length; i++)
+            this.extractSkills(node.children[i],set,index+`:${i}`,bs_dom)
+
     }
     
 
     //Classify the skills as basic,intermediate and advanced
     classifySkills=()=>{
         let skills=this.props.component
-        let basic_skills=[],intermediate_skills=[],advanced_skills=[]
-        this.extractSkills(skills.children[0],basic_skills)
-        this.extractSkills(skills.children[1],intermediate_skills)
+        let basic_skills=[],intermediate_skills=[],advanced_skills=[],bs_dom=[]
+        this.extractSkills(skills.children[0],basic_skills,`${this.props.index}:0`,bs_dom)
+        console.log(bs_dom)
+        this.extractSkills(skills.children[1],intermediate_skills,`${this.props.index}:1`,bs_dom)
         return {basic_skills,intermediate_skills,advanced_skills}
     }
 
@@ -117,7 +141,7 @@ class Skillset extends Component {
                                             </button>
                                         </div>
                                     </div>
-                             </div>
+                              </div>
                     })}
                 </div>
             </React.Fragment>

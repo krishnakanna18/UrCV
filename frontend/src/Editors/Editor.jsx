@@ -29,7 +29,7 @@ class Editor extends Component {
         if(this.props.type==='skills'){
             console.log(this.props.component,"Skills")
             return(
-                <SkillsEditor component={this.props.component} >
+                <SkillsEditor component={this.props.component} index={this.props.index}>
                     
                 </SkillsEditor>
             )
