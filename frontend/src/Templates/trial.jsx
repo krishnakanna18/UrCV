@@ -119,11 +119,18 @@ class Template extends Component {
     }
 
 
-    
+    //Delete an element recursive 
+    //Current - current recursion tree index ; index - index to delete ; 
+    //parent - index's parent ; template; current container
     deleteElement=(current,index,parent,template)=>{
         if(current===parent){
-            template.children.splice(index,1)
-            return 1
+            try{            
+                template.children.splice(index,1);
+                return 1
+            }
+            catch(err){
+                return 0;
+            }
         }
         for(let i=0; i< template.children.length; i++)
             if(this.deleteElement(current+`:${i}`,index,parent,template.children[i])===1)
@@ -132,28 +139,94 @@ class Template extends Component {
 
     }
 
+    //Helper function for deleting an element given its index in the tree ;
+    //Returns: 1 if deleted successfully 0 if not
+    delete=(index)=>{
+        console.log(index)
+        let template={...this.state.template}
+        let pid=index.split(':'),parent;                          //Split the index to get its element's parent
+        if(pid.length>=2){
+            parent=pid.slice(0,pid.length-1).join(':')            //Retrieve the parent index by joining till the second last
+            index=parseInt(pid[pid.length-1])                     //The index to delete
+            for(let i=0; i<template.containers.length; i++)
+                if(this.deleteElement(`${i}`,index,parent,template.containers[i])==0){
+                    this.setState({template:template}); 
+                    return 1;
+                }
+            return 0;
+        }
+        else{
+            index=parseInt(pid[pid.length-1])                //If pid size less than 2 delete the entire container
+            try{
+                template.containers.splice(index,1);
+                this.setState({template:template})
+                return 1;
+            }
+            catch(err){
+                return 0;
+            }
+
+        }
+
+    }
+
+
     //Function for upadting an element in index target with component
-    updateElement=(index,target,template,component)=>{
+    updateElement=(index,target,template,component,move)=>{
         if(index===target){
+            if(move!==undefined){
+                if(template.children.length>0){
+                    let temp=template.children[move.index]
+                    template.children[move.index]=template.children[move.index+move.pos]
+                    template.children[move.index+move.pos]=temp
+                    return 1
+                }
+            }
+
             template=component
             return 1
         }
 
         for(let i=0; i< template.children.length; i++)
-            if(this.updateElement(index+`:${i}`,target,template.children[i],component)===1)
+            if(this.updateElement(index+`:${i}`,target,template.children[i],component,move)===1)
                 return 1 
         return 0
     }
 
-    //Helper function for upaditing the element at index with component  ; 
-    //Returns:  Updated template 
-    update=(index,component)=>{
+    //Helper function for upaditing the element at index with component  ; Used in updating and moving an element
+    //Returns:  Updated template ; move - moveObject in case of moving
+    update=(index,component,move=undefined)=>{
         let template={...this.state.template}
         for(let i=0; i<template.containers.length; i++){
-            if(this.updateElement(`${i}`,index,template.containers[i],component)==1)
+            if(this.updateElement(`${i}`,index,template.containers[i],component,move)==1)
                 return template   
         }
         return template
+
+    }
+
+
+    move=(index,pos)=>{
+        console.log(index)
+        let template={...this.state.template}
+        let pid=index.split(':'),parent;  
+        if(pid.length>=2){
+            let parent_index=pid.slice(0,pid.length-1).join(':')
+            index=parseInt(pid[pid.length-1])
+            console.log(index)
+            let moveObj={index:index,pos:pos}
+            template=this.update(parent_index,[],moveObj)
+            this.setState({template:template},()=>{return 1})
+
+        }
+        else{
+            index=parseInt(pid[pid.length-1]) 
+            let temp=template.containers[index]
+            template.containers[index]=template.containers[index+pos]
+            template.containers[index+pos]=temp
+            this.setState({template:template},()=>{return 1})
+        }
+
 
     }
 
@@ -250,7 +323,13 @@ class Template extends Component {
         // console.log(editorComponent)
 
         return(
-            <Editor index={`${editor.index}`} component={editorComponent} type={editorType} disableEditor={this.disableEditor} >
+            <Editor index={`${editor.index}`} 
+                    component={editorComponent} 
+                    type={editorType} 
+                    disableEditor={this.disableEditor} 
+                    delete={this.delete}
+                    move={this.move}
+            >
 
             </Editor>
         )

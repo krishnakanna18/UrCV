@@ -25,11 +25,13 @@ class Editor extends Component {
 
 
     displayEditor=()=>{
-        console.log(this.props.component)
         if(this.props.type==='skills'){
-            console.log(this.props.component,"Skills")
             return(
-                <SkillsEditor component={this.props.component} index={this.props.index}>
+                <SkillsEditor component={this.props.component} 
+                              index={this.props.index} 
+                              removeSkill={this.props.delete}
+                              moveSkill={this.props.move}
+                >
                     
                 </SkillsEditor>
             )
