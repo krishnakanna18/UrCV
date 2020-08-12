@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Autocomplete from '../Components/Autocomplete'
 // import {
 //     BrowserRouter as Router,
 //     Route,
@@ -6,6 +7,7 @@ import React, { Component } from 'react';
 //     Switch
 //   } from "react-router-dom";
 import '../../public/SkillEditor.css'
+
 class Skillset extends Component {
     constructor(props){
         super(props);
@@ -42,9 +44,9 @@ class Skillset extends Component {
     classifySkills=()=>{
         let skills=this.props.component
         let basic_skills=[],intermediate_skills=[],advanced_skills=[]
-        this.extractSkills(skills.children[0],basic_skills,`${this.props.index}:0`)
-        this.extractSkills(skills.children[1],intermediate_skills,`${this.props.index}:1`)
-        // this.extractSkills(skills.children[1],advanced_skills,`${this.props.index}:1`)
+        this.extractSkills(skills.children[0],basic_skills,`${this.props.index}:0`)               
+        this.extractSkills(skills.children[1],intermediate_skills,`${this.props.index}:1`)      
+        this.extractSkills(skills.children[2],advanced_skills,`${this.props.index}:2`)
         return {basic_skills,intermediate_skills,advanced_skills}
     }
 
@@ -135,7 +137,7 @@ class Skillset extends Component {
                                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
                                                     {/* Add a skill above */}
-                                                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}} onClick={} >
+                                                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}} >
                                                         <span className="pl-3">
                                                             <img alt="Alt" src="https://img.icons8.com/ios/24/000000/plus-math.png"/>
                                                             Add skill Above
@@ -177,7 +179,7 @@ class Skillset extends Component {
 
 
                                                     {/* Add a skill below */}
-                                                    <button className="btn dropdown-item " type="btn" style={{  padding:0,border:"none"}}  onClick={} >
+                                                    <button className="btn dropdown-item " type="btn" style={{  padding:0,border:"none"}}  >
                                                         <span className="pl-3">
                                                             <img alt="Alt" src="https://img.icons8.com/ios/24/000000/plus-math.png"/>
                                                             Add skill below
@@ -207,6 +209,16 @@ class Skillset extends Component {
                         <button className="btn"  onClick={this.changeInner}><img src="https://img.icons8.com/ios/50/000000/undo.png"   style={{width:"22px"}}  alt="REAL"   className="img-fluid"/> </button><span className="ml-n2">Back</span>
                     </div>
                 </div>
+
+                <div className="col-lg col-8 ">
+                    <Autocomplete 
+                    options={this.state.global_skills.map((skill)=>skill["tool"])}
+                    >
+        
+                    </Autocomplete>
+
+                </div>
+               
                 {this.displayList()}
             </React.Fragment>
         )

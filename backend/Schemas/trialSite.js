@@ -241,7 +241,7 @@ let insert=async(...args)=>{
        return await div.save()
     }))
     // console.log(ids)
-    return ids.map((ele)=>ele._id)
+    return ids
    
 
 }
@@ -307,38 +307,40 @@ let retrieve=async(id)=>{
 // let classes=""
 // classes="img-responsive rounded-circle"
 // let div100=new Container({
-//     id:'0110',
+//     id:'0200',
 //     tag:'img',
 //     classlist:classes.split(' '),
-//     contents:{src:"https://img.stackshare.io/no-img-open-source.png"}
+//     contents:{src:"https://img.stackshare.io/service/993/pUBY5pVj.png"}
 // })
 
 // let div101=new Container({
-//     id:'0111',
+//     id:'0201',
 //     tag:'span',
 //     classlist:["mt-2"],
-//     contents:{text:"C"}
+//     contents:{text:"Python"}
 // })
 // classes="mt-4 row  container align-items-center"
 // let div10=new Container({
-//     id:'011',
+//     id:'020',
 //     classlist:classes.split(' '),
 //     children:[div100._id,div101._id]
 // })
 // classes="col-md-3 list-group  mt-md-0 mt-4 col-12 skill-box"
-// // let div1=new Container({
-// //     id:'01',
-// //     classlist:classes.split(' '),
-// //     styles:{"background-color": "rgb(107, 173, 165)"},
-// //     children:[div10._id]
-// // })
+// let div1=new Container({
+//     id:'02',
+//     classlist:classes.split(' '),
+//     styles:{"background-color": "rgb(74, 150, 154)"},
+//     children:[div10._id]
+// })
 // classes="mt-5 pt-5 container-lg container-fluid  d-flex flex-md-row align-items-md-start align-items-center justify-content-around flex-column"
 // // let div0=new Container({
 // //     id:'0',
 // //     classlist:classes.split(' '),
 // //     children:[div1._id]
 // // })
-// id=await insert(div100,div101,div10);
+// // id=await insert(div100,div101,div10,div1);
+// // console.log(div100,div101,div10,div1)
+// console.log("The id of div1 is:",div1._id)
 // // Container.findOneAndDelete({id:{$in:['6010','6011','601']}},(err,res)=>{
 // //     if(err)
 // //         throw err;
@@ -346,9 +348,22 @@ let retrieve=async(id)=>{
 // //         console.log(res);
 // // })
 
-// console.log(id,"THe whole container")
+// // console.log(id,"THe whole container")
+
+// })
+// (async function(){
+//     let child=await Container.findOne({id:'02'})
+//     let result
+//     try{
+//     result=await Container.findByIdAndUpdate("5f207158e2565a461ad74a13",{$push:{children:child._id}},{new: true, upsert: true, setDefaultsOnInsert: true})
+//     console.log(result)
+//     }
+//     catch(err){
+//         console.log(err)
+//     }
 
 // })()
+
 // Container.find({}).then((res)=>{
 //     fs.writeFileSync('siteobjects.js',JSON.stringify(res))
 
