@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import '../../public/autocomplete.css'
 class Node{
     constructor(value,index=-1){
         this.index=index
@@ -127,80 +127,132 @@ class Autocomplete extends Component {
     constructor(props){
         super(props);
         this.state={filtered_list:[],
-                    active:false,
-                    active_index:0,
-                    input:"",
-                    trie:new Trie(this.props.options) }
+                    active:false,                            //True - search active
+                    active_index:0,                          //Index of the active item
+                    input:"",                                //input value
+                    input_length:0,                          //length of keyboard input
+                    trie:new Trie(this.props.options),       //trie of options
+                    errMessage:""                            //Display err messages
+                   }      
     }
+
 
     changeInput(e){
         // console.log(e.target.value)
         let filtered_list=this.state.trie.retrieve(e.target.value)
-        this.setState({input:e.target.value,active:true,active_index:0,filtered_list})
+        filtered_list=filtered_list.slice(0,Math.min(filtered_list.length,7))
+        this.setState({input:e.target.value,
+                      active:true,
+                      active_index:0,
+                      filtered_list,
+                      input_length:e.target.value.length,
+                      errMessage:""})
     }
 
-    selectSkill(e){
-        console.log(e.keyCode)
-        const {active_index,filtered_list}=this.state;
-        if(e.keyCode===13){
+
+    selectOption(e){
+        const {active_index,filtered_list,active}=this.state;
+        let ai;
+        if(e.keyCode===13 && active===true){
             this.setState({
                 active_index:0,
                 input:filtered_list[active_index].string,
+                filtered_list:[],
                 active:false,
             })
-            console.log("The selected index",filtered_list[active_index].index)
+        let status=this.props.addOption(filtered_list[active_index].index)
+        if(status.success===-1){
+            console.log(status.message)
+            this.setState({errMessage:status.message})
         }
-        else if(e.keyCode===38){
+
+            // console.log("The selected index",filtered_list[active_index].index)
+        }
+        else if(e.keyCode===38 && active===true){
+            
             if(active_index===0)
-                return;
+                ai=filtered_list.length-1;
+            else
+                ai=active_index-1
             this.setState({
-                active_index:active_index-1,
-                input:filtered_list[active_index-1].string,
-                active:true
+                active_index:ai,
+                input:filtered_list[ai].string,
+                active:true,
             })
         }
-        else if(e.keyCode===40){
+        else if(e.keyCode===40 && active===true){
             if(active_index===filtered_list.length-1)
-                return;
+                ai=0;
+            else
+                ai=active_index+1;
             this.setState({
-                active_index:active_index+1,
-                input:filtered_list[active_index+1].string,
-                active:true
+                active_index:ai,
+                input:filtered_list[ai].string,
+                active:true,
             })
         }
 
     }
 
-    clickSkill(e,index){
+
+    clickOption(e,index){
         let text=e.target.innerText
         console.log("The select index",index)
         this.setState({
             active_index:0,
             input:text,
             active:false,
+            filtered_list:[]
         })
+        let status=this.props.addOption(index)
+        if(status.success===-1){
+            console.log(status.message)
+            this.setState({errMessage:status.message})
+
+        }
 
 
     }
 
+
+    hoverEnter(e,index){
+        let {filtered_list}=this.state;
+        let input=filtered_list[index].string;
+        this.setState({
+            active_index:index,
+            input
+        })
+
+    }
+
+
     displayMatches(){
         if(this.state.active)
         {
-            const {filtered_list,active_index}=this.state;
+            const {filtered_list,active_index,input_length}=this.state;
             return(
                 <React.Fragment>
                     <div className="d-flex flex-column">
                     {filtered_list.map((skill,index)=>{
                         let active_class=""
-                        if(active_index===index)
-                            active_class={backgroundColor: "rgb(245, 255, 250)"}
+                        if(active_index===index){
+                            active_class="active-item"
+                        }
+                        // let prefix_index=skill.string.indexOf(input);
+                        let prefix=skill.string.slice(0,input_length);
+                        let suffix=skill.string.slice(input_length,skill.string.length);
+                        // console.log(prefix,suffix)
                         return(
                             <div className="col" 
                                  key={`${index}`}
-                                 style={{active_class}}
-                                 onClick={(e)=>this.clickSkill(e,skill.index)}
+                                 onClick={(e)=>this.clickOption(e,skill.index)}
+                                 onMouseEnter={(e)=>this.hoverEnter(e,index)}
+                                 
                             >
-                                {skill.string}
+                                <div className={`${active_class}`}>
+                                    {prefix}<span className="font-weight-bold">{suffix}</span>
+                                    {/* {skill.string} */}
+                                </div>
                             </div>
                         )
                     })}
@@ -211,16 +263,28 @@ class Autocomplete extends Component {
         
     }
 
+    
     render(){
+        let {errMessage}=this.state;
         return(
             <React.Fragment>
                 <div className="d-flex flex-column">
-                    <input type="search" id="skill-search" className="form-control mb-2 mt-2 " placeholder="Add a language, framework, database.."
-                     value={`${this.state.input}`}
-                     onChange={(e)=>this.changeInput(e)}
-                     onKeyDown={(e)=>this.selectSkill(e)}
-                    >
-                    </input>
+                    <div className="flex justify-content-center">
+                        <input autoComplete="off" type="search-box" id="skill-search" className="form-control mb-2 mt-2 shadow-sm" placeholder="Add a language, framework, database.."
+                        value={`${this.state.input}`}
+                        onChange={(e)=>this.changeInput(e)}
+                        onKeyDown={(e)=>this.selectOption(e)}
+                        >
+                        </input>
+                    </div>
+
+                    {errMessage.length>0?
+                    <div className="text-danger justify-content-center">
+                        {errMessage}
+                    </div>
+                    :""
+                    }
+
                     {this.displayMatches()}
                 </div>
             </React.Fragment>

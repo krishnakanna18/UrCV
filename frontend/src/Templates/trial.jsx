@@ -15,15 +15,41 @@ class Template extends Component {
             enabled:false,
             index:"",
             type:""
-        }}
+        },
+        models:{                               //Sample Schemas
+            skillTemplate:"",
+            projectTemplate:""
+        }
+        }
     }
 
     async componentDidMount(){
         let result=await fetch('http://localhost:9000/template/1')
         let template=await result.json()
-        this.setState({template:template,fetched:1})
+        let skillTemplate
+        this.setState({template:template,fetched:1},function(){
+             skillTemplate=this.search(undefined,"skills");
+             for(let i=0; i<skillTemplate.children.length; i++)
+             {
+                 if(skillTemplate.children[i].children){
+                     skillTemplate=skillTemplate.children[i].children[0];
+                     break
+                 }
+    
+             }
+             this.changeState({models:{skillTemplate}})
+            
+
+        })
     }
 
+    changeState=(obj)=>{
+        this.setState({...obj},function(){
+        })
+
+
+    }
+    
     tree(container,index){
         // if(container.children!==undefined)
         //      container.children=container.children.map((child,id)=>this.tree(child,index+`${id}`))
@@ -74,17 +100,22 @@ class Template extends Component {
     }
 
     //Search for an element in the tree                                            
-    searchElement=(index,target,template)=>{           //index - the current element's index
+    searchElement=(index,target,template,condition)=>{           //index - the current element's index
                                                        // target- the target index; //template-current tree element
         if(index===target){
             return template
         }
 
+        if(condition!==undefined)
+            if(template.classlist.indexOf(condition)>-1)
+                return template
+
+
         if(template.children.length===0)
             return undefined
 
         for(let i=0; i< template.children.length; i++){
-            let res=this.searchElement(index+`:${i}`,target,template.children[i])
+            let res=this.searchElement(index+`:${i}`,target,template.children[i],condition)
             if(res!==undefined)
                 return res  
         }
@@ -92,11 +123,11 @@ class Template extends Component {
 
     //helper function for searching an element given its index
     //Returns the element at index if found or undefined
-    search=(index)=>{
+    search=(index,condition=undefined)=>{                   //Condition - optional for matching conditions
         let template={...this.state.template}
         let result
         for(let i=0; i<template.containers.length; i++){
-            result=this.searchElement(`${i}`,index,template.containers[i])
+            result=this.searchElement(`${i}`,index,template.containers[i],condition)
             if(result!==undefined)
                 break
         }
@@ -118,6 +149,21 @@ class Template extends Component {
         return 0
     }
 
+    //helper function for inserting an element given its parent id and the element
+    insert=(p_id=-1,element)=>{
+        // console.log("parent",p_id)
+        if(p_id===-1)
+            return;
+        let template={...this.state.template}
+        for(let i=0; i<template.containers.length; i++)
+            if(this.insertElement(element,`${i}`,p_id,template.containers[i])===1){
+                this.setState({template},()=>{return 1})
+                return 1
+            }
+        // console.log("INSIDE INSERT")
+        return 0;
+
+    }
 
     //Delete an element recursive 
     //Current - current recursion tree index ; index - index to delete ; 
@@ -149,7 +195,7 @@ class Template extends Component {
             parent=pid.slice(0,pid.length-1).join(':')            //Retrieve the parent index by joining till the second last
             index=parseInt(pid[pid.length-1])                     //The index to delete
             for(let i=0; i<template.containers.length; i++)
-                if(this.deleteElement(`${i}`,index,parent,template.containers[i])==0){
+                if(this.deleteElement(`${i}`,index,parent,template.containers[i])===1){
                     this.setState({template:template}); 
                     return 1;
                 }
@@ -230,6 +276,8 @@ class Template extends Component {
 
     }
 
+
+    
 
     //TestFunctions
     addContainer=()=>{
@@ -329,6 +377,8 @@ class Template extends Component {
                     disableEditor={this.disableEditor} 
                     delete={this.delete}
                     move={this.move}
+                    insert={this.insert}
+                    models={this.state.models}
             >
 
             </Editor>

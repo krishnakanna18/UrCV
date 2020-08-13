@@ -31,6 +31,8 @@ class Editor extends Component {
                               index={this.props.index} 
                               removeSkill={this.props.delete}
                               moveSkill={this.props.move}
+                              addSkill={this.props.insert}
+                              skillModel={this.props.models.skillTemplate}
                 >
                     
                 </SkillsEditor>

@@ -21,6 +21,9 @@ class Skillset extends Component {
         
     }
 
+    skilltemplate=()=>{
+        
+    }
 
     //Extract the skills from the skill-box specified as node
     extractSkills=(node,set,index)=>{
@@ -104,6 +107,54 @@ class Skillset extends Component {
 
     }
 
+    makeSkill=(skill,template)=>{
+        if(!template)
+            return
+        if(template.tag==="img" && template.children.length===0)
+            template.contents["src"]=skill.logo;
+        if(template.tag==="span" && template.children.length===0)
+            template.contents["text"]=skill.tool;
+        if(template.children)
+        for(let i=0; i<template.children.length; i++)
+            this.makeSkill(skill,template.children[i])
+        return 
+        
+
+    }
+
+    createSkill=(index)=>{
+
+        //Validating skill's presence
+        const {basic_skills,intermediate_skills,advanced_skills,global_skills,innerPage:{level}}=this.state;
+        let skill=global_skills[index].tool.toLowerCase()
+
+        if(basic_skills.map((skill)=>skill.toLowerCase()).includes(skill) || intermediate_skills.map((skill)=>skill.toLowerCase()).includes(skill) || advanced_skills.map((skill)=>skill.toLowerCase()).includes(skill))
+            return {success:-1,message:"Skill already Present"}
+
+        const skill_map={basic:0,intermediate:1,advanced:2}
+
+        const p_id=`${this.props.index}:${skill_map[`${level}`]}`     //Parent's index
+
+        //Add a skill locally
+        let set=[...this.state[`${level}_skills`]],old=[...set]      //Initliase the set
+        
+        set.push(global_skills[index].tool)                  
+        this.setState({[`${level}_skills`]:set})
+
+        //Call the insert props function
+        let template=JSON.parse(JSON.stringify(this.props.skillModel))  //Deepcopy props 
+
+        this.makeSkill(global_skills[index],template)   //Make the skill with template
+ 
+        if(this.props.addSkill(p_id,template)===0){       //If failed revert back
+            this.setState({[`${level}_skills`]:old})
+            return {success:-1}
+        }
+        else
+            return {success:1}
+
+    }
+
     displayList=()=>{
         let {innerPage:{level}}=this.state;
         let p_id;
@@ -130,7 +181,7 @@ class Skillset extends Component {
                                     <div className="d-flex flex-row justify-content-between">
                                         <span className="pt-2 pb-2">{skill}</span>
                                         <div className="d-flex justify-content-end" >
-                                            <div class="dropdown">
+                                            <div className="dropdown">
                                                 <button className="btn " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <img className="img-fluid" alt="Alt" src="https://img.icons8.com/ios/24/000000/more.png"/>
                                                 </button>
@@ -210,9 +261,10 @@ class Skillset extends Component {
                     </div>
                 </div>
 
-                <div className="col-lg col-8 ">
+                <div className="col">
                     <Autocomplete 
                     options={this.state.global_skills.map((skill)=>skill["tool"])}
+                    addOption={this.createSkill}
                     >
         
                     </Autocomplete>
