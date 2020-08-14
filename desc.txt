@@ -1,9 +1,0 @@
-This is my first web app that i think is project worthy and also this is my first project that i think would look legit and good 
-on my resume. Originally i wanted to make a portfolio and i had an idea where i coukd develop a web app that lets other developers to make their portfolio
-easily with some drag and drop options and along with some predefined templates.
-Also this is my first project where im making use of a frontend end framework and im learning as im coding along with the project.
-React is actually beautiful. If anyone says otherwise it only means that they couldn't get the essence of react and they probabky couldn't 
-understand why react is so popular. 
-First off to be a react developer is to be good at every aspect of javascript. React improves you as a javascript programmer.
-Now coming onto the databse that i ve used for storing various things. First i thought of using a relatioanl database. But to user something like an entire structure of a webiste u need something mellable something that u can modify any number of times and something that goes with any type of data and is also scalable to a reasonable level and also handles concurrent transactions.
-The best i could come up with was document based mongodb databse.
