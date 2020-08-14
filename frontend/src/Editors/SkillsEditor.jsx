@@ -15,7 +15,12 @@ class Skillset extends Component {
                     innerPage:{
                         isInner:false,
                         level:""                        
-                    }}
+                    },
+                    insertPosition:{
+                        index:-1,
+                        pos:0
+                    }
+                    }
         console.log(this.props.index)
 
         
@@ -73,6 +78,12 @@ class Skillset extends Component {
             this.setState({innerPage:{isInner:!this.state.innerPage.isInner,level}})   
     }
 
+
+    setAddPos=(index,pos)=>{
+        this.setState({insertPosition:{index,pos}})
+    }
+
+
     moveSkill=(index,p_id,pos)=>{
         console.log(index)
         let level=this.state.innerPage.level
@@ -107,7 +118,9 @@ class Skillset extends Component {
 
     }
 
-    makeSkill=(skill,template)=>{
+    //Final for the trial template---------------
+    //Make a skill element --- with logo as img and tool as text
+    makeSkill=(skill,template)=>{                 
         if(!template)
             return
         if(template.tag==="img" && template.children.length===0)
@@ -122,7 +135,8 @@ class Skillset extends Component {
 
     }
 
-    createSkill=(index)=>{
+    //create a skill and add it to the local state and update the parent
+    createSkill=(index,position=-1)=>{                //position -- where to add the skill
 
         //Validating skill's presence
         const {basic_skills,intermediate_skills,advanced_skills,global_skills,innerPage:{level}}=this.state;
@@ -137,16 +151,21 @@ class Skillset extends Component {
 
         //Add a skill locally
         let set=[...this.state[`${level}_skills`]],old=[...set]      //Initliase the set
-        
-        set.push(global_skills[index].tool)                  
-        this.setState({[`${level}_skills`]:set})
+        // console.log(position,this.state.insertPosition.index,"Add position")
+        if(position===-1)                                            //Add to the end
+            set.push(global_skills[index].tool)  
+        else
+            set.splice(position,0,global_skills[index].tool)            
+
+        this.setState({[`${level}_skills`]:set,insertPosition:{index:-1,pos:0}})
 
         //Call the insert props function
-        let template=JSON.parse(JSON.stringify(this.props.skillModel))  //Deepcopy props 
+          //Deepcopy props 
+        let template=JSON.parse(JSON.stringify(this.props.skillModel)) //---- Contains the model for a single template
 
         this.makeSkill(global_skills[index],template)   //Make the skill with template
- 
-        if(this.props.addSkill(p_id,template)===0){       //If failed revert back
+    
+        if(this.props.addSkill(p_id,template,position)===0){       //If failed revert back
             this.setState({[`${level}_skills`]:old})
             return {success:-1}
         }
@@ -155,8 +174,9 @@ class Skillset extends Component {
 
     }
 
+    
     displayList=()=>{
-        let {innerPage:{level}}=this.state;
+        let {innerPage:{level},insertPosition}=this.state;
         let p_id;
         let set=[];
         if(level==="")
@@ -177,7 +197,24 @@ class Skillset extends Component {
             <React.Fragment>
                 <div className="mt-4  pt-1 d-flex flex-column  align-items-center">
                     {set.map((skill,index)=>{
-                       return <div  className="col-lg col-8 mt-1 mb-1 " key={`${index}`} style={{backgroundColor:"#F5FFFA"}}>
+                       return ( 
+                           <React.Fragment key={`${index}`}>
+                               {/* Autocomplete to add skill above */}
+                                {index===insertPosition.index && insertPosition.pos===-1?
+                                    <div className="col">
+                                        <Autocomplete 
+                                            options={this.state.global_skills.map((skill)=>skill["tool"])}
+                                            addOption={this.createSkill}
+                                            addPosition={index}         //Specify the add position
+                                            >
+                                
+                                            </Autocomplete>
+
+                                    </div>
+                                        :""
+                                }
+
+                                <div  className="col-lg col-8 mt-1 mb-1 " key={`${index}`} style={{backgroundColor:"#F5FFFA"}}>
                                     <div className="d-flex flex-row justify-content-between">
                                         <span className="pt-2 pb-2">{skill}</span>
                                         <div className="d-flex justify-content-end" >
@@ -188,7 +225,7 @@ class Skillset extends Component {
                                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
                                                     {/* Add a skill above */}
-                                                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}} >
+                                                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.setAddPos(index,-1)}>
                                                         <span className="pl-3">
                                                             <img alt="Alt" src="https://img.icons8.com/ios/24/000000/plus-math.png"/>
                                                             Add skill Above
@@ -230,7 +267,7 @@ class Skillset extends Component {
 
 
                                                     {/* Add a skill below */}
-                                                    <button className="btn dropdown-item " type="btn" style={{  padding:0,border:"none"}}  >
+                                                    <button className="btn dropdown-item " type="btn" style={{  padding:0,border:"none"}}  onClick={()=>this.setAddPos(index,+1)} >
                                                         <span className="pl-3">
                                                             <img alt="Alt" src="https://img.icons8.com/ios/24/000000/plus-math.png"/>
                                                             Add skill below
@@ -242,7 +279,23 @@ class Skillset extends Component {
 
                                         </div>
                                     </div>
-                              </div>
+                                </div>
+                                {/* To add a skill below  */}
+                                {index===insertPosition.index && insertPosition.pos===1?
+                                    <div className="col">
+                                    <Autocomplete 
+                                        options={this.state.global_skills.map((skill)=>skill["tool"])}
+                                        addOption={this.createSkill}
+                                        addPosition={index+1}         //Specify the add position
+                                        >
+                                        </Autocomplete>
+
+                                    </div>
+                                    :""
+                                }
+    
+                            </React.Fragment>
+                                )
                     })}
                 </div>
             </React.Fragment>

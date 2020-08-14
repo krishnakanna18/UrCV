@@ -136,27 +136,30 @@ class Template extends Component {
     }
 
     //Insert an element in the tree
-    insertElement=(element,index,parent,template)=>{    //element-element to add ; //index-current element index
+    insertElement=(element,index,parent,template,position)=>{    //element-element to add ; //index-current element index
                                                         //parent- Parent index of element to add //template-parent
         if(index===parent){
-            template.children.push(element)
+            if(position===-1)
+                template.children.push(element)
+            else
+                template.children.splice(position,0,element)
             return 1
         }
 
         for(let i=0; i< template.children.length; i++)
-             if(this.insertElement(element,index+`:${i}`,parent,template.children[i])===1)
+             if(this.insertElement(element,index+`:${i}`,parent,template.children[i],position)===1)
                 return 1   
         return 0
     }
 
     //helper function for inserting an element given its parent id and the element
-    insert=(p_id=-1,element)=>{
+    insert=(p_id=-1,element,position=-1)=>{       //position -- position to insert in the parent's children array
         // console.log("parent",p_id)
         if(p_id===-1)
             return;
         let template={...this.state.template}
         for(let i=0; i<template.containers.length; i++)
-            if(this.insertElement(element,`${i}`,p_id,template.containers[i])===1){
+            if(this.insertElement(element,`${i}`,p_id,template.containers[i],position)===1){
                 this.setState({template},()=>{return 1})
                 return 1
             }
@@ -252,15 +255,16 @@ class Template extends Component {
     }
 
 
+    //Move element at index by pos
     move=(index,pos)=>{
-        console.log(index)
+        // console.log(index)
         let template={...this.state.template}
         let pid=index.split(':'),parent;  
         if(pid.length>=2){
             let parent_index=pid.slice(0,pid.length-1).join(':')
             index=parseInt(pid[pid.length-1])
-            console.log(index)
-            let moveObj={index:index,pos:pos}
+            // console.log(index)
+            let moveObj={index:index,pos:pos}                    //Describe the update object
             template=this.update(parent_index,[],moveObj)
             this.setState({template:template},()=>{return 1})
 
@@ -277,56 +281,6 @@ class Template extends Component {
     }
 
 
-    
-
-    //TestFunctions
-    addContainer=()=>{
-        let classes="img-responsive rounded-circle"
-        let image={
-            id:'0020',
-            tag:'img',
-            classlist:classes.split(' '),
-            children:[],
-            contents:{src:"https://img.stackshare.io/service/4418/gT8yKJa7.jpg"}
-        }
-        let text={
-                id:'0021',
-                tag:'span',
-                classlist:["mt-2"],
-                children:[],
-                contents:{text:"Discord"}
-        }
-        classes="mt-4 row col align-items-center"
-        let cont={
-            id:'002',
-            classlist:classes.split(' '),
-            children:[image,text],
-            tag:"div"
-        }
-        let template={...this.state.template}
-        // console.log(template,"Before template")
-        // for(let i=0; i<template.containers.length; i++)
-        //     this.insertElement(cont,`${i}`,'0:0',template.containers[i])
-
-        for(let i=0; i<template.containers.length; i++)
-            this.insertElement(cont,`${i}`,'0:1',template.containers[i])
-        
-        // for(let i=0; i<template.containers.length; i++)
-        //     this.deleteElement(`${i}`,'1','0',template.containers[i])
-        // let res=""
-        // for(let i=0; i<template.containers.length; i++){
-        //     res=this.searchElement(`${i}`,'1:0',template.containers[i])
-        //     if(res!==undefined)
-        //         break
-        // }
-        // console.log(res)
-
-        this.setState({template:template})
-        
-        
-    }
-
-    
     enableEditor=(index,classes)=>{
         let {editor}=this.state
         if(editor.enabled==0 || editor.index!==index){

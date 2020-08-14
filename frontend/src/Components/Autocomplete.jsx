@@ -160,7 +160,14 @@ class Autocomplete extends Component {
                 filtered_list:[],
                 active:false,
             })
-        let status=this.props.addOption(filtered_list[active_index].index)
+
+        let status
+        if(this.props.addPosition===undefined)
+            status=this.props.addOption(filtered_list[active_index].index)
+        else{
+            status=this.props.addOption(filtered_list[active_index].index,this.props.addPosition)
+        }
+
         if(status.success===-1){
             console.log(status.message)
             this.setState({errMessage:status.message})
@@ -204,7 +211,14 @@ class Autocomplete extends Component {
             active:false,
             filtered_list:[]
         })
-        let status=this.props.addOption(index)
+
+        let status
+
+        if(!this.props.addPosition)
+            status=this.props.addOption(index)
+        else
+            status=this.props.addOption(index,this.props.addPosition)
+        
         if(status.success===-1){
             console.log(status.message)
             this.setState({errMessage:status.message})
