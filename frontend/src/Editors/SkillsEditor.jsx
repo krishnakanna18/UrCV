@@ -333,41 +333,39 @@ class Skillset extends Component {
         let src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNiAwbDEyIDEyLTEyIDEyeiIvPjwvc3ZnPg==" 
         if(this.state.innerPage.isInner===false){
             return(
-                <div className="d-flex flex-column justify-content-start text-left align-contents-center">
+                    <div className="d-flex flex-column justify-content-start text-left align-contents-center">
 
-                <div  className="row justify-content-between" >
-                    <div className=""  onInput={(e)=>{console.log(e)}}>
-                        Basic
-                    </div>
-                    <div>
-                        <button className="btn" onClick={()=>this.changeInner('basic')}><img className="arrow" src={`${src}`}  alt="Form"></img></button>
-                    </div>
-                </div>
+                        <div  className="row justify-content-between" >
+                            <div className=""  onInput={(e)=>{console.log(e)}}>
+                                Basic
+                            </div>
+                            <div>
+                                <button className="btn" onClick={()=>this.changeInner('basic')}><img className="arrow" src={`${src}`}  alt="Form"></img></button>
+                            </div>
+                        </div>
 
-                <hr className="hr"></hr>
+                        <hr className="hr"></hr>
 
-                <div className="row justify-content-between"  >
-                    <div className=""  onInput={(e)=>{console.log(e)}}>
-                        Intermediate 
-                    </div>
-                    <div>
-                        <button className="btn" onClick={()=>this.changeInner('intermediate')}><img className="arrow" src={`${src}`}  alt="Formality" ></img></button>
-                    </div>
-                </div>
-                
-                <hr className="hr"></hr>
+                        <div className="row justify-content-between"  >
+                            <div className=""  onInput={(e)=>{console.log(e)}}>
+                                Intermediate 
+                            </div>
+                            <div>
+                                <button className="btn" onClick={()=>this.changeInner('intermediate')}><img className="arrow" src={`${src}`}  alt="Formality" ></img></button>
+                            </div>
+                        </div>
+                        
+                        <hr className="hr"></hr>
 
-                <div className="row justify-content-between"  >
-                    <div className=""  onInput={(e)=>{console.log(e)}}>
-                        Advanced
+                        <div className="row justify-content-between"  >
+                            <div className=""  onInput={(e)=>{console.log(e)}}>
+                                Advanced
+                            </div>
+                            <div>
+                                <button className="btn" onClick={()=>this.changeInner('advanced')}><img className="arrow" src={`${src}`} alt="Formali"></img></button>         
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <button className="btn" onClick={()=>this.changeInner('advanced')}><img className="arrow" src={`${src}`} alt="Formali"></img></button>         
-                    </div>
-                </div>
-
-            </div>
-
             )
         }
         return this.displayInner()
