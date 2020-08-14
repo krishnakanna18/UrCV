@@ -169,7 +169,7 @@ class Autocomplete extends Component {
         }
 
         if(status.success===-1){
-            console.log(status.message)
+            // console.log(status.message)
             this.setState({errMessage:status.message})
         }
 
@@ -204,7 +204,7 @@ class Autocomplete extends Component {
 
     clickOption(e,index){
         let text=e.target.innerText
-        console.log("The select index",index)
+        // console.log("The select index",index)
         this.setState({
             active_index:0,
             input:text,
@@ -220,7 +220,7 @@ class Autocomplete extends Component {
             status=this.props.addOption(index,this.props.addPosition)
         
         if(status.success===-1){
-            console.log(status.message)
+            // console.log(status.message)
             this.setState({errMessage:status.message})
 
         }

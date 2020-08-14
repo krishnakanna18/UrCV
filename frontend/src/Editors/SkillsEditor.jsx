@@ -21,7 +21,6 @@ class Skillset extends Component {
                         pos:0
                     }
                     }
-        console.log(this.props.index)
 
         
     }
@@ -85,7 +84,6 @@ class Skillset extends Component {
 
 
     moveSkill=(index,p_id,pos)=>{
-        console.log(index)
         let level=this.state.innerPage.level
         let set=[...this.state[`${level}_skills`]]
         // console.log(set,"The touched skill")
