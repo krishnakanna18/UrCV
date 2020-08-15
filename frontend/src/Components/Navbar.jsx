@@ -73,7 +73,7 @@ class Navbar extends Component {
         return ( 
             <React.Fragment>
                 <Router>
-                    <nav className="navbar navbar-expand-lg navbar-light bg-dark">
+                    <nav className="navbar navbar-expand-lg navbar-light bg-dark sticky-top">
                         <Link style={{color:"white"}} className="navbar-brand"  to="/" >
                             UrCV    
                         </Link>

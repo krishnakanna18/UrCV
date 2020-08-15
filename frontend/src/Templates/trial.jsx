@@ -344,10 +344,12 @@ class Template extends Component {
         return ( 
             <React.Fragment> 
                 <div className="d-flex flex-lg-row flex-column">
-                    <div className="col-xl-2 col-lg-3  ml-n2 container-fluid " style={{display:"none"}} id="editor">
+                    <div className="col-xl-2 col-lg-3  ml-n2 container-fluid row" style={{display:"none"}} id="editor">
+                        <div className="position-fixed col-xl-2 col-lg-3  ml-n2 ">
                             {this.state.editor.enabled===1?
                                 this.editorDisplay()
                             :""}
+                        </div>
                     </div>
                     <div className="col-lg-10 mt-5  col-12 d-flex flex-column  container-fluid" id="site-container">
                     
