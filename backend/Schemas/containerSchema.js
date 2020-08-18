@@ -5,10 +5,13 @@ mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useU
 let containerSchema=new mongoose.Schema({
     id:String,
     classlist:{type:[String],default:[]},
-    styles:{type:Object,default:undefined},
+    styles:{type:Object,default:{}},
     tag:{type:String,default:'div'},
-    children:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
-    contents:{type:Object,default:undefined}
+    children:{
+        type:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
+        default:[]
+    },
+    contents:{type:Object,default:{}}
 
 })
 let insert=async(...args)=>{

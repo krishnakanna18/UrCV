@@ -1,11 +1,30 @@
 import React, { Component } from 'react';
 import '../../public/trial.css'
+import '../../public/trailc.css'
 import Editor from '../Editors/Editor'
 import Div from '../TagComponents/Div'
 import Img from '../TagComponents/Img'
 import P from '../TagComponents/P'
 import Span from '../TagComponents/Span'
 import Link from '../TagComponents/Link'
+
+//Convert the css style object to react style object
+let styleParser=(styles)=>{
+    let temp={}
+    Object.keys(styles).map((style)=>{
+         let strings=style.split('-')
+         let first=strings[0]
+         strings=strings.slice(1,strings.length).map((string)=>{
+             return string.charAt(0).toUpperCase() + string.slice(1)
+         })
+         strings=[first,...strings]
+         strings=strings.join('')
+         temp={...temp,[strings]:styles[style]}
+        
+         
+     })
+    return temp
+ }
 
 class Template extends Component {
     constructor(){
@@ -54,6 +73,8 @@ class Template extends Component {
         // if(container.children!==undefined)
         //      container.children=container.children.map((child,id)=>this.tree(child,index+`${id}`))
         // console.log(container.styles)
+        if(container.styles)
+            container.styles=styleParser(container.styles)
         if(container.tag==="div")
           return(  
             <Div index={`${index}`} key={`${index}`} styles={container.styles} enableEditor={this.enableEditor} classes={container.classlist} >             
@@ -78,6 +99,12 @@ class Template extends Component {
           <Span index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents}>
               {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
           </Span>
+        )
+        else if(container.tag==="a" )
+        return(  
+          <Link index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents}>
+              {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
+          </Link>
         )
     
     }
@@ -353,7 +380,7 @@ class Template extends Component {
                     </div>
                     <div className="col-lg-10 mt-5  col-12 d-flex flex-column  container-fluid" id="site-container">
                     
-                        <div className=" mt-5 pt-5 container-fluid  " id="site" style={{overflow:"auto"}}>
+                        <div className=" mt-5 pt-5 container-fluid  mb-5" id="site" style={{overflow:"auto"}}>
                             {this.siteDisplay()}
                         </div>
                     </div>

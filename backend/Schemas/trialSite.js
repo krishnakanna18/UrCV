@@ -220,17 +220,23 @@ mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useU
 let containerSchema=new mongoose.Schema({
     id:String,
     classlist:{type:[String],default:[]},
-    styles:{type:Object},
+    styles:{type:Object,default:{}},
     tag:{type:String,default:'div'},
-    children:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
-    contents:{type:Object}
+    children:{
+        type:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
+        default:[]
+    },
+    contents:{type:Object,default:{}}
 
 })
 let Container=mongoose.model('containers',containerSchema)
 let templateSchema=new mongoose.Schema({
     name:String,
     id:String,
-    containers:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
+    containers:{
+        type:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
+        default:[]
+    }
     
 })
 let Template=mongoose.model('templates',templateSchema)
@@ -385,6 +391,8 @@ let retrieve=async(id)=>{
 
 
 
+
+
 // module.exports=Website;
 // "5f1a9817612b3481b198bc64" Site ID in db
 // Container.find({}).then((res)=>{
@@ -403,3 +411,194 @@ let retrieve=async(id)=>{
 // })
 
 // console.log(obj.name)
+
+
+//Insert Project
+(async()=>{
+    let classes
+
+   
+    let div000=new Container({
+            tag:'img',
+            classlist:"",
+            contents:{src:"/project.jpg"},
+        })
+
+    classes="btn col-auto"
+    let div0010=new Container({
+        tag:'a',
+        classlist:classes.split(' '),
+        contents:{
+            text:"Python"
+        }
+    })
+    console.log(div0010.classlist)
+    let div0011=new Container({
+        tag:'a',
+        classlist:classes.split(' '),
+        contents:{
+            text:"Tkinter"
+        }
+    })
+  
+   
+    
+
+    classes="project-stack d-inline-flex flex-row flex-wrap mt-2"
+    let div001=new Container({
+        tag:'div',
+        styles:{
+            "color": "#66A7D5 "
+        },
+        classlist:classes.split(' '),
+        children:[div0010._id,div0011._id]
+    })
+
+    classes="font-weight-bold"
+    let div0020=new Container({
+        tag:'a',
+        classlist:classes.split(' '),
+        contents:{
+            text:"UCritic Source Code",
+            href:"https://github.com/krishnakanna18/UCritic",
+            target:"_blank"
+        },
+        styles:{
+            "color": "#fff",
+            "font-size": "larger"
+        }
+    })
+
+    classes="mt-n3"
+    let div002=new Container({
+        tag:'div',
+        classlist:classes.split(' '),
+        children:[div0020._id]
+    })
+
+    classes="font-weight-bold"
+    let div0030=new Container({
+        tag:'p',
+        classlist:classes.split(' '),
+        contents:{
+            text:"Completed 2020",
+        },
+    })
+
+    classes="mt-n4"
+    let div003=new Container({
+        tag:'div',
+        classlist:classes.split(' '),
+        children:[div0030._id]
+    })
+
+    classes="col-lg-6 d-flex flex-column"
+    let div00=new Container({
+        tag:'div',
+        classlist:classes.split(' '),
+        children:[div000._id,div001._id,div002._id,div003._id]
+    })
+    
+    classes="font-weight-bold"
+    let div010=new Container({
+        tag:'p',
+        classlist:classes.split(' '),
+        contents:{
+            text:"Text File Compressor",
+        },
+        styles:{
+            "font-size": "xx-large"
+        }
+    })
+
+    classes="mt-n3 link"
+    let div011=new Container({
+        tag:'p',
+        classlist:classes.split(' '),
+        contents:{
+            text:"Find shortest path ",
+        }
+    })
+
+    let div012=new Container({
+        tag:'p',
+        contents:{
+            text:"This desktop application aims to visualize the shortest path between two points using A* search algorithm. A restricted set of coordinates can be added through which the path cannot pass."
+        },
+        styles:{
+            "font-size": "larger"
+        }
+    })
+
+    classes="col-md-6 d-flex flex-column project-description"
+    let div01=new Container({
+        tag:'div',
+        classlist:classes.split(' '),
+        children:[div010._id,div011._id,div012._id]
+    })
+
+    classes="col-lg-6 d-flex flex-md-row flex-column project"
+    let div0=new Container({
+        tag:'div',
+        classlist:classes.split(' '),
+        children:[div00._id,div01._id],
+        styles:{
+            "background-color":"#66A7D5"
+        }
+    })
+    console.log(div0.classlist)
+
+    let ids=await insert(div00,div000,div001,div0010,div0011,div002,div0020,div003,div0030,div01,div010,div011,div012,div0)
+
+
+
+
+
+    // classes="col-md-6 d-flex flex-column"
+    // let div00=new Container({
+    //         tag:'div'
+
+    // })
+    // classes="col-lg-6 d-flex flex-md-row flex-column project"
+    // let div0=new Container({
+    //         tag:'div',
+    //         classlist:classes.split(' '),
+    //         styles:{
+                    // "background-color":"7dcc93"
+    //         },
+    //     })
+    
+    // let ids=await insert(div0)
+    // console.log(ids)
+    // Template.findByIdAndUpdate("5f215e4eca32cc5faca29122",{$push:{containers:div0._id}},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
+    //     if(err)
+    //         throw err;
+    //     console.log(res)
+
+    // })
+    Container.findByIdAndUpdate("5f3b738679041343de0d8b28",{$push:{children:div0._id}},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
+        if(err)
+            throw err;
+        console.log(res);
+    })
+
+    // Container.findByIdAndUpdate("5f3b738679041343de0d8b28",{$pull:{children:"5f3bed94cc15f061b673b84e"}},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
+    //     if(err)
+    //         throw err;
+    //     console.log(res);
+    // })
+
+    // Container.findById("5f3b738679041343de0d8b28",(err,res)=>{
+    //     console.log(res.children)
+    // })
+
+    // Container.findByIdAndUpdate("5f3b738679041343de0d8b28",{children:[]},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
+    //     if(err)
+    //         throw err;
+    //     console.log(res);
+    // })
+    // console.log(await Template.retrieve("5f215e4eca32cc5faca29122"))
+
+
+})()
+// 5f3b738679041343de0d8b28

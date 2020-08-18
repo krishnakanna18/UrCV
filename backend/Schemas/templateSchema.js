@@ -7,7 +7,10 @@ mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useU
 let templateSchema=new mongoose.Schema({
     name:String,
     id:String,
-    containers:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}]
+    containers:{
+        type:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
+        default:[]
+    }
     
 })
 
