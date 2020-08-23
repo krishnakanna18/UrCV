@@ -42,7 +42,11 @@ class Editor extends Component {
         else if(this.props.type==='container')
         {
                 return(
-                    <ContainerEditor>
+                    <ContainerEditor component={this.props.component} 
+                                     index={this.props.index} 
+                                     removeElement={this.props.delete}
+                                     moveElement={this.props.move}
+                                     >
                         
                     </ContainerEditor>
                 )

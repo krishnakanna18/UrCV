@@ -1,5 +1,17 @@
 import React, { Component } from 'react';
 class Img extends Component{
+    dragStart(e){
+        e.dataTransfer.setData("text",e.target.src)
+        console.log(e.dataTransfer,e.target.src)
+    }
+    dragOver(e){
+        e.preventDefault();
+    }
+    onDrop(e){
+        e.preventDefault();
+        e.target.src=e.dataTransfer.getData("text");
+
+    }
     render(){
         let classes=""
         let style={}
@@ -12,6 +24,10 @@ class Img extends Component{
                 // onMouseEnter={(e)=>{
                 // console.log(e.target)
                 // }}
+                draggable={`${true}`}
+                onDragStart={(e)=>this.dragStart(e)}
+                onDragOver={(e)=>this.dragOver(e)}
+                onDrop={(e)=>this.onDrop(e)}
             >
             </img>
         )

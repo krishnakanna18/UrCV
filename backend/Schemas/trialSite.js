@@ -415,190 +415,107 @@ let retrieve=async(id)=>{
 
 //Insert Project
 (async()=>{
-    let classes
-
-   
+    let classes;
+    classes="h1"
     let div000=new Container({
-            tag:'img',
-            classlist:"",
-            contents:{src:"/project.jpg"},
-        })
-
-    classes="btn col-auto"
-    let div0010=new Container({
-        tag:'a',
-        classlist:classes.split(' '),
-        contents:{
-            text:"Python"
-        }
-    })
-    console.log(div0010.classlist)
-    let div0011=new Container({
-        tag:'a',
-        classlist:classes.split(' '),
-        contents:{
-            text:"Tkinter"
-        }
-    })
-  
-   
-    
-
-    classes="project-stack d-inline-flex flex-row flex-wrap mt-2"
-    let div001=new Container({
-        tag:'div',
-        styles:{
-            "color": "#66A7D5 "
-        },
-        classlist:classes.split(' '),
-        children:[div0010._id,div0011._id]
-    })
-
-    classes="font-weight-bold"
-    let div0020=new Container({
-        tag:'a',
-        classlist:classes.split(' '),
-        contents:{
-            text:"UCritic Source Code",
-            href:"https://github.com/krishnakanna18/UCritic",
-            target:"_blank"
-        },
-        styles:{
-            "color": "#fff",
-            "font-size": "larger"
-        }
-    })
-
-    classes="mt-n3"
-    let div002=new Container({
-        tag:'div',
-        classlist:classes.split(' '),
-        children:[div0020._id]
-    })
-
-    classes="font-weight-bold"
-    let div0030=new Container({
         tag:'p',
         classlist:classes.split(' '),
         contents:{
-            text:"Completed 2020",
+            text:"I can help.",
         },
+       
     })
-
-    classes="mt-n4"
-    let div003=new Container({
-        tag:'div',
-        classlist:classes.split(' '),
-        children:[div0030._id]
-    })
-
-    classes="col-lg-6 d-flex flex-column"
+    classes="col text-center"
     let div00=new Container({
         tag:'div',
         classlist:classes.split(' '),
-        children:[div000._id,div001._id,div002._id,div003._id]
+        children:[div000._id]
     })
-    
-    classes="font-weight-bold"
+    classes="h2"
     let div010=new Container({
         tag:'p',
         classlist:classes.split(' '),
         contents:{
-            text:"Text File Compressor",
+            text:"I'm currently available for freelance work",
         },
-        styles:{
-            "font-size": "xx-large"
-        }
-    })
-
-    classes="mt-n3 link"
-    let div011=new Container({
-        tag:'p',
-        classlist:classes.split(' '),
-        contents:{
-            text:"Find shortest path ",
-        }
-    })
-
-    let div012=new Container({
-        tag:'p',
-        contents:{
-            text:"This desktop application aims to visualize the shortest path between two points using A* search algorithm. A restricted set of coordinates can be added through which the path cannot pass."
-        },
-        styles:{
-            "font-size": "larger"
-        }
-    })
-
-    classes="col-md-6 d-flex flex-column project-description"
+       
+    })    
+    classes="col mt-3 text-center"
     let div01=new Container({
         tag:'div',
         classlist:classes.split(' '),
-        children:[div010._id,div011._id,div012._id]
+        children:[div010._id]
     })
-
-    classes="col-lg-6 d-flex flex-md-row flex-column project"
+    classes="h5"
+    let div020=new Container({
+        tag:'p',
+        classlist:classes.split(' '),
+        contents:{
+            text:"I can help you any kind of fullstack web application. I can design and also scale web applications to withstand a reasonable amount of traffic",
+        },
+       
+    })    
+    classes="col-8 mt-3 text-center"
+    let div02=new Container({
+        tag:'div',
+        classlist:classes.split(' '),
+        children:[div020._id]
+    })
+    
+    let div0300=new Container({
+        tag:'img',
+        classlist:"",
+        styles:{"width": "20%"},
+        contents:{src:"https://img.icons8.com/cotton/64/000000/green-file--v1.png"},
+    })
+    classes="pt-3"
+    let div0301=new Container({
+        tag:'p',
+        styles:{"font-size":"medium"},
+        contents:{
+            text:"MESSAGE ME",
+        },
+    })
+    classes="btn user-mail d-flex flex-row align-items-center"
+    let div030=new Container({
+        tag:'a',
+        classlist:classes.split(' '),
+        styles:{"background-color": "#45b29a",
+                "color": "#1b7f69"},
+        contents:{href:"mailto:example@gmail.com",
+                role:"button"
+            },
+        children:[div0300._id,div0301._id]
+    })
+    classes="mt-4 mb-5"
+    let div03=new Container({
+        tag:'div',
+        classlist:classes.split(' '),
+        children:[div030._id]
+    })
+    classes="d-flex flex-column justify-content-center align-items-center mt-5 pt-3 container contact"
     let div0=new Container({
         tag:'div',
         classlist:classes.split(' '),
-        children:[div00._id,div01._id],
-        styles:{
-            "background-color":"#66A7D5"
-        }
+        children:[div00._id,div01._id,div02,div03._id]
     })
-    console.log(div0.classlist)
-
-    let ids=await insert(div00,div000,div001,div0010,div0011,div002,div0020,div003,div0030,div01,div010,div011,div012,div0)
-
-
-
-
-
-    // classes="col-md-6 d-flex flex-column"
-    // let div00=new Container({
-    //         tag:'div'
-
-    // })
-    // classes="col-lg-6 d-flex flex-md-row flex-column project"
-    // let div0=new Container({
-    //         tag:'div',
-    //         classlist:classes.split(' '),
-    //         styles:{
-                    // "background-color":"7dcc93"
-    //         },
-    //     })
+    // let ids=await insert(div0,div00,div000,div01,div010,div02,div020,div03,div030,div0300,div0301)
     
-    // let ids=await insert(div0)
-    // console.log(ids)
-    // Template.findByIdAndUpdate("5f215e4eca32cc5faca29122",{$push:{containers:div0._id}},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
-    //     if(err)
-    //         throw err;
-    //     console.log(res)
-
-    // })
-    Container.findByIdAndUpdate("5f3b738679041343de0d8b28",{$push:{children:div0._id}},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
-        if(err)
-            throw err;
+    Template.findByIdAndUpdate("5f215e4eca32cc5faca29122",{$push:{containers:{
+                                                                    $each:["5f207158e2565a461ad74a13"],
+                                                                    $position:4
+                                                                    
+    }}},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
         console.log(res);
     })
-
-    // Container.findByIdAndUpdate("5f3b738679041343de0d8b28",{$pull:{children:"5f3bed94cc15f061b673b84e"}},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
-    //     if(err)
-    //         throw err;
-    //     console.log(res);
+    // Template.findByIdAndUpdate("5f215e4eca32cc5faca29122",{$pull:{containers:"5f207158e2565a461ad74a13"}},(err,res)=>{
+    //     console.log(res)
     // })
-
-    // Container.findById("5f3b738679041343de0d8b28",(err,res)=>{
-    //     console.log(res.children)
-    // })
-
-    // Container.findByIdAndUpdate("5f3b738679041343de0d8b28",{children:[]},{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
-    //     if(err)
-    //         throw err;
-    //     console.log(res);
-    // })
-    // console.log(await Template.retrieve("5f215e4eca32cc5faca29122"))
-
+    Template.findById("5f215e4eca32cc5faca29122",(err,res)=>{
+        console.log(res)
+    })
 
 })()
+// 5f207158e2565a461ad74a13 Skill Container
 // 5f3b738679041343de0d8b28
+// "5f215e4eca32cc5faca29122"

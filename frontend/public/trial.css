@@ -4,7 +4,7 @@ body{
     scroll-behavior: smooth;
     background-color: #f0f3f8
 }
-p{
+/* p{
     color: #545454;
     font-size: 50px;
     font-family: "adobe-garamond-pro,HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif";
@@ -23,7 +23,7 @@ p.h1{
 
     font-family:"Courier New", Courier, monospace;
 
-}
+} */
 
 hr{
     border-top:4px dotted #45b29a;
@@ -37,6 +37,7 @@ hr{
     border-color: #edeeef; */
     border-radius: 15px;
     background-color: white;
+    z-index: 1;
 }
 
 #editor{
@@ -46,10 +47,12 @@ hr{
     background-color: white;
 }
 
+
+
 .overlay{
   border: solid;
   border-width: 3px;
-  border-color: black;
+  border-color:  #b0e2ff;
   /* top: 0;
   left: 0;
   right: 0;
@@ -59,3 +62,11 @@ hr{
   cursor: pointer;
 }
 
+.selected{
+    background-color:rgba(253, 249, 239, 0.5);
+    border: solid;
+    border-width: 3px;
+    border-color: #b0e2ff;
+  
+
+}

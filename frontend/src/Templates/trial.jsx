@@ -38,7 +38,8 @@ class Template extends Component {
         models:{                               //Sample Schemas
             skillTemplate:"",
             projectTemplate:""
-        }
+        },
+        before_update:""
         }
     }
 
@@ -77,32 +78,32 @@ class Template extends Component {
             container.styles=styleParser(container.styles)
         if(container.tag==="div")
           return(  
-            <Div index={`${index}`} key={`${index}`} styles={container.styles} enableEditor={this.enableEditor} classes={container.classlist} >             
+            <Div index={`${index}`} key={`${index}`} styles={container.styles} enableEditor={this.enableEditor} classes={container.classlist} editorIndex={this.state.editor.index}>             
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </Div>
           )
         else if(container.tag==="img" || container.tag==="image" )
           return(  
-            <Img index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents}>
+            <Img index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents} editorIndex={this.state.editor.index}>
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </Img>
           )
         else if(container.tag==="p" )
           return(  
-            <P index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents}>
+            <P index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents} editorIndex={this.state.editor.index}>
     
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </P>
           )
         else if(container.tag==="span" )
         return(  
-          <Span index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents}>
+          <Span index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents} editorIndex={this.state.editor.index}>
               {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
           </Span>
         )
         else if(container.tag==="a" )
         return(  
-          <Link index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents}>
+          <Link index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents} editorIndex={this.state.editor.index}>
               {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
           </Link>
         )
@@ -220,13 +221,25 @@ class Template extends Component {
     delete=(index)=>{
         console.log(index)
         let template={...this.state.template}
+        let before_update=JSON.parse(JSON.stringify(this.state.template))
         let pid=index.split(':'),parent;                          //Split the index to get its element's parent
         if(pid.length>=2){
             parent=pid.slice(0,pid.length-1).join(':')            //Retrieve the parent index by joining till the second last
             index=parseInt(pid[pid.length-1])                     //The index to delete
             for(let i=0; i<template.containers.length; i++)
                 if(this.deleteElement(`${i}`,index,parent,template.containers[i])===1){
-                    this.setState({template:template}); 
+
+                    this.setState({template:template,before_update:before_update},()=>{
+
+                        let undo=document.getElementById("undoChanges")
+                        undo.style.display="block"
+                        undo.style.backgroundColor="black"
+
+                        setTimeout(()=>{
+                            undo.style.display="none"
+                        },4000)
+                    });
+
                     return 1;
                 }
             return 0;
@@ -235,7 +248,14 @@ class Template extends Component {
             index=parseInt(pid[pid.length-1])                //If pid size less than 2 delete the entire container
             try{
                 template.containers.splice(index,1);
-                this.setState({template:template})
+                this.setState({template:template,before_update:before_update},()=>{
+                    let undo=document.getElementById("undoChanges")
+                        undo.style.display="block"
+                        undo.style.backgroundColor="black"
+                        setTimeout(()=>{
+                            undo.style.display="none"
+                        },4000)
+                })
                 return 1;
             }
             catch(err){
@@ -307,17 +327,21 @@ class Template extends Component {
 
     }
 
+    undoDelete=()=>{
+        
+        this.setState({template:this.state.before_update})
+    }
 
     enableEditor=(index,classes)=>{
         let {editor}=this.state
-        if(editor.enabled==0 || editor.index!==index){
+        if(editor.enabled==0 || editor.index!==index ||  editor.index===index){
              document.getElementById('editor').style.display="block"
              document.getElementById('site-container').classList.remove('col-lg-10')
              document.getElementById('site-container').classList.add('col-lg-9')
              this.setState({editor:{enabled:1,index:`${index}`,type:classes}})
             }
 
-        else if(editor.enabled==1 || editor.index===index){
+        else if(editor.enabled==1 ){
             document.getElementById('editor').style.display="none"
             document.getElementById('site-container').classList.add('col-lg-10')
              document.getElementById('site-container').classList.remove('col-lg-9')
@@ -370,17 +394,42 @@ class Template extends Component {
     render() { 
         return ( 
             <React.Fragment> 
+
+                {/* Undo changes button */}
+                <div id="undoChanges"  style={{display:"none"}} className="container">
+                    <div className="position-fixed d-flex flex-column pt-3 pb-3 pr-3 pl-3" id="undoInner" style={{top:"20%",bottom:"50%",right:"0",backgroundColor:"black",zIndex:3,height:"14%"}}>
+                        <p className="" style={{color:"white",fontSize:"medium"}}>
+                            You removed an element
+                        </p>
+                        <div className=" d-flex flex-row justify-content-between" >
+                            <button className="btn btn-light " 
+                                onClick={this.undoDelete}
+                            >
+                                Undo
+                            </button>
+                            <button className="btn btn-light" 
+                                    onClick={()=>{
+                                        let undo=document.getElementById("undoChanges")
+                                        undo.style.display="none"
+                                    }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="d-flex flex-lg-row flex-column">
-                    <div className="col-xl-2 col-lg-3  ml-n2 container-fluid row" style={{display:"none"}} id="editor">
-                        <div className="position-fixed col-xl-2 col-lg-3  ml-n2 ">
+                    <div className="col-xl-2 col-lg-3  ml-n2 container-fluid row " style={{display:"none"}} id="editor">
+                        <div className="position-fixed col-xl-2 col-lg-3  ml-n2 " style={{overflowY:"scroll",bottom: "0%", top: "5%"}}>
                             {this.state.editor.enabled===1?
                                 this.editorDisplay()
                             :""}
                         </div>
                     </div>
-                    <div className="col-lg-10 mt-5  col-12 d-flex flex-column  container-fluid" id="site-container">
+                    <div className="col-lg-10 mt-5  col-12  container-fluid " id="site-container">
                     
-                        <div className=" mt-5 pt-5 container-fluid  mb-5" id="site" style={{overflow:"auto"}}>
+                        <div className=" mt-5 pt-5 container-fluid  mb-5 " id="site" style={{overflow:"auto",overflowY:"scroll"}}>
                             {this.siteDisplay()}
                         </div>
                     </div>

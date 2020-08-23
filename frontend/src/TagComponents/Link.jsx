@@ -4,7 +4,7 @@ class Link extends Component{
     
     render(){
         let classes=""
-        let style={},href="javascript:void(0)",target="",text=""
+        let style={},href="javascript:void(0)",target="",text="",role=""
         if(this.props.classes!==undefined)
             classes=`${this.props.classes.join(' ')}`
         if(this.props.styles!==undefined)
@@ -15,8 +15,10 @@ class Link extends Component{
             text=this.props.contents.text
         if(this.props.contents.target!==undefined)
             target=this.props.contents.target
+        if(this.props.contents.role!==undefined)
+            role=this.props.contents.role
         return(
-            <a className={`${classes}`} style={style} id={`${this.props.index}`} href={`${href}`} target={`${target}`} >
+            <a className={`${classes}`} style={style} id={`${this.props.index}`} href={`${href}`} target={`${target}`} role={`${role}`}>
                 {`${text}`}
                 {this.props.children}
             </a>
