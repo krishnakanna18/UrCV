@@ -1,38 +1,23 @@
-// let fs=require("fs")
-// let skills=fs.readFileSync('./tools.json')
-// skills=JSON.parse(skills)    
-// // console.log(skills)
-// let special=new Set()
-// skills.map((skill)=>skill.tool.toLowerCase()).filter((skill)=>{
-//     // console.log(skill)
-//     for(let i=0; i<skill.length; i++)
-//         {
-//             let c=skill[i].charCodeAt(0);
+// let m;
+// class r{
+//     constructor(){
+//         this.func=this.func.bind(this)
+//     }
+//     func(a,b){
 
-//             if(c<97 || c>122){
-//                 special.add(skill[i])
-//             }
-           
-//         }
-// })
-// console.log(special)
-// process.stdout.write(special)
+//         console.log(a,"is a",b);
+//     }
 
-let styleParser=(styles)=>{
-    let temp={}
-    Object.keys(styles).map((style)=>{
-         let strings=style.split('-')
-         let first=strings[0]
-         strings=strings.slice(1,strings.length).map((string)=>{
-             return string.charAt(0).toUpperCase() + string.slice(1)
-         })
-         strings=[first,...strings]
-         strings=strings.join('')
-         temp={...temp,[strings]:styles[style]}
-        
-         
-     })
-    return temp
- }
-console.log({"max-width":"1583px","background-color":"#7fffde"})
- console.log(styleParser({"width":"1583px","background-color":"#7fffde"}))
+//     ha(){
+//         return [this.func.bind(this),[1,2]]
+//     }
+// }
+// let k=new r();
+// let y=k.ha();
+// y[0].apply(y,y[1])
+function f(c,b){
+    c+=10;
+}
+let k=10;
+f(k,1);
+console.log(k)

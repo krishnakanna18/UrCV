@@ -34,12 +34,15 @@ class Template extends Component {
             enabled:false,
             index:"",
             type:""
-        },
+            },
         models:{                               //Sample Schemas
             skillTemplate:"",
             projectTemplate:""
-        },
-        before_update:""
+            },
+        changes_stacks:{            //Stack to store the changes made
+            undo_stack:[],          //Stores the undo operations triggered by ctrl+z
+            redo_stack:[]           //Stores the undo operations triggered by ctrl+y
+            }
         }
     }
 
@@ -58,9 +61,65 @@ class Template extends Component {
     
              }
              this.changeState({models:{skillTemplate}})
+             document.querySelector("body").addEventListener("keydown",(e)=>this.changes_stacks_event(e))
             
 
         })
+    }
+
+    undo_change=()=>{
+        let changes_stacks={...this.state.changes_stacks}
+        if(changes_stacks.undo_stack.length===0){
+            console.log("Empty stack")
+            return;
+        }
+        let top=changes_stacks.undo_stack.pop();
+        let topUndo=top.undo;
+        if(topUndo.func.apply(this,[...topUndo.args,0])===1){
+            changes_stacks.redo_stack.push(top);
+            console.log("Changes->",changes_stacks)
+            this.setState({changes_stacks})
+            location.href=`#${top.index}`   //Move to the changed element's location
+        }
+        else{
+            console.log("Operation failed");
+        }
+
+
+    }
+
+    redo_change=()=>{
+        let changes_stacks={...this.state.changes_stacks}
+        if(changes_stacks.redo_stack.length===0){
+            console.log("Empty stack")
+            return;
+        }
+        let top=changes_stacks.redo_stack.pop();
+        let topRedo=top.redo;
+        if(topRedo.func.apply(this,[...topRedo.args,0])===1){
+            changes_stacks.undo_stack.push(top);
+            console.log("Changes->",changes_stacks)
+            this.setState({changes_stacks})
+            location.href=`#${top.index}`    //Move to the changed element's location
+        }
+        else{
+            console.log("Operation failed");
+        }
+
+
+    }
+
+    changes_stacks_event=(event)=>{
+        if(event.ctrlKey && event.key === 'z'){
+            console.log("Undo")
+            this.undo_change();
+        }
+        else if(event.ctrlKey && event.key === 'y'){
+            console.log("Redo")
+            this.redo_change();
+        }
+
+
     }
 
     changeState=(obj)=>{
@@ -164,30 +223,53 @@ class Template extends Component {
     }
 
     //Insert an element in the tree
-    insertElement=(element,index,parent,template,position)=>{    //element-element to add ; //index-current element index
+    insertElement=(element,index,parent,template,position,old_value)=>{    //element-element to add ; //index-current element index
                                                         //parent- Parent index of element to add //template-parent
         if(index===parent){
-            if(position===-1)
+            if(position===-1){
                 template.children.push(element)
-            else
+                old_value.push(`${index}:${template.children.length-1}`)
+            }
+            else{
                 template.children.splice(position,0,element)
+                old_value.push(`${index}:${position}`)
+            }
             return 1
         }
 
         for(let i=0; i< template.children.length; i++)
-             if(this.insertElement(element,index+`:${i}`,parent,template.children[i],position)===1)
+             if(this.insertElement(element,index+`:${i}`,parent,template.children[i],position,old_value)===1)
                 return 1   
         return 0
     }
 
     //helper function for inserting an element given its parent id and the element
-    insert=(p_id=-1,element,position=-1)=>{       //position -- position to insert in the parent's children array
+    insert=(p_id=-1,element,position=-1,stackCall=-1)=>{       //position  -- position to insert in the parent's children array
+                                                               //StackCall -- if -1 adds operation to change stack 
+                                                               //          -- else(called from undo,redo operations) don't add operation
         // console.log("parent",p_id)
         if(p_id===-1)
             return;
-        let template={...this.state.template}
+        let template={...this.state.template},changes_stacks={...this.state.changes_stacks}
+        let old_value=[];
         for(let i=0; i<template.containers.length; i++)
-            if(this.insertElement(element,`${i}`,p_id,template.containers[i],position)===1){
+            if(this.insertElement(element,`${i}`,p_id,template.containers[i],position,old_value)===1){
+                if(stackCall===-1){
+                let change_obj={             //Object to log operations
+                    undo:{
+                        func:this.delete,
+                        args:old_value
+                    },
+                    redo:{
+                        func:this.insert,
+                        args:[p_id,element,position]
+                        
+                    },
+                    index:old_value[0]
+                }
+                changes_stacks.undo_stack.push(change_obj)
+            }
+
                 this.setState({template},()=>{return 1})
                 return 1
             }
@@ -199,9 +281,10 @@ class Template extends Component {
     //Delete an element recursive 
     //Current - current recursion tree index ; index - index to delete ; 
     //parent - index's parent ; template; current container
-    deleteElement=(current,index,parent,template)=>{
+    deleteElement=(current,index,parent,template,old_value)=>{
         if(current===parent){
-            try{            
+            try{
+                old_value.push(template.children[index])            
                 template.children.splice(index,1);
                 return 1
             }
@@ -210,7 +293,7 @@ class Template extends Component {
             }
         }
         for(let i=0; i< template.children.length; i++)
-            if(this.deleteElement(current+`:${i}`,index,parent,template.children[i])===1)
+            if(this.deleteElement(current+`:${i}`,index,parent,template.children[i],old_value)===1)
                 return 1 
         return 0
 
@@ -218,19 +301,38 @@ class Template extends Component {
 
     //Helper function for deleting an element given its index in the tree ;
     //Returns: 1 if deleted successfully 0 if not
-    delete=(index)=>{
+    delete=(index,stackCall=-1)=>{          //StackCall -- if -1 adds operation to change stack 
+                                            //          -- else(called from undo,redo operations) don't add operation
         console.log(index)
-        let template={...this.state.template}
-        let before_update=JSON.parse(JSON.stringify(this.state.template))
+        let params=[index]
+        let template={...this.state.template},changes_stacks={...this.state.changes_stacks}
+        // let before_update=JSON.parse(JSON.stringify(this.state.template))
         let pid=index.split(':'),parent;                          //Split the index to get its element's parent
         if(pid.length>=2){
             parent=pid.slice(0,pid.length-1).join(':')            //Retrieve the parent index by joining till the second last
             index=parseInt(pid[pid.length-1])                     //The index to delete
+            let old_value=[];
             for(let i=0; i<template.containers.length; i++)
-                if(this.deleteElement(`${i}`,index,parent,template.containers[i])===1){
+                if(this.deleteElement(`${i}`,index,parent,template.containers[i],old_value)===1){
+                    if(stackCall===-1){
+                    let change_obj={             //Object to log operations
+                        undo:{
+                            func:this.insert,
+                            args:[parent,old_value[0],index]
+                        },
+                        redo:{
+                            func:this.delete,
+                            args:params
+                            
+                        },
+                        index:params[0]
+                    }
 
-                    this.setState({template:template,before_update:before_update},()=>{
-
+                    changes_stacks.undo_stack.push(change_obj)
+                }
+                    this.setState({template:template,changes_stacks}),
+                        setTimeout(()=>{
+                        
                         let undo=document.getElementById("undoChanges")
                         undo.style.display="block"
                         undo.style.backgroundColor="black"
@@ -238,7 +340,7 @@ class Template extends Component {
                         setTimeout(()=>{
                             undo.style.display="none"
                         },4000)
-                    });
+                    },500);
 
                     return 1;
                 }
@@ -247,8 +349,22 @@ class Template extends Component {
         else{
             index=parseInt(pid[pid.length-1])                //If pid size less than 2 delete the entire container
             try{
+                let old_value=[template.containers[index]]
                 template.containers.splice(index,1);
-                this.setState({template:template,before_update:before_update},()=>{
+                let change_obj={             //Object to log operations
+                    undo:{
+                        func:this.delete,
+                        args:params
+                    },
+                    redo:{
+                        func:this.insert,
+                        args:[-1,old_value[0],index]
+                    },
+                    index:params[0]
+                }
+
+                changes_stacks.undo_stack.push(change_obj)
+                this.setState({template:template,changes_stacks},()=>{
                     let undo=document.getElementById("undoChanges")
                         undo.style.display="block"
                         undo.style.backgroundColor="black"
@@ -328,8 +444,8 @@ class Template extends Component {
     }
 
     undoDelete=()=>{
-        
-        this.setState({template:this.state.before_update})
+        this.undo_change();
+        document.getElementById("undoChanges").style.display="none"
     }
 
     enableEditor=(index,classes)=>{
