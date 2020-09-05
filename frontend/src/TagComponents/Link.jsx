@@ -2,13 +2,6 @@ import React, { Component } from 'react';
 
 class Link extends Component{
     
-    shouldComponentUpdate(nextProps,nextState){
-        if(this.props.index.indexOf(this.props.editorIndex)===0 || this.props.index.indexOf(nextProps.editorIndex)===0 || ((this.props.index.indexOf(this.props.ur_stack_id)===0) || this.props.index.indexOf(nextProps.ur_stack_id)===0) && this.props.ur_stack_id.length>0 ){
-            
-            return 1;
-        }
-        return 0;
-    }
 
     render(){
         let classes=""

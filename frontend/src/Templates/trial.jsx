@@ -42,7 +42,9 @@ class Template extends Component {
         changes_stacks:{            //Stack to store the changes made
             undo_stack:[],          //Stores the undo operations triggered by ctrl+z
             redo_stack:[],           //Stores the undo operations triggered by ctrl+y
-            stack_element_index:""  //Store the stack element index
+            stack_element_index:"",  //Store the stack element index
+            undo_top:"",
+            redo_top:""
             }
         }
     }
@@ -71,19 +73,21 @@ class Template extends Component {
     undo_change=()=>{
         let undo_stack=[...this.state.changes_stacks.undo_stack]
         let redo_stack=[...this.state.changes_stacks.redo_stack]
+        let {redo_top}=this.state.changes_stacks
         console.log(`${undo_stack}`);
         if(undo_stack.length===0){
             console.log("Empty stack")
+            // this.setState({changes_stacks:{undo_stack,redo_stack,undo_top:"",redo_top}})
             return;
         }
         let top=undo_stack.pop();
         let topUndo=top.undo;
-        console.log("Top ->",topUndo)
-        
+        // console.log("Top ->",topUndo)
+        // console.log(`TOp index ${top.index}`);
         if(topUndo.func.apply(this,[...topUndo.args,0])===1){
             redo_stack.push(top);
             // console.log("Changes->",changes_stacks)
-            let changes_stacks={undo_stack,redo_stack}
+            let changes_stacks={undo_stack,redo_stack,redo_top,undo_top:`${top.index}`}
             console.log(`Top index is ${top.index}`);
             this.setState({changes_stacks})
             location.href=`#${top.index}`   //Move to the changed element's location
@@ -99,18 +103,20 @@ class Template extends Component {
 
         let undo_stack=[...this.state.changes_stacks.undo_stack]
         let redo_stack=[...this.state.changes_stacks.redo_stack]
-
+        let {undo_top}=this.state.changes_stacks
         if(redo_stack.length===0){
             console.log("Empty stack")
+            // this.setState({changes_stacks:{undo_stack,redo_stack,undo_top,redo_top:""}})
             return;
         }
         let top=redo_stack.pop();
         let topRedo=top.redo;
-        console.log("Top ->",topRedo)
+        // console.log("Top ->",topRedo)
+        // console.log(`Redo index ${top.index}`);
         if(topRedo.func.apply(this,[...topRedo.args,0])===1){
             undo_stack.push(top);
             // console.log("Changes->",changes_stacks)
-            let changes_stacks={undo_stack,redo_stack}
+            let changes_stacks={undo_stack,redo_stack,undo_top,redo_top:`${top.index}`}
             this.setState({changes_stacks})
             location.href=`#${top.index}`    //Move to the changed element's location
         }
@@ -150,7 +156,11 @@ class Template extends Component {
         if(container.tag==="div")
           return(  
             <Div index={`${index}`} key={`${index}`} styles={container.styles} classes={container.classlist}
-                 enableEditor={this.enableEditor}  editorIndex={this.state.editor.index} ur_stack_id={this.state.changes_stacks.stack_element_index}>             
+                 enableEditor={this.enableEditor}  editorIndex={this.state.editor.index} ur_stack_id={this.state.changes_stacks.stack_element_index}
+                 child_containers={container.children}
+                 undoIndex={this.state.changes_stacks.undo_top}
+                 redoIndex={this.state.changes_stacks.redo_top}
+                 >             
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </Div>
           )
@@ -287,7 +297,7 @@ class Template extends Component {
                         args:[p_id,element,position]
                         
                     },
-                    index:old_value[0]
+                    index:`${i}`
                 }
                 undo_stack.push(change_obj)
             }
@@ -346,7 +356,7 @@ class Template extends Component {
                             args:params
                             
                         },
-                        index:params[0]
+                        index:`${pid[0]}`
                     }
                     undo_stack.push(change_obj)
                 }
@@ -382,9 +392,8 @@ class Template extends Component {
                         func:this.insert,
                         args:[-1,old_value[0],index]
                     },
-                    index:params[0]
+                    index:`${pid[0]}`
                 }
-
                 undo_stack.push(change_obj)
             }
                 this.setState({template:template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{
@@ -466,9 +475,8 @@ class Template extends Component {
                         args:params
                         
                     },
-                    index:params[0]
+                    index:`${pid[0]}`
                 }
-
                 undo_stack.push(change_obj)
             }
             this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
@@ -495,13 +503,16 @@ class Template extends Component {
 
     enableEditor=(index,classes)=>{
         let {editor}=this.state
-        if(editor.enabled==0 || editor.index!==index ||  editor.index===index){
+        if(editor.enabled==0 || editor.index!==index ){
              document.getElementById('editor').style.display="block"
              document.getElementById('site-container').classList.remove('col-lg-10')
              document.getElementById('site-container').classList.add('col-lg-9')
              this.setState({editor:{enabled:1,index:`${index}`,type:classes}})
             }
 
+        else if(editor.index===index){
+            return;
+        }
         else if(editor.enabled==1 ){
             document.getElementById('editor').style.display="none"
             document.getElementById('site-container').classList.add('col-lg-10')

@@ -3,9 +3,12 @@ import '../../public/editPanel.css'
 class Div extends Component{
 
     //Check if the next selected component is same as the existing component
+    //Performance Improvance
     shouldComponentUpdate(nextProps,nextState){
 
         let {index,editorIndex}=this.props;
+        let next_editorIndex=nextProps.editorIndex;
+
 
         //If the container is not a top level component
 
@@ -16,23 +19,31 @@ class Div extends Component{
                             comp.classList.remove('selected')
                             // comp.classList.remove('editPanel')
                         }
-        // console.log(`${nextProps.ur_stack_id}`);
-        // console.log(this.props.editorIndex,this.props.index.indexOf(this.props.editorIndex))
-        // if(this.props.ur_stack_id.length>0)
-            // console.log(`${nextProps.ur_stack_id} and its length`);            
-        // if(index.indexOf(editorIndex)===0 || index.indexOf(nextProps.editorIndex)===0 || ((index.indexOf(this.props.ur_stack_id)===0) || index.indexOf(nextProps.ur_stack_id)===0) && this.props.ur_stack_id.length>0 ){
-        //     return 1;
-        // }
+ 
+        if(editorIndex.length>0 && next_editorIndex.length===0)
+            return 0;
 
+        if(editorIndex.length===0 && index.indexOf(nextProps.editorIndex)===0)
+            return 1;
+        
+        if((index.indexOf(editorIndex)===0 && editorIndex===next_editorIndex)|| index.indexOf(nextProps.editorIndex)===0)
+            return 1;
+        
+        
+        if((index.indexOf(nextProps.undoIndex)===0 && nextProps.undoIndex.length>0)|| (index.indexOf(nextProps.redoIndex)===0) && nextProps.redoIndex.length>0 )
+            return 1;
+        
+        if(editorIndex.length===0 && index.indexOf(nextProps.editorIndex)!==0)
+            return 0;
+                        
+        return 0;
      
-        return 1; 
       
     }
     
     render(){
         // if(this.props.editorIndex!=="")
-        // console.log(`Im ${this.props.index} amd im being rendered`);
-
+        console.log(`Im ${this.props.index} amd im being rendered and div`);
         let classes=""
         let style={}
         if(this.props.classes!==undefined)

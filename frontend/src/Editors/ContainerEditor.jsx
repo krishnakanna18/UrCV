@@ -55,8 +55,17 @@ class Container extends Component {
     displayOuter=()=>{
             let components=[...this.props.component.children]
             let index=this.props.index
-            // console.log(index)
+            console.log(index)
             return( 
+                <React.Fragment>
+                    {/* <div className="mt-2 row">
+                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.removeElement(`${index}`)}>
+                            <span className="pl-3">
+                                <img className="img-fluid" alt="Alt" src="https://img.icons8.com/ios/24/000000/multiply.png"/>
+                                    Remove 
+                            </span> 
+                    </button>
+                    </div> */}
                     <div className="mt-4 d-flex flex-column">
                         {components.map((component,id)=>{
                             return(
@@ -125,6 +134,8 @@ class Container extends Component {
                             )
                         })}
                     </div>
+                </React.Fragment>
+                
                 )
 
     }
