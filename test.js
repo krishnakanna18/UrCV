@@ -1,23 +1,51 @@
-// let m;
-// class r{
-//     constructor(){
-//         this.func=this.func.bind(this)
-//     }
-//     func(a,b){
+let test={
+    a:{
+        b:[
+            {
+                a:{
+                    b:[
+                        {
+                            text:"Back at u bitch"
+                        },
+                        {
+                            text:"I'm vengeance"
+                        },
+                        
 
-//         console.log(a,"is a",b);
-//     }
+                    ],
+                    c:{
+                        one:1,
+                        two:2
+                    },
+                }
+            },
+            {
+                a:{
+                    b:[
+                        {
+                            text:"I'm the night"
+                        },
+                        {
+                            text:"I'm batman"
+                        }
 
-//     ha(){
-//         return [this.func.bind(this),[1,2]]
-//     }
-// }
-// let k=new r();
-// let y=k.ha();
-// y[0].apply(y,y[1])
-function f(c,b){
-    c+=10;
+                    ],
+                    c:{
+                        one:1,
+                        two:2
+                    },
+
+                }
+            }
+        ],
+        c:{},
+
+        
+    }
 }
-let k=10;
-f(k,1);
-console.log(k)
+
+let obj2={...test}
+// console.log(`${obj2},${test}`);
+ob=[...obj2.a.b[0].a.b]
+ob=undefined
+console.log(`${obj2.a.b[0].a.b[0].text},${test.a.b[0].a.b[1].text}`);

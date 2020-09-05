@@ -41,7 +41,8 @@ class Template extends Component {
             },
         changes_stacks:{            //Stack to store the changes made
             undo_stack:[],          //Stores the undo operations triggered by ctrl+z
-            redo_stack:[]           //Stores the undo operations triggered by ctrl+y
+            redo_stack:[],           //Stores the undo operations triggered by ctrl+y
+            stack_element_index:""  //Store the stack element index
             }
         }
     }
@@ -68,16 +69,22 @@ class Template extends Component {
     }
 
     undo_change=()=>{
-        let changes_stacks={...this.state.changes_stacks}
-        if(changes_stacks.undo_stack.length===0){
+        let undo_stack=[...this.state.changes_stacks.undo_stack]
+        let redo_stack=[...this.state.changes_stacks.redo_stack]
+        console.log(`${undo_stack}`);
+        if(undo_stack.length===0){
             console.log("Empty stack")
             return;
         }
-        let top=changes_stacks.undo_stack.pop();
+        let top=undo_stack.pop();
         let topUndo=top.undo;
+        console.log("Top ->",topUndo)
+        
         if(topUndo.func.apply(this,[...topUndo.args,0])===1){
-            changes_stacks.redo_stack.push(top);
-            console.log("Changes->",changes_stacks)
+            redo_stack.push(top);
+            // console.log("Changes->",changes_stacks)
+            let changes_stacks={undo_stack,redo_stack}
+            console.log(`Top index is ${top.index}`);
             this.setState({changes_stacks})
             location.href=`#${top.index}`   //Move to the changed element's location
         }
@@ -89,16 +96,21 @@ class Template extends Component {
     }
 
     redo_change=()=>{
-        let changes_stacks={...this.state.changes_stacks}
-        if(changes_stacks.redo_stack.length===0){
+
+        let undo_stack=[...this.state.changes_stacks.undo_stack]
+        let redo_stack=[...this.state.changes_stacks.redo_stack]
+
+        if(redo_stack.length===0){
             console.log("Empty stack")
             return;
         }
-        let top=changes_stacks.redo_stack.pop();
+        let top=redo_stack.pop();
         let topRedo=top.redo;
+        console.log("Top ->",topRedo)
         if(topRedo.func.apply(this,[...topRedo.args,0])===1){
-            changes_stacks.undo_stack.push(top);
-            console.log("Changes->",changes_stacks)
+            undo_stack.push(top);
+            // console.log("Changes->",changes_stacks)
+            let changes_stacks={undo_stack,redo_stack}
             this.setState({changes_stacks})
             location.href=`#${top.index}`    //Move to the changed element's location
         }
@@ -137,26 +149,30 @@ class Template extends Component {
             container.styles=styleParser(container.styles)
         if(container.tag==="div")
           return(  
-            <Div index={`${index}`} key={`${index}`} styles={container.styles} enableEditor={this.enableEditor} classes={container.classlist} editorIndex={this.state.editor.index}>             
+            <Div index={`${index}`} key={`${index}`} styles={container.styles} classes={container.classlist}
+                 enableEditor={this.enableEditor}  editorIndex={this.state.editor.index} ur_stack_id={this.state.changes_stacks.stack_element_index}>             
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </Div>
           )
         else if(container.tag==="img" || container.tag==="image" )
           return(  
-            <Img index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents} editorIndex={this.state.editor.index}>
+            <Img index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents} 
+                 editorIndex={this.state.editor.index}>
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </Img>
           )
         else if(container.tag==="p" )
           return(  
-            <P index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents} editorIndex={this.state.editor.index}>
+            <P index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents} 
+               editorIndex={this.state.editor.index}>
     
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </P>
           )
         else if(container.tag==="span" )
         return(  
-          <Span index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents} editorIndex={this.state.editor.index}>
+          <Span index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents} 
+                editorIndex={this.state.editor.index}>
               {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
           </Span>
         )
@@ -237,9 +253,12 @@ class Template extends Component {
             return 1
         }
 
-        for(let i=0; i< template.children.length; i++)
-             if(this.insertElement(element,index+`:${i}`,parent,template.children[i],position,old_value)===1)
+        for(let i=0; i< template.children.length; i++){
+             if(this.insertElement(element,index+`:${i}`,parent,{...template.children[i]},position,old_value)===1){
                 return 1   
+             }
+            }
+
         return 0
     }
 
@@ -250,10 +269,13 @@ class Template extends Component {
         // console.log("parent",p_id)
         if(p_id===-1)
             return;
-        let template={...this.state.template},changes_stacks={...this.state.changes_stacks}
+        let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
         let old_value=[];
-        for(let i=0; i<template.containers.length; i++)
-            if(this.insertElement(element,`${i}`,p_id,template.containers[i],position,old_value)===1){
+        // template.containers=[]
+        // return 1;
+        // for(let i=0; i<template.containers.length; i++)
+        let i=p_id.split(":")[0];   //i- index of parent
+            if(this.insertElement(element,`${i}`,p_id,{...template.containers[i]},position,old_value)===1){
                 if(stackCall===-1){
                 let change_obj={             //Object to log operations
                     undo:{
@@ -267,10 +289,9 @@ class Template extends Component {
                     },
                     index:old_value[0]
                 }
-                changes_stacks.undo_stack.push(change_obj)
+                undo_stack.push(change_obj)
             }
-
-                this.setState({template},()=>{return 1})
+                this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
                 return 1
             }
         // console.log("INSIDE INSERT")
@@ -303,16 +324,16 @@ class Template extends Component {
     //Returns: 1 if deleted successfully 0 if not
     delete=(index,stackCall=-1)=>{          //StackCall -- if -1 adds operation to change stack 
                                             //          -- else(called from undo,redo operations) don't add operation
-        console.log(index)
         let params=[index]
-        let template={...this.state.template},changes_stacks={...this.state.changes_stacks}
+        let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
         // let before_update=JSON.parse(JSON.stringify(this.state.template))
         let pid=index.split(':'),parent;                          //Split the index to get its element's parent
         if(pid.length>=2){
             parent=pid.slice(0,pid.length-1).join(':')            //Retrieve the parent index by joining till the second last
             index=parseInt(pid[pid.length-1])                     //The index to delete
             let old_value=[];
-            for(let i=0; i<template.containers.length; i++)
+            // for(let i=0; i<template.containers.length; i++)
+            let i=pid[0];                   // i - index of parent
                 if(this.deleteElement(`${i}`,index,parent,template.containers[i],old_value)===1){
                     if(stackCall===-1){
                     let change_obj={             //Object to log operations
@@ -327,10 +348,10 @@ class Template extends Component {
                         },
                         index:params[0]
                     }
-
-                    changes_stacks.undo_stack.push(change_obj)
+                    undo_stack.push(change_obj)
                 }
-                    this.setState({template:template,changes_stacks}),
+
+                    this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}}),
                         setTimeout(()=>{
                         
                         let undo=document.getElementById("undoChanges")
@@ -351,6 +372,7 @@ class Template extends Component {
             try{
                 let old_value=[template.containers[index]]
                 template.containers.splice(index,1);
+                if(stackCall===-1){
                 let change_obj={             //Object to log operations
                     undo:{
                         func:this.delete,
@@ -363,8 +385,9 @@ class Template extends Component {
                     index:params[0]
                 }
 
-                changes_stacks.undo_stack.push(change_obj)
-                this.setState({template:template,changes_stacks},()=>{
+                undo_stack.push(change_obj)
+            }
+                this.setState({template:template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{
                     let undo=document.getElementById("undoChanges")
                         undo.style.display="block"
                         undo.style.backgroundColor="black"
@@ -391,6 +414,7 @@ class Template extends Component {
                     let temp=template.children[move.index]
                     template.children[move.index]=template.children[move.index+move.pos]
                     template.children[move.index+move.pos]=temp
+                    move.changedIndex=`${index}:${move.index+move.pos}`
                     return 1
                 }
             }
@@ -408,7 +432,7 @@ class Template extends Component {
     //Helper function for upaditing the element at index with component  ; Used in updating and moving an element
     //Returns:  Updated template ; move - moveObject in case of moving
     update=(index,component,move=undefined)=>{
-        let template={...this.state.template}
+        let template=JSON.parse(JSON.stringify(this.state.template))
         for(let i=0; i<template.containers.length; i++){
             if(this.updateElement(`${i}`,index,template.containers[i],component,move)==1)
                 return template   
@@ -419,9 +443,10 @@ class Template extends Component {
 
 
     //Move element at index by pos
-    move=(index,pos)=>{
+    move=(index,pos,stackCall=-1)=>{
         // console.log(index)
-        let template={...this.state.template}
+        let params=[index,pos]
+        let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
         let pid=index.split(':'),parent;  
         if(pid.length>=2){
             let parent_index=pid.slice(0,pid.length-1).join(':')
@@ -429,7 +454,25 @@ class Template extends Component {
             // console.log(index)
             let moveObj={index:index,pos:pos}                    //Describe the update object
             template=this.update(parent_index,[],moveObj)
-            this.setState({template:template},()=>{return 1})
+            // console.log(this.state.editor.index)
+            if(stackCall===-1){
+                let change_obj={             //Object to log operations
+                    undo:{
+                        func:this.move,
+                        args:[moveObj.changedIndex,-pos]
+                    },
+                    redo:{
+                        func:this.move,
+                        args:params
+                        
+                    },
+                    index:params[0]
+                }
+
+                undo_stack.push(change_obj)
+            }
+            this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
+            return 1;
 
         }
         else{
@@ -437,6 +480,8 @@ class Template extends Component {
             let temp=template.containers[index]
             template.containers[index]=template.containers[index+pos]
             template.containers[index+pos]=temp
+            console.log(this.state.editor.index)
+
             this.setState({template:template},()=>{return 1})
         }
 

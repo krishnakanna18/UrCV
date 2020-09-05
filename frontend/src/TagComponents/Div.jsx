@@ -5,22 +5,34 @@ class Div extends Component{
     //Check if the next selected component is same as the existing component
     shouldComponentUpdate(nextProps,nextState){
 
+        let {index,editorIndex}=this.props;
+
         //If the container is not a top level component
-        if(this.props.index.includes(":") )
-            return 1
 
         //The parent component of the selected component
-        if(this.props.editorIndex===this.props.index && nextProps.editorIndex!==this.props.editorIndex)
+        if(editorIndex===index && nextProps.editorIndex!==editorIndex)
                         {
-                            let comp=document.getElementById(this.props.index)
+                            let comp=document.getElementById(index)
                             comp.classList.remove('selected')
                             // comp.classList.remove('editPanel')
-                            return 1
                         }
-        return 1
+        // console.log(`${nextProps.ur_stack_id}`);
+        // console.log(this.props.editorIndex,this.props.index.indexOf(this.props.editorIndex))
+        // if(this.props.ur_stack_id.length>0)
+            // console.log(`${nextProps.ur_stack_id} and its length`);            
+        // if(index.indexOf(editorIndex)===0 || index.indexOf(nextProps.editorIndex)===0 || ((index.indexOf(this.props.ur_stack_id)===0) || index.indexOf(nextProps.ur_stack_id)===0) && this.props.ur_stack_id.length>0 ){
+        //     return 1;
+        // }
+
+     
+        return 1; 
+      
     }
     
     render(){
+        // if(this.props.editorIndex!=="")
+        // console.log(`Im ${this.props.index} amd im being rendered`);
+
         let classes=""
         let style={}
         if(this.props.classes!==undefined)

@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import '../../public/pHover.css'
 class P extends Component{
+    
+    shouldComponentUpdate(nextProps,nextState){
+        // if(this.props.index.indexOf(this.props.editorIndex)===0 || this.props.index.indexOf(nextProps.editorIndex)===0 || ((this.props.index.indexOf(this.props.ur_stack_id)===0) || this.props.index.indexOf(nextProps.ur_stack_id)===0) && this.props.ur_stack_id.length>0 ){
+            
+        //     return 1;
+        // }
+        return 1;
+    }
 
     showOptions(e,isParent){
         if(isParent)
@@ -21,6 +29,7 @@ class P extends Component{
 
     
     render(){
+        // console.log(`I'm ${this.props.index} and im a text`);
         let classes=""
         let style={}
         if(this.props.classes!==undefined)

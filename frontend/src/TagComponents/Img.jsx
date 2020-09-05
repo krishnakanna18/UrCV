@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
 class Img extends Component{
+
+    shouldComponentUpdate(nextProps,nextState){
+        // if(this.props.index.indexOf(this.props.editorIndex)===0 || this.props.index.indexOf(nextProps.editorIndex)===0 || ((this.props.index.indexOf(this.props.ur_stack_id)===0) || this.props.index.indexOf(nextProps.ur_stack_id)===0) && this.props.ur_stack_id.length>0 ){
+            
+        //     return 1;
+        // }
+        return 1;
+    }
     dragStart(e){
         e.dataTransfer.setData("text",e.target.src)
         console.log(e.dataTransfer,e.target.src)
@@ -13,6 +21,7 @@ class Img extends Component{
 
     }
     render(){
+        // console.log(`I'm ${this.props.index} and im an image`);
         let classes=""
         let style={}
         if(this.props.classes!==undefined)
