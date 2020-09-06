@@ -7,8 +7,16 @@ import Img from '../TagComponents/Img'
 import P from '../TagComponents/P'
 import Span from '../TagComponents/Span'
 import Link from '../TagComponents/Link'
+// import Perf from 'react-addons-perf'; // ES6
+import { Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+} from "react-router-dom";
+
 
 //Convert the css style object to react style object
+// Perf.start()
 let styleParser=(styles)=>{
     let temp={}
     Object.keys(styles).map((style)=>{
@@ -156,7 +164,7 @@ class Template extends Component {
         if(container.tag==="div")
           return(  
             <Div index={`${index}`} key={`${index}`} styles={container.styles} classes={container.classlist}
-                 enableEditor={this.enableEditor}  editorIndex={this.state.editor.index} ur_stack_id={this.state.changes_stacks.stack_element_index}
+                 enableEditor={this.enableEditor}  editorIndex={this.state.editor.index} 
                  child_containers={container.children}
                  undoIndex={this.state.changes_stacks.undo_top}
                  redoIndex={this.state.changes_stacks.redo_top}
@@ -167,14 +175,14 @@ class Template extends Component {
         else if(container.tag==="img" || container.tag==="image" )
           return(  
             <Img index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents} 
-                 editorIndex={this.state.editor.index}>
+            >
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </Img>
           )
         else if(container.tag==="p" )
           return(  
             <P index={`${index}`} key={`${index}`} styles={container.styles}  classes={container.classlist} contents={container.contents} 
-               editorIndex={this.state.editor.index}>
+            >
     
                 {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
             </P>
@@ -182,13 +190,13 @@ class Template extends Component {
         else if(container.tag==="span" )
         return(  
           <Span index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents} 
-                editorIndex={this.state.editor.index}>
+                >
               {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
           </Span>
         )
         else if(container.tag==="a" )
         return(  
-          <Link index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents} editorIndex={this.state.editor.index}>
+          <Link index={`${index}`} key={`${index}`}  styles={container.styles} classes={container.classlist} contents={container.contents} >
               {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
           </Link>
         )
@@ -606,10 +614,22 @@ class Template extends Component {
                         </div>
                     </div>
                 </div>
+
+            <Router>
+                <Route path="getEditorIndex" component={()=>function(){
+                    console.log(`${this.state.editor.index}`);
+                    return this.state.editor.index
+                }}/>
+            </Router>
+
             </React.Fragment>
 
          );
     }
+
+    
 }
+
+
  
 export default Template;

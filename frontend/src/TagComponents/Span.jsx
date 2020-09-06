@@ -10,6 +10,13 @@ class Span extends Component{
             classes=`${this.props.classes.join(' ')}`
         if(this.props.styles!==undefined)
             style=this.props.styles
+        // let isParent
+        // if(this.props.editorIndex.length>0)
+        //     {  if(this.props.index.indexOf(this.props.editorIndex)===0)
+        //         isParent=true
+        //     else
+        //         isParent=false
+        //     }
         return(
             <span className={`${classes}`} style={style} id={`${this.props.index}`} >
                 {this.props.contents.text}
