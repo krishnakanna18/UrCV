@@ -11,6 +11,7 @@ class EditorProvider extends Component{
             type:""}
         
     }
+    
 
     render(){
         return (
