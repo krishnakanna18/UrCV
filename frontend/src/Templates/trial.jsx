@@ -34,6 +34,7 @@ let styleParser=(styles)=>{
     return temp
  }
 
+
 class Template extends Component {
     constructor(){
         super();
@@ -607,9 +608,8 @@ class Template extends Component {
                             :""}
                         </div>
                     </div>
-                    <div className="col-lg-10 mt-5  col-12  container-fluid " id="site-container">
-                    
-                        <div className=" mt-5 pt-5 container-fluid  mb-5 " id="site" style={{overflow:"auto",overflowY:"scroll"}}>
+                    <div className="col-lg-10 mt-5 col-12 container-fluid" id="site-container">
+                        <div className="mt-5 pt-5 container-fluid mb-5" id="site" style={{overflowY:"scroll",overflow:"auto"}}>
                             {this.siteDisplay()}
                         </div>
                     </div>

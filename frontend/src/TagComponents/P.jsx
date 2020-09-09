@@ -29,7 +29,7 @@ class P extends Component{
 
     
     render(){
-        console.log(`I'm ${this.props.index} and im a text`);
+        // console.log(`I'm ${this.props.index} and im a text`);
         let link=<Link to="/getEditorIndex">
 
                 </Link>
@@ -52,10 +52,10 @@ class P extends Component{
         // console.log(this.props.editorIndex,"And im ", this.props.index,isParent)
         return(
             <p className={`${classes}`}  style={style} id={`${this.props.index}`} 
-                onMouseEnter={(e)=>{ this.showOptions(e,isParent);
-                    // console.log("Current editor is ",this.props.editorIndex)
-                }}
-                onMouseLeave={(e)=>{this.hideOptions(e,isParent)}}
+                // onMouseEnter={(e)=>{ this.showOptions(e,isParent);
+                //     console.log("Current editor is ",this.props.editorIndex)
+                // }}
+                // onMouseLeave={(e)=>{this.hideOptions(e,isParent)}}
                 >
                 {this.props.contents.text}
                 {this.props.children}
