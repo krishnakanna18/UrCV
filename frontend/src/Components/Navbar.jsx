@@ -73,8 +73,8 @@ class Navbar extends Component {
         return ( 
             <React.Fragment>
                 <Router>
-                    <nav className="navbar navbar-expand-lg navbar-light bg-dark sticky-top">
-                        <Link style={{color:"white"}} className="navbar-brand"  to="/" >
+                    <nav className="navbar navbar-expand-lg navbar-light  sticky-top" style={{backgroundColor:"white"}}>
+                        <Link className="navbar-brand"  to="/" >
                             UrCV    
                         </Link>
                         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,15 +85,6 @@ class Navbar extends Component {
                             {/* <li className="nav-item">
                                     <a  className="nav-link" href={`https://github.com/login/oauth/authorize?client_id=ed386413882419f33d05&scope=public_repo`}>Go to git</a>
                                 </li> */}
-                                <li className="nav-item">
-                                    <Link  style={{color:"white"}} className="nav-link" to="/design">MakeCV<span className="sr-only">(current)</span></Link>
-                                </li>
-                                <li>
-                                    {this.isloggedin()}
-                                </li>
-                                <li className="nav-item">
-                                    <Link  style={{color:"white"}}  className="nav-link" to='/test/Actor'>Where the link is the route will be</Link>
-                                </li>
                                 <li className="nav-item">
                                     <Link  className="nav-link" to={`/template/test`}>Template-Test</Link>
                                 </li>

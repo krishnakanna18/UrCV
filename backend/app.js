@@ -16,7 +16,8 @@ const express=require("express");
 app.use(cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
-app.use(express.static(__dirname+'public'));
+app.use(express.static(path.join(__dirname,'/public')));
+
 mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
 
 app.use(session({
@@ -260,6 +261,11 @@ app.get('/tools',async(req,res)=>{
       res.json(JSON.parse(JSON.stringify(skills)))
 })
 
+app.get('/jsonview',async(req,res)=>{
+      // res.sendFile('/home/krishna/Documents/UrCV/backend/Schemas/editContents.json');
+      // res.redirect('/me.svg');   
+      res.json(await Template.retrieve("5f215e4eca32cc5faca29122"))
+})
 
 // app.get('/gitauth',(req,res)=>{
 //       console.log(req.query.code,"THe code");

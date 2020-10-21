@@ -70,6 +70,15 @@ Selected Container:-
                             Replace:Prompt user pc,change link,
                             add as link to a section of the page
                     
+        div:
+            On Editor:
+                     (parent):
+                     Background colour or Image, Remove, Move, Add above or below
+                     List of containers contained in it
+
+                     (non-parent):
+                     Background colour or Image,
+                     List the text, images and link components contained in the container
 
 
 

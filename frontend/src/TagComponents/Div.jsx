@@ -40,10 +40,61 @@ class Div extends Component{
      
       
     }
+
+    displayOverlayButtons=(ind)=>{
+        // let up= <div id="addAboveButton" style={{position:"absolute", top:"0%", right:"50%", left:"50%",bottom:"100%"}}>
+        //             <img src="https://img.icons8.com/cotton/64/000000/plus--v1.png"/>
+        //         </div>
+        // let down=<div id="addBelowButton" style={{position:"absolute", bottom:"0%", right:"50%", left:"50%",top:"100%"}}>
+        //             <img src="https://img.icons8.com/cotton/64/000000/plus--v1.png"/>
+        //         </div>
+        let commonImg=document.createElement("img");
+        commonImg.setAttribute("src","https://img.icons8.com/cotton/64/000000/plus--v1.png");
+
+        let Img=document.createElement("img");
+        Img.setAttribute("src","https://img.icons8.com/cotton/64/000000/plus--v1.png");
+
+        let divtop=document.createElement("div");
+        divtop.style.cssText="position: absolute;  top:-5%;  right:50%;  left:50%;"
+        divtop.appendChild(Img);
+        divtop.setAttribute("id","addAboveButton");
+
+        let divbottom=document.createElement("div");
+        divbottom.style.cssText="position: absolute;  bottom:-5%;  right:50%;  left:50%;"
+        divbottom.appendChild(commonImg);
+        divbottom.setAttribute("id","addBelowButton");
+
+        let moreImg=document.createElement("img");
+        moreImg.setAttribute("src","https://img.icons8.com/ios/24/000000/more.png");
+
+        let divEnd=document.createElement("div");
+        divEnd.style.cssText="position: absolute;  top:0%;  right:1%; "
+        divEnd.appendChild(moreImg);
+        divEnd.setAttribute("id","addEndButton");
+
+
+        document.getElementById(ind).append(divtop,divbottom,divEnd);
+
+    }
+
+    removeOverlayButtons=(ind)=>{
+
+        let up=document.getElementById("addAboveButton");
+        let down=document.getElementById("addBelowButton");
+        let end=document.getElementById("addEndButton");
+        try{
+        document.getElementById(ind).removeChild(up);
+        document.getElementById(ind).removeChild(down);
+        document.getElementById(ind).removeChild(end);
+        }
+        catch(e){
+            // console.log()
+        }
+    }
     
     render(){
         // if(this.props.editorIndex!=="")
-        console.log(`Im ${this.props.index} amd im being rendered and div`);
+        // console.log("Im getting rendered",this.props.index)
         let classes=""
         let style={}
         if(this.props.classes!==undefined)
@@ -73,12 +124,15 @@ class Div extends Component{
                     // this.props.enableOverlay(this.props.index)
                     let comp=document.getElementById(this.props.index)
                     comp.classList.add('overlay')
+                    this.displayOverlayButtons(this.props.index);
+
                 }} 
                 onMouseLeave={()=>{
                     
                     // this.props.disableOverlay(this.props.index)
                     let comp=document.getElementById(this.props.index)
                     comp.classList.remove('overlay')
+                    this.removeOverlayButtons(this.props.index)
                 }}
                 onClick={()=>{
 
@@ -92,6 +146,7 @@ class Div extends Component{
                     // comp.classList.add('editPanel')
 
                 }} style={style}>
+               
                 {this.props.children}
             </div>
 
@@ -101,18 +156,18 @@ class Div extends Component{
             //         <div className="d-flex flex-row justify-content-end editPanel">
             //             <div className="d-flex flex-row justify-content-around col">
             //                 <button className="btn" style={{backgroundColor:"white"}}>
-            //                     <img src="https://img.icons8.com/ios/24/000000/edit.png"/> Edit
+            //                     <img src="http://localhost:3000/icons/edit.png"/> Edit
             //                 </button>
             //             </div>
 
             //             <div className="d-flex flex-row justify-content-center col">
 
             //                 <button className={`btn ${disabled}`} style={{backgroundColor:"white"}}>
-            //                     <img src="https://img.icons8.com/android/24/000000/down.png"/>
+            //                     <img src="http://localhost:3000/icons/down.png"/>
             //                 </button>
 
             //                 <button className={`btn ${disabled}`} style={{backgroundColor:"white"}}>
-            //                     <img src="https://img.icons8.com/ios/24/000000/up.png"/>
+            //                     <img src="http://localhost:3000/icons/up.png"/>
             //                 </button>
 
             //             </div>

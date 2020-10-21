@@ -83,9 +83,9 @@ class Template extends Component {
         let undo_stack=[...this.state.changes_stacks.undo_stack]
         let redo_stack=[...this.state.changes_stacks.redo_stack]
         let {redo_top}=this.state.changes_stacks
-        console.log(`${undo_stack}`);
+        // console.log(`${undo_stack}`);
         if(undo_stack.length===0){
-            console.log("Empty stack")
+            // console.log("Empty stack")
             // this.setState({changes_stacks:{undo_stack,redo_stack,undo_top:"",redo_top}})
             return;
         }
@@ -97,7 +97,7 @@ class Template extends Component {
             redo_stack.push(top);
             // console.log("Changes->",changes_stacks)
             let changes_stacks={undo_stack,redo_stack,redo_top,undo_top:`${top.index}`}
-            console.log(`Top index is ${top.index}`);
+            // console.log(`Top index is ${top.index}`);
             this.setState({changes_stacks})
             location.href=`#${top.index}`   //Move to the changed element's location
         }
@@ -138,11 +138,11 @@ class Template extends Component {
 
     changes_stacks_event=(event)=>{
         if(event.ctrlKey && event.key === 'z'){
-            console.log("Undo")
+            // console.log("Undo")
             this.undo_change();
         }
         else if(event.ctrlKey && event.key === 'y'){
-            console.log("Redo")
+            // console.log("Redo")
             this.redo_change();
         }
 
@@ -497,7 +497,7 @@ class Template extends Component {
             let temp=template.containers[index]
             template.containers[index]=template.containers[index+pos]
             template.containers[index+pos]=temp
-            console.log(this.state.editor.index)
+            // console.log(this.state.editor.index)
 
             this.setState({template:template},()=>{return 1})
         }
@@ -512,20 +512,17 @@ class Template extends Component {
 
     enableEditor=(index,classes)=>{
         let {editor}=this.state
-        if(editor.enabled==0 || editor.index!==index ){
+        if(editor.enabled===0 || editor.index!==index || editor.index===index ){
              document.getElementById('editor').style.display="block"
              document.getElementById('site-container').classList.remove('col-lg-10')
              document.getElementById('site-container').classList.add('col-lg-9')
              this.setState({editor:{enabled:1,index:`${index}`,type:classes}})
             }
 
-        else if(editor.index===index){
-            return;
-        }
-        else if(editor.enabled==1 ){
+        else if(editor.enabled===1 ){
             document.getElementById('editor').style.display="none"
             document.getElementById('site-container').classList.add('col-lg-10')
-             document.getElementById('site-container').classList.remove('col-lg-9')
+            document.getElementById('site-container').classList.remove('col-lg-9')
             this.setState({editor:{enabled:0,index:"",type:""}})
            }
         // this.addContainer()
@@ -534,7 +531,7 @@ class Template extends Component {
     disableEditor=()=>{
         document.getElementById('editor').style.display="none"
         document.getElementById('site-container').classList.add('col-lg-10')
-         document.getElementById('site-container').classList.remove('col-lg-9')
+        document.getElementById('site-container').classList.remove('col-lg-9')
         this.setState({editor:{enabled:0,index:"",type:""}})
 
     }
@@ -602,25 +599,22 @@ class Template extends Component {
 
                 <div className="d-flex flex-lg-row flex-column">
                     <div className="col-xl-2 col-lg-3  ml-n2 container-fluid row " style={{display:"none"}} id="editor">
-                        <div className="position-fixed col-xl-2 col-lg-3  ml-n2 " style={{overflowY:"scroll",bottom: "0%", top: "5%"}}>
+                        <div className="position-fixed col-xl-2 col-lg-3  ml-n2 " style={{overflowY:"scroll",bottom: "0%", top: "52px"}}>
                             {this.state.editor.enabled===1?
                                 this.editorDisplay()
                             :""}
                         </div>
                     </div>
+
                     <div className="col-lg-10 mt-5 col-12 container-fluid" id="site-container">
-                        <div className="mt-5 pt-5 container-fluid mb-5" id="site" style={{overflowY:"scroll",overflow:"auto"}}>
+                        <div className="mt-5 pt-5 container-fluid mb-5 col" id="site" style={{overflowY:"scroll",overflow:"auto"}}>
+                            
                             {this.siteDisplay()}
                         </div>
                     </div>
                 </div>
 
-            <Router>
-                <Route path="getEditorIndex" component={()=>function(){
-                    console.log(`${this.state.editor.index}`);
-                    return this.state.editor.index
-                }}/>
-            </Router>
+        
 
             </React.Fragment>
 
