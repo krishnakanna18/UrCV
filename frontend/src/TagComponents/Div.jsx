@@ -124,7 +124,7 @@ class Div extends Component{
                     // this.props.enableOverlay(this.props.index)
                     let comp=document.getElementById(this.props.index)
                     comp.classList.add('overlay')
-                    this.displayOverlayButtons(this.props.index);
+                    // this.displayOverlayButtons(this.props.index);
 
                 }} 
                 onMouseLeave={()=>{
@@ -132,7 +132,7 @@ class Div extends Component{
                     // this.props.disableOverlay(this.props.index)
                     let comp=document.getElementById(this.props.index)
                     comp.classList.remove('overlay')
-                    this.removeOverlayButtons(this.props.index)
+                    // this.removeOverlayButtons(this.props.index)
                 }}
                 onClick={()=>{
 

@@ -1,9 +1,7 @@
 div.editorTextBox{
     border: solid;
     outline: none;
-    background-color: #F5F5F5;
     border-radius: 0%;
-    border-color: #F5F5F5;
     resize: none; 
     display: block;
 
@@ -13,25 +11,56 @@ div.editorTextBox{
     box-sizing: border-box;         /* Opera/IE 8+ */
 
 
-    background: none 0% 0%  rgb(245, 245, 240); 
-    font-size: 18px;
-
+    font-size: 16px;
+    border: 1px solid #ccc;
+    box-shadow:  rgba(0, 0, 0, 0.2) 0px 2px 5px 0px
+    
 
 }
 
 
-.editorText{
+div.editorTextBox{
     font-size: 16px;
     color: #333333;
+    padding: 3%;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 
 }
 
 
-.editorText::selection{
+div.editorTextBox::selection{
     color: white;
     background-color: #333333;
 }
 
+div.editorTextBoxOuter{
+    width: calc(10vw + 40%);
+    margin-left:calc(-1vw)
+}
+
+
+span.editorText{
+    font-size: 18px;
+    color: #333333;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+}
+
+p.editorText{
+    font-size: 18px;
+    color: #333333;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+}
+
+p.editorText::selection{
+    color: white;
+    background-color: #333333;
+}
+
+span.editorText::selection{
+    color: white;
+    background-color: #333333;
+}
 /* Editor nav bar styles */
 /* border: 1px solid #CCC; */

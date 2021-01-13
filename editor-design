@@ -94,3 +94,14 @@ Add element:
                     Above: Add a (selected)section above current in the editor
                     Below: Add a (selected)section above current in the editor
 
+
+
+
+
+Remarks/takeaways(Future development):
+
+                        Always have all the text contents under span tag in all the future templates.
+                        Always use inline style elements for all the template elements.
+
+
+
