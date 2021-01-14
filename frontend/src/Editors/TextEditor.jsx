@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import '../../public/css/TextEditor.css'
-import TextareaAutosize from 'react-textarea-autosize';
-import autosize from 'autosize'
-import { initial } from 'lodash';
+// import TextareaAutosize from 'react-textarea-autosize';
+// import autosize from 'autosize'
+// import { initial, range } from 'lodash';
 
 //Convert the css style object to react style object
 let styleParser=(styles)=>{
@@ -81,32 +81,104 @@ class TextEditor extends Component {
     //Function to respond to changes in the Text
     onChange=(e)=>{
 
-        if(e.which===13 && e.type==="keydown")
+        //Prevent mouse point from pointing at &nbsp; on an empty span
+        // if(e.type==="mouseup")
+        // {
+        //     let Selection=document.getSelection()    
+        //     let checkString= Selection.anchorNode.textContent
+        //     console.log(checkString)
+        //     if(checkString[checkString.length-1]===' ')
+        //     {
+        //     //     e.preventDefault();
+        //         console.log("inside")
+        //     //     let range=document.createRange(); range.setStart(Selection.anchorNode,0); range.setEnd(Selection.anchorNode,0);
+        //     //     Selection.removeAllRanges();
+        //     //     Selection.addRange(range);
+        //     }
+        //     return
+        // }
+        
+        let targetChild=e.target.children[0]   //Parent Paragraph of the editable text
+
+        if(e.which===13 && e.type==="keydown")   //Handle enter keydown event
         {
             e.preventDefault();
-            // let br=document.createElement('br')
-            // br.style.marginBottom="0em"
-            // br.style.display="block"
-            // e.target.children[0].appendChild(br)
-            e.target.children[0].appendChild(document.createElement('br'))
+            // targetChild.appendChild(document.createElement('br'))
             return
 
         }
-        if(e.keyCode===8 && e.type==="keydown")
-        {   
-            e.preventDefault();
 
-        }
+        //Handle keyup event on enter -- add empty span and focus on the empty span
         if(e.which===13 && e.type==="keyup")
         {   
-            e.preventDefault();
+            e.preventDefault();  //Prevent default action on enter
+
+            //Create an empty span and attach it to the target child
             let emptySpan=document.createElement('span')
             emptySpan.innerHTML='&nbsp;'
             emptySpan.style.fontSize="100%"
+            emptySpan.style.display="block"
             emptySpan.classList.add("editorText")
-            e.target.children[0].appendChild(emptySpan)
+            targetChild.appendChild(emptySpan)
+
+            //Set the focus on the new line
+            let range=document.createRange()
+            range.setStart(emptySpan,0)
+            range.setEnd(emptySpan,0)
+            document.getSelection().removeAllRanges();
+            document.getSelection().addRange(range)
+
             return
         }
+
+        //Under construction
+        if(e.keyCode===8 && e.type==="keydown") //Handle backspace keydown event
+        {   
+            let Selection=window.getSelection()
+            if(Selection.isCollapsed===true){
+
+                let selectionParent=Selection.anchorNode.parentNode
+                if(selectionParent.tagName==="SPAN"){
+                    console.log(selectionParent.innerText.length,selectionParent.innerText)
+
+                    if(selectionParent.innerHTML==="&nbsp;" && targetChild.children.length>1){
+                        e.preventDefault();
+                        console.log(selectionParent.remove())
+                    }
+
+                    if((targetChild.children.length===1 || selectionParent.previousSibling===null) && selectionParent.innerText.length===1)
+                        {   
+                            console.log(selectionParent.innerText)
+                            e.preventDefault();
+                            selectionParent.innerHTML="&nbsp;"
+                                        //Set the focus on the new line
+                            let range=document.createRange()
+                            range.setStart(selectionParent,0)
+                            range.setEnd(selectionParent,0)
+                            Selection.removeAllRanges();
+                            Selection.addRange(range)
+
+                        }
+                }
+                else{
+                    console.log(selectionParent)
+                    e.preventDefault();
+
+                }
+            }
+            else{
+                let anchor=Selection.anchorNode.parentNode, focus=Selection.focusNode.parentNode
+                if(anchor===focus)
+                {
+                    console.log("Equal")
+                }
+
+
+            }
+
+        }
+
+
         if(e.type==="keydown")
             return;
 
@@ -124,7 +196,7 @@ class TextEditor extends Component {
 
         let spanTexts
         try{
-        spanTexts=e.currentTarget.children[0].children;
+        spanTexts=targetChild.children;
         }
         catch(e){
             textComponent.children.push(
@@ -174,7 +246,7 @@ class TextEditor extends Component {
             )  
         }
 
-        console.log(textComponent)
+        // console.log(textComponent)
         
     }
 
@@ -207,6 +279,9 @@ class TextEditor extends Component {
                     <div   className="editorTextBox"                                
                                 onKeyDown={(e)=>{ 
                                     this.onChange(e)}} 
+                                onMouseUp={(e)=>{
+                                    this.onChange(e)
+                                }}
                                 onKeyUp={(e)=>{ 
                                         this.onChange(e)}} 
                                 contentEditable={true}
@@ -214,6 +289,7 @@ class TextEditor extends Component {
                                 >
                                 <p  className="editorText" 
                                     contentEditable="inherit"
+                                    suppressContentEditableWarning={true}
                                 >
                                     {   displayStrings.length>0?
                                             displayStrings.map((st,id)=>{
@@ -223,9 +299,7 @@ class TextEditor extends Component {
                                                     {`${st.text}`}
                                                 </span>
                                             })
-                                            :<span style={{fontSize:"100%"}}>
-
-                                            </span>
+                                            :""
                                     }
                                 </p>
 
