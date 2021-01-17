@@ -117,48 +117,47 @@ class TextEditor extends Component {
 
             if(ancParent===focParent && ancParent.tagName==="SPAN")  //Same span element
             {
-                if(anchorOffset===focusOffset) //No selection -- caret is in between a span
-                {
+
+                    if(focusOffset<anchorOffset)
+                        [focusOffset, anchorOffset]=[anchorOffset, focusOffset]
 
                     let parentIndex=[...targetChild.children].indexOf(ancParent),
                         textLength=anchorNode.textContent.length,                 //Length of the span element
-                        spanText, anchorText                                     //Text inside replacing span and replaced span
+                        spanText, anchorText,                                     //Text inside replacing span and replaced span
+                        isFullText=(focusOffset-anchorOffset===textLength && focusOffset!==anchorOffset) //If entrie span is selected
 
-                    spanText=anchorNode.textContent.slice(anchorOffset,textLength)  
+                    spanText=anchorNode.textContent.slice(focusOffset,textLength)  
                     anchorText=anchorNode.textContent.slice(0,anchorOffset)
 
-                    if(anchorOffset===textLength)                                 //If caret after end of span
+                    if(focusOffset===textLength && !isFullText)                                 //If caret after end of span
                     {
                         if(ancParent.nextSibling===null || ancParent.nextSibling.tagName==="BR")
                                 spanText="&nbsp;"
                     }
-                    else if(anchorOffset===0)                                     //If caret before beginning of span
-                        anchorText="&nbsp;"
+                    else if(anchorOffset===0 || isFullText===true)                                  //If caret before beginning of span
+                        anchorText="&nbsp;" 
 
                     emptySpan.innerHTML=spanText                                  //Split the span element
                     emptySpan.style.cssText=ancParent.style.cssText               //Set the style   
                     ancParent.innerHTML=anchorText
 
-                    targetChild.insertBefore(document.createElement("br"),targetChild.children[parentIndex+1])  //Add br after the replaced span
 
-                    if(spanText.length>0)                                         //If replacing span non empty
+                    if(ancParent.nextSibling.tagName!=="BR" || !isFullText)   //TO avoid consecutive br elements
+                        targetChild.insertBefore(document.createElement("br"),targetChild.children[parentIndex+1])  //Add br after the replaced span
+
+                    if(spanText.length>0 && !isFullText)                                         //If replacing span non empty
                        { targetChild.insertBefore(emptySpan,targetChild.children[parentIndex+2])
-                        this.setFocus(Selection,emptySpan)
+                          this.setFocus(Selection,emptySpan)
                        }
                     else
                         this.setFocus(Selection,ancParent.nextSibling.nextSibling)  //Set focus on element after br(node+2)
                     
-
-                }
             }
-
-            return
-
-            
 
         }
 
         return
+
 
 
         //Under construction
@@ -246,6 +245,11 @@ class TextEditor extends Component {
         {      
             if(span.tagName==="BR")
                 {
+                    textComponent.children.push(
+                        {
+                            tag:"br",classlist:[],styles:{},contents:{},children:[]   
+                        }
+                        ) 
                     continue
                 }
             let spanStyle=[], spanObj={}
@@ -277,7 +281,7 @@ class TextEditor extends Component {
             )  
         }
 
-        // console.log(textComponent)
+        console.log(textComponent)
         
     }
 
