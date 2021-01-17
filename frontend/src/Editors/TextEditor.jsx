@@ -76,36 +76,32 @@ class TextEditor extends Component {
         
     }
 
+    setFocus=(Selection, element, offset=0)=>{
+
+        let range=document.createRange()
+            range.setStart(element,offset)
+            range.setEnd(element,offset)
+            Selection.removeAllRanges();
+            Selection.addRange(range)
+
+    }
+
 
     
     //Function to respond to changes in the Text
+    //Under construction
     onChange=(e)=>{
-
-        //Prevent mouse point from pointing at &nbsp; on an empty span
-        // if(e.type==="mouseup")
-        // {
-        //     let Selection=document.getSelection()    
-        //     let checkString= Selection.anchorNode.textContent
-        //     console.log(checkString)
-        //     if(checkString[checkString.length-1]===' ')
-        //     {
-        //     //     e.preventDefault();
-        //         console.log("inside")
-        //     //     let range=document.createRange(); range.setStart(Selection.anchorNode,0); range.setEnd(Selection.anchorNode,0);
-        //     //     Selection.removeAllRanges();
-        //     //     Selection.addRange(range);
-        //     }
-        //     return
-        // }
         
-        let targetChild=e.target.children[0]   //Parent Paragraph of the editable text
+        let targetChild=e.target.children[0],   //Parent Paragraph of the editable text
+            Selection=document.getSelection(),   //Selection object
+            {anchorNode,focusNode, anchorOffset, focusOffset}=Selection,
+            ancParent=anchorNode.parentNode, focParent=focusNode.parentNode
+
 
         if(e.which===13 && e.type==="keydown")   //Handle enter keydown event
-        {
+        {   
             e.preventDefault();
-            // targetChild.appendChild(document.createElement('br'))
             return
-
         }
 
         //Handle keyup event on enter -- add empty span and focus on the empty span
@@ -115,40 +111,78 @@ class TextEditor extends Component {
 
             //Create an empty span and attach it to the target child
             let emptySpan=document.createElement('span')
-            emptySpan.innerHTML='&nbsp;'
             emptySpan.style.fontSize="100%"
-            emptySpan.style.display="block"
             emptySpan.classList.add("editorText")
-            targetChild.appendChild(emptySpan)
 
-            //Set the focus on the new line
-            let range=document.createRange()
-            range.setStart(emptySpan,0)
-            range.setEnd(emptySpan,0)
-            document.getSelection().removeAllRanges();
-            document.getSelection().addRange(range)
+
+            if(ancParent===focParent && ancParent.tagName==="SPAN")  //Same span element
+            {
+                if(anchorOffset===focusOffset) //No selection -- caret is in between a span
+                {
+
+                    let parentIndex=[...targetChild.children].indexOf(ancParent),
+                        textLength=anchorNode.textContent.length,                 //Length of the span element
+                        spanText, anchorText                                     //Text inside replacing span and replaced span
+
+                    spanText=anchorNode.textContent.slice(anchorOffset,textLength)  
+                    anchorText=anchorNode.textContent.slice(0,anchorOffset)
+
+                    if(anchorOffset===textLength)                                 //If caret after end of span
+                    {
+                        if(ancParent.nextSibling===null || ancParent.nextSibling.tagName==="BR")
+                                spanText="&nbsp;"
+                    }
+                    else if(anchorOffset===0)                                     //If caret before beginning of span
+                        anchorText="&nbsp;"
+
+                    emptySpan.innerHTML=spanText                                  //Split the span element
+                    emptySpan.style.cssText=ancParent.style.cssText               //Set the style   
+                    ancParent.innerHTML=anchorText
+
+                    targetChild.insertBefore(document.createElement("br"),targetChild.children[parentIndex+1])  //Add br after the replaced span
+
+                    if(spanText.length>0)                                         //If replacing span non empty
+                       { targetChild.insertBefore(emptySpan,targetChild.children[parentIndex+2])
+                        this.setFocus(Selection,emptySpan)
+                       }
+                    else
+                        this.setFocus(Selection,ancParent.nextSibling.nextSibling)  //Set focus on element after br(node+2)
+                    
+
+                }
+            }
 
             return
+
+            
+
         }
+
+        return
+
 
         //Under construction
         if(e.keyCode===8 && e.type==="keydown") //Handle backspace keydown event
         {   
             let Selection=window.getSelection()
+
+
             if(Selection.isCollapsed===true){
 
                 let selectionParent=Selection.anchorNode.parentNode
-                if(selectionParent.tagName==="SPAN"){
-                    console.log(selectionParent.innerText.length,selectionParent.innerText)
 
-                    if(selectionParent.innerHTML==="&nbsp;" && targetChild.children.length>1){
+
+                    if((selectionParent.innerHTML==="&nbsp;" || selectionParent.innerHTML===" ") && targetChild.children.length>1){
+                        console.log("Yes")
                         e.preventDefault();
-                        console.log(selectionParent.remove())
+                        selectionParent.remove()
                     }
 
-                    if((targetChild.children.length===1 || selectionParent.previousSibling===null) && selectionParent.innerText.length===1)
+
+                    else if(((targetChild.children.length===1 || selectionParent.previousSibling===null) && selectionParent.innerText.length===1) || 
+                        ( selectionParent.innerHTML.length===1 && targetChild.children.length>1))
                         {   
-                            console.log(selectionParent.innerText)
+                            console.log(selectionParent.innerText.length,selectionParent.innerText, selectionParent)
                             e.preventDefault();
                             selectionParent.innerHTML="&nbsp;"
                                         //Set the focus on the new line
@@ -159,21 +193,18 @@ class TextEditor extends Component {
                             Selection.addRange(range)
 
                         }
-                }
-                else{
-                    console.log(selectionParent)
-                    e.preventDefault();
-
-                }
+    
             }
             else{
-                let anchor=Selection.anchorNode.parentNode, focus=Selection.focusNode.parentNode
-                if(anchor===focus)
+                let anchor=Selection.anchorNode, focus=Selection.focusNode
+                e.preventDefault()
+                if(anchor.parentNode===focus.parentNode)
                 {
                     console.log("Equal")
+                    console.log(Selection.anchorOffset,Selection.focusOffset, Selection.textContent)
+
                 }
-
-
+                console.log(anchor,focus)
             }
 
         }
@@ -250,6 +281,8 @@ class TextEditor extends Component {
         
     }
 
+    // End of the change function
+
 
     //Function to resize textarea size on initial mouseenter
     reSize=(e)=>{
@@ -279,17 +312,17 @@ class TextEditor extends Component {
                     <div   className="editorTextBox"                                
                                 onKeyDown={(e)=>{ 
                                     this.onChange(e)}} 
-                                onMouseUp={(e)=>{
-                                    this.onChange(e)
-                                }}
+                                // onMouseUp={(e)=>{
+                                //     this.onChange(e)
+                                // }}
                                 onKeyUp={(e)=>{ 
                                         this.onChange(e)}} 
+                                onCut={(e)=>{ 
+                                    this.onChange(e)}}
                                 contentEditable={true}
                                 suppressContentEditableWarning={true}
                                 >
                                 <p  className="editorText" 
-                                    contentEditable="inherit"
-                                    suppressContentEditableWarning={true}
                                 >
                                     {   displayStrings.length>0?
                                             displayStrings.map((st,id)=>{
@@ -312,16 +345,3 @@ class TextEditor extends Component {
 }
  
 export default TextEditor;
-
-{/* <script>
-const tx = document.getElementsByTagName('textarea');
-for (let i = 0; i < tx.length; i++) {
-  tx[i].setAttribute('style', 'height:' + (tx[i].scrollHeight) + 'px;overflow-y:hidden;');
-  tx[i].addEventListener("input", OnInput, false);
-}
-
-function OnInput() {
-  this.style.height = 'auto';
-  this.style.height = (this.scrollHeight) + 'px';
-}
-</script> */}
