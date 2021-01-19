@@ -4,25 +4,6 @@ import '../../public/css/TextEditor.css'
 // import autosize from 'autosize'
 // import { initial, range } from 'lodash';
 
-//Convert the css style object to react style object
-let styleParser=(styles)=>{
-    let temp={}
-    Object.keys(styles).map((style)=>{
-         let strings=style.split('-')
-         let first=strings[0]
-         strings=strings.slice(1,strings.length).map((string)=>{
-             return string.charAt(0).toUpperCase() + string.slice(1)
-         })
-         strings=[first,...strings]
-         strings=strings.join('')
-         temp={...temp,[strings]:styles[style]}
-        
-         
-     })
-    return temp
- }
-
-
 class TextEditor extends Component {
 
     constructor(props){
@@ -97,7 +78,6 @@ class TextEditor extends Component {
             {anchorNode,focusNode, anchorOffset, focusOffset}=Selection,
             ancParent=anchorNode.parentNode, focParent=focusNode.parentNode
 
-
         if(e.which===13 && e.type==="keydown")   //Handle enter keydown event
         {   
             e.preventDefault();
@@ -113,7 +93,6 @@ class TextEditor extends Component {
             let emptySpan=document.createElement('span')
             emptySpan.style.fontSize="100%"
             emptySpan.classList.add("editorText")
-
 
             if(ancParent===focParent && ancParent.tagName==="SPAN")  //Same span element
             {
@@ -141,19 +120,48 @@ class TextEditor extends Component {
                     emptySpan.style.cssText=ancParent.style.cssText               //Set the style   
                     ancParent.innerHTML=anchorText
 
-
-                    if(ancParent.nextSibling.tagName!=="BR" || !isFullText)   //TO avoid consecutive br elements
+                    if(ancParent.nextSibling===null || ancParent.nextSibling.tagName!=="BR" || !isFullText)   //TO avoid consecutive br elements
                         targetChild.insertBefore(document.createElement("br"),targetChild.children[parentIndex+1])  //Add br after the replaced span
+                    
 
                     if(spanText.length>0 && !isFullText)                                         //If replacing span non empty
                        { targetChild.insertBefore(emptySpan,targetChild.children[parentIndex+2])
                           this.setFocus(Selection,emptySpan)
                        }
                     else
-                        this.setFocus(Selection,ancParent.nextSibling.nextSibling)  //Set focus on element after br(node+2)
-                    
+                        this.setFocus(Selection,ancParent.nextSibling.nextSibling)  //Set focus on element after br(node+2)                    
             }
 
+            else if(ancParent.tagName==="SPAN" && focParent.tagName==="SPAN"){   //If more than one span elements are selected
+
+                let ancIndex=[...targetChild.children].indexOf(ancParent),
+                    focIndex=[...targetChild.children].indexOf(focParent)
+
+                if(focIndex<ancIndex)         //Swap all the properties of focus and anchor node
+                    [ancParent,focParent,anchorOffset,focusOffset,ancIndex,focIndex,anchorNode,focusNode]
+                   =[focParent,ancParent,focusOffset,anchorOffset,focIndex,ancIndex,focusNode, anchorNode]
+                
+                let focusText=focusNode.textContent.slice(focusOffset,focusNode.textContent.length),  
+                    anchorText=anchorNode.textContent.slice(0,anchorOffset),
+                    end=focIndex
+
+                if(anchorOffset===0 && focusOffset===focusNode.textContent.length)  //If selection contains entire anchor and focus Text
+                    {focusText=anchorText="&nbsp;"; end+=2}
+
+                else if(anchorOffset===0)   //If selection contains entire anchor Text
+                    anchorText="&nbsp;"
+
+                else if(focusOffset===focusNode.textContent.length)  //If selection contains entire focus Text
+                    focusText="&nbsp;"
+
+                ancParent.innerHTML=anchorText
+                focParent.innerHTML=focusText
+
+                targetChild.insertBefore(document.createElement("br"),targetChild.children[ancIndex+1])  //Add br after the replaced span
+
+                for(let i=ancIndex+1; i<end; i++)   //Remove all nodes inbetween the anchor and focus node
+                    targetChild.children[ancIndex+1].remove()    
+            }
         }
 
         return
@@ -296,15 +304,6 @@ class TextEditor extends Component {
             }
     }
 
-    setIndices=(st,end)=>{
-        // console.log(e.target.selectionStart,e.target.selectionEnd,e.type,e.target.value.slice(e.target.selectionStart,e.target.selectionEnd));
-        let {startIndex,endIndex}=this.state
-        // if(startIndex===-1 && endIndex===-1)
-        this.setState({startIndex:st,endIndex:end})
-    }
-    
-
-    
 
     render() { 
         let displayStrings=[]                       //Array of strings to be displayed and edited

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import '../../public/trial.css'
-import '../../public/trailc.css'
+import '../../public/css/trial.css'
+import '../../public/css/trailc.css'
 import Editor from '../Editors/Editor'
 import Div from '../TagComponents/Div'
 import Img from '../TagComponents/Img'

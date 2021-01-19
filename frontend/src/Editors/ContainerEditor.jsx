@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import '../../public/containerEditor.css'
+import '../../public/css/containerEditor.css'
 import TextEditor from './TextEditor'
 class Container extends Component {
     constructor(props){

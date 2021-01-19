@@ -6,7 +6,7 @@ import Autocomplete from '../Components/Autocomplete'
 //     Link,
 //     Switch
 //   } from "react-router-dom";
-import '../../public/SkillEditor.css'
+import '../../public/css/SkillEditor.css'
 
 class Skillset extends Component {
     constructor(props){

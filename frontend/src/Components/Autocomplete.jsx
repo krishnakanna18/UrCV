@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import '../../public/autocomplete.css'
+import '../../public/css/autocomplete.css'
 class Node{
     constructor(value,index=-1){
         this.index=index
