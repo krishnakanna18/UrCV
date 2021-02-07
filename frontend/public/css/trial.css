@@ -14,30 +14,8 @@ body{
     border-top-left-radius: 15px;
     margin-bottom: -1%;
 }
-/* p{
-    color: #545454;
-    font-size: 50px;
-    font-family: "adobe-garamond-pro,HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif";
-    
-}
-p.h2{
-    color: #45b29a;
-    font-size: 30px;
-    font-family: "adobe-garamond-pro,HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif";
-    font-family: "Courier New", Courier, monospace;
 
 
-}
-p.h1{
-    color: #1e836c; 
-
-    font-family:"Courier New", Courier, monospace;
-
-} */
-
-hr{
-    border-top:4px dotted #45b29a;
-}
 
 
 
@@ -111,7 +89,7 @@ hr{
     
   }
   
-  // for Firefox add this class as well
+  /* // for Firefox add this class as well */
   .thin_scroll{
     /* scrollbar-width: thin; */
   }

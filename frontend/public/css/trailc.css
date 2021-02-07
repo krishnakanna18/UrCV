@@ -2,31 +2,27 @@ body{
     overflow-x: hidden;
     max-width: 100%;
 }
-p{
+/* p{
     color: #545454;
     font-size: 50px;
     font-family: "adobe-garamond-pro,HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif";
     
-}
-p.h2{
+} */
+/* p.h2{
     color: #45b29a;
     font-size: 30px;
-    font-family: "adobe-garamond-pro,HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif";
+    font-family: "adobe-garamond-pro,HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif"; */
     /* font-family: "Courier New", Courier, monospace; */
-    font-family: brandon-grotesque, sans-serif;
+    /* font-family: brandon-grotesque, sans-serif;
 
 
-}
-p.h1{
+} */
+/* p.h1{
     color: #1e836c; 
 
     font-family:"Courier New", Courier, monospace;
 
-}
-
-hr{
-    border-top:4px dotted #45b29a;
-}
+} */
 
 
 .skill-box{
