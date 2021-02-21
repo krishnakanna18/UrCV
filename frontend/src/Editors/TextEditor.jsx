@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import '../../public/css/TextEditor.css'
 import fonts from '../../public/jsonFiles/bestFonts.json'
-import { CompactPicker } from 'react-color';
-import { SwatchesPicker } from 'react-color';
-
+import { debounce , throttle } from 'lodash'
 
 // import TextareaAutosize from 'react-textarea-autosize';
 // import autosize from 'autosize'
@@ -14,33 +12,48 @@ class TextEditor extends Component {
     constructor(props){
         super(props);
         this.state={
-            defaultStyles:{fontWeight:"normal", fontStyle:"none", textDecoration:"none", fontFamily:"Alice",color:"#333333"},
-            editStyles:{fontWeight:"bold", fontStyle:"italic", textDecoration:"underline"},
-            test:0
+            defaultStyles:{fontWeight:"normal", fontStyle:"normal", textDecoration:"none", fontFamily:"Alice",color:"#333333"},
+            editStyles:{fontWeight:"bold", fontStyle:"italic", textDecoration:"underline",
+            color:['#4D4D4D', '#999999', '#FFFFFF', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00', '#A4DD00', '#68CCCA', '#73D8FF', '#AEA1FF', '#FDA1FF', '#333333', '#808080', '#cccccc', '#D33115', '#E27300', '#FCC400', '#B0BC00', '#68BC00', '#16A5A5', '#009CE0', '#7B64FF', '#FA28FF', '#000000', '#666666', '#B3B3B3', '#9F0500', '#C45100', '#FB9E00', '#808900', '#194D33', '#0C797D', '#0062B1', '#653294', '#AB149E']},
+            test:0,
+            debouceChange:throttle(this.updateParent,692),
+            // debouceChange:this.updateParent
+
         }
     }
 
+    //Completely avoid re-rendering the component(Allow rendring only after component mounts)
+    shouldComponentUpdate=()=>{
+        return false
+    }
 
     // Group the nested sentences along with the styles
     groupTextStyles=(Text,sentence)=>{
-        if(Text.styles){
-            if("fontSize" in Text.styles)
-                Text.styles["fontSize"]="100%"
-            else
-                Text.styles={...Text.styles, fontSize:"100%"}
-            sentence.push({text:Text.contents.text, style:Text.styles})
-        }
-        else
-            sentence.push({text:Text.contents.text, style:{fontSize:"100%"}})
 
-        if(Text.children.length===0)
-            return
-
+        let arr=[Text]
         if(Text.children)
-            for(let i=0; i<Text.children.length; i++)
-                return this.groupTextStyles(Text.children[i],sentence)
-            
-        
+            arr=[Text,...Text.children]
+
+        for(let i=0; i<arr.length; i++)
+        {   
+            let child=arr[i]
+            if(child.tag==="br"){
+                sentence.push({tag:"br"});
+                continue;
+            }
+            if(child.contents.text.length===0 && i===0)
+                continue;
+                if(child.styles){
+                    if("fontSize" in child.styles)
+                        child.styles["fontSize"]="100%"
+                    else
+                        child.styles={...child.styles, fontSize:"100%"}
+                    sentence.push({text:child.contents.text, style:child.styles})
+                }
+                else
+                    sentence.push({text:child.contents.text, style:{fontSize:"100%"}})
+        }
+
     }
 
     //Set the values of the style editor attributes of the corresponding textbox
@@ -53,7 +66,13 @@ class TextEditor extends Component {
         parentEditor=ancParent.parentNode.parentNode.previousSibling,
         isSingleChar=(ancParent===focParent && anchorOffset===focusOffset), styleAttributes
 
-        styleAttributes=parentEditor.querySelectorAll(".styleAtb")
+        try{
+            styleAttributes=parentEditor.querySelectorAll(".styleAtb")
+        }
+        catch(e)
+        {
+            return;
+        }
         let arr=Object.entries(Style), i=0
 
         if(ancParent.tagName==="SPAN" && isSingleChar)
@@ -92,21 +111,20 @@ class TextEditor extends Component {
       
     }
 
+    updateParent=(targetChild)=>{
 
-
-    updateParent=(e)=>{
-
-        let propText=this.props.text,
-            targetChild=e.target.children[0]
+        let propText=this.props.text
 
         let propClass=propText.classlist, propStyle=propText.styles;
+        if(propStyle===undefined || propStyle===null)
+            propStyle={}
         let textComponent={
             tag:"p",
             classlist:propClass,
-            styles:{...propStyle},
+            styles:JSON.parse(JSON.stringify(propStyle)),
             contents:{text:""},
             children:[]
-        }
+        }        
 
         let spanTexts
         try{
@@ -163,8 +181,8 @@ class TextEditor extends Component {
                 }
             )  
         }
-
-        console.log(textComponent)
+        // console.log(textComponent)
+        this.props.modifyText(this.props.index,textComponent)
     }
 
 
@@ -281,7 +299,7 @@ class TextEditor extends Component {
             }
         }
 
-        this.setStyleEditor()
+        this.state.debouceChange(e.target.children[0])
         return
 
 
@@ -340,21 +358,30 @@ class TextEditor extends Component {
 
     }
 
+  
 
     // End of the change function
 
     styleEvent=(e,attribute,value=undefined)=>{
 
+        let Selection=document.getSelection()
+        // if(attribute==="color"){
+        //     Selection=this.state.selection
+        //     console.log(Selection)
+
+        // }
+
+
+        
+
 
         let {editStyles, defaultStyles}=this.state,
-            Selection=document.getSelection(),
             {anchorNode,focusNode, anchorOffset, focusOffset}=Selection,
             ancParent=anchorNode.parentNode, focParent=focusNode.parentNode,
             tarAtt=e.target.parentNode,
             isSingleChar=(ancParent===focParent && anchorOffset===focusOffset),
             parentEditor=ancParent.parentNode.parentNode
 
-        
 
         let fontProps=false
         if(attribute==="fontWeight"||attribute==="fontStyle"||attribute==="textDecoration")
@@ -369,13 +396,15 @@ class TextEditor extends Component {
         if(e.target.getAttribute("class").includes("color"))
             tarAtt=e.target.parentNode.parentNode.parentNode
 
-        if(attribute==="color")
-            tarAtt=e.target.closest(".colorParent").parentNode
+      
+
+            // console.log(parentEditor,tarAtt.parentNode)
+        
 
         let isSameEditor=(parentEditor.previousSibling===tarAtt.parentNode)
-        console.log(isSameEditor)
 
         if(isSameEditor){
+            console.log("inside editor")
 
             let ancIndex=[...parentEditor.children[0].children].indexOf(ancParent),
                 focIndex=[...parentEditor.children[0].children].indexOf(focParent)
@@ -412,9 +441,7 @@ class TextEditor extends Component {
                         nextSpan.style.cssText=ancParent.style.cssText
                         ancParent.parentNode.insertBefore(nextSpan,temp.nextSibling)
                     }
-                    // if(ancParent.innerText.length===0)
-                    //     ancParent.remove()
-                        
+                
                     this.setFocus(document.getSelection(),temp,1)                     
                 }
 
@@ -427,6 +454,7 @@ class TextEditor extends Component {
                     nextSpan.innerText=ancParent.innerText.slice(anchorOffset,focusOffset)
                     ancParent.parentNode.insertBefore(nextSpan,ancParent.nextSibling)
                     ancParent.innerText=anchorText
+
                     
                     if(focusOffset!==textLength)
                    { let nextSpanFocus=document.createElement("span")
@@ -438,11 +466,13 @@ class TextEditor extends Component {
                     if(fontProps===false)
                         nextSpan.style[attribute]=value
                     else{                    
-                    if(nextSpan.style[attribute]===editStyles[attribute] )
-                        nextSpan.style[attribute]=defaultStyles[attribute]
-                    else 
-                        nextSpan.style[attribute]=editStyles[attribute]
+                        if(nextSpan.style[attribute]===editStyles[attribute] )
+                            nextSpan.style[attribute]=defaultStyles[attribute] 
+                        else 
+                            nextSpan.style[attribute]=editStyles[attribute]
+                        
                     }
+             
                 }
 
                 else{
@@ -455,6 +485,8 @@ class TextEditor extends Component {
                         target=defaultStyles[attribute]
 
                     let nextSpan
+
+                    console.log(target)
 
                     if(anchorOffset>0){
                     nextSpan=document.createElement("span")
@@ -479,17 +511,16 @@ class TextEditor extends Component {
 
                     focParent.style[attribute]=target
 
-                    console.log(anchorOffset,ancParent, nextSpan, focusOffset, focParent)
-
                     for(let i=ancIndex+1; i<focIndex+1; i++){
                         if(parentEditor.children[0].children[i].tagName!=="BR")
                             parentEditor.children[0].children[i].style[attribute]=target
                     }
                 }
             }
+        this.state.debouceChange(parentEditor.children[0])
+
         }
         this.setStyleEditor()
-        this.setState({test:!this.state.test})
     }
 
 
@@ -502,10 +533,14 @@ class TextEditor extends Component {
     }
 
 
+
     render() { 
+        // console.log("Im called",this.props.text)
         let displayStrings=[]                       //Array of strings to be displayed and edited
         let Text=JSON.parse(JSON.stringify(this.props.text))
         this.groupTextStyles(Text,displayStrings)
+        // console.log(displayStrings)
+        let {editStyles:{color}}={...this.state}
 
         return ( 
             <React.Fragment>
@@ -531,7 +566,7 @@ class TextEditor extends Component {
                         >
                                 <img alt="Alt" className="img-responsive styleImg" src="http://localhost:3000/icons/underline.png"/>
                         </button>
-                        <div className="lineBreak"></div>
+                        <div className="lineBreak"  ></div>
 
                         <div className="dropdown" >
                             <button className="btn dropdown-toggle " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" data-display="static">
@@ -549,37 +584,27 @@ class TextEditor extends Component {
                                 }
                             </div>
                         </div>
-                        <div className="lineBreak"></div>
+                        <div className="lineBreak" ></div>
 
-                        <div className="dropdown" >
-                            <button className="btn dropdown-toggle" type="button" id="dropdownMenuButtonFont" data-toggle="dropdown" aria-haspopup="true" data-display="static"
-                                onClick={(e)=>{console.log(document.getSelection())}}
-                            >
+                        <div className="dropdown">
+                            <button className="btn dropdown-toggle styleAtb" type="button" id="dropdownMenuButtonFont" data-toggle="dropdown" aria-haspopup="true" data-display="static">
                                 <img alt="Alt" data-toggle="tooltip" data-placement="top" style={{width:"22px"}}
-                                      title="Text color" className="img-responsive styleImg" src="http://localhost:3000/icons/textColor.png"/>
+                                      title="Text color" className="img-responsive styleImg" src="http://localhost:3000/icons/textColor.png">
+                                </img>
                             </button>
-                            <div className="dropdown-menu dropdown-menu-right colorParent" aria-labelledby="dropdownMenuButtonFont">
-                                <CompactPicker  
-                                onChange={(color,e)=>{
-                                                    console.log(document.getSelection(),"The selection element")
-                                                    e.target.classList.add("color")
-                                                    // console.log(e.target.closest(".colorParent").parentNode)
-                                                    // this.styleEvent(e,"color",color.hex)
-                                                }}
-
-                                >
-                                
-                                </CompactPicker>
+                            <div className="dropdown-menu dropdown-menu-right colorParent" aria-labelledby="dropdownMenuButtonFont"                            >
+                                <div className="d-flex flex-row  flex-wrap" style={{backgroundColor:"white"}} >
+                                    {
+                                        color.map((c,id)=>{
+                                            return <div onClick={(e)=>{e.preventDefault();this.styleEvent(e,"color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
+                                            data-toggle="tooltip" data-placement="top" title={c}>
+                                                   </div>
+                                        })
+                                    }
+                                </div>
                             </div>
                         </div>
-                        <div className="lineBreak"></div>
-
-
-
-
-
-
-
+                        <div className="lineBreak" ></div>
                     </div>                  
 
                     {/*Contains the text being edited*/} 
@@ -592,8 +617,11 @@ class TextEditor extends Component {
                                     this.onChange(e)}}
 
                                 onMouseUp={(e)=>{
-                                        this.setStyleEditor(e)
+                                        this.setStyleEditor(e); 
                                 }}
+
+                                // onMouseDown={()=>this.setSelection()}
+
 
                                 contentEditable={true}
                                 suppressContentEditableWarning={true}
@@ -602,6 +630,8 @@ class TextEditor extends Component {
                                 >
                                     {   displayStrings.length>0?
                                             displayStrings.map((st,id)=>{
+                                                if(st.tag==="br")
+                                                    return<br key={`${id}`}></br>
                                                 return <span style={st.style} key={`${id}`} className="editorText">
                                                     {`${st.text}`}
                                                 </span>

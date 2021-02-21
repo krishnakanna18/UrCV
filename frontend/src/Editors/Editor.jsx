@@ -47,6 +47,7 @@ class Editor extends Component {
                                      index={this.props.index} 
                                      removeElement={this.props.delete}
                                      moveElement={this.props.move}
+                                     modifyElement={this.props.modify}
                                      >
                         
                     </ContainerEditor>

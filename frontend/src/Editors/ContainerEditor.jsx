@@ -20,21 +20,22 @@ class Container extends Component {
 
     }
 
-    innerTree=(component)=>{
-        let queue=[component],editors=[]
+    innerTree=(component,pid)=>{
+        let queue=[{...component,id:pid}],editors=[]
         while(queue.length)
         {
             let cur=queue.shift();
             if(cur.tag!=="div")
             {
                 editors.push(cur);
+                // console.log(cur,cur.id)
                 if(cur.tag==="p" || cur.tag==="span")
                     continue;
             }
             if(cur.children)
                 for(let i=0; i<cur.children.length; i++)
                 {
-                    queue.push(cur.children[i]);
+                    queue.push({...cur.children[i],id:`${cur.id}:${i}`});
                 }
 
         }
@@ -44,8 +45,9 @@ class Container extends Component {
 
     displayInner=()=>{
         let {innerPage:{index}}=this.state
+        let containerIndex=`${this.props.index}:${index}`
         let innerComponent=JSON.parse(JSON.stringify(this.props.component.children[index]))
-        let disp=this.innerTree(innerComponent)
+        let disp=this.innerTree(innerComponent,containerIndex)
         return(
                 <React.Fragment>
                     <div className="row col mt-n2 justify-content-start">
@@ -57,7 +59,10 @@ class Container extends Component {
                     <div className="mt-5 d-flex flex-column col" >
                         {disp.map((element,id)=>{
                             if(element.tag==="p" || element.tag==="span")
-                                return <TextEditor key={`${id}`} text={element}>
+                                return <TextEditor key={`${id}`} text={element} 
+                                        modifyText={this.props.modifyElement}
+                                        index={element.id}
+                                        >
 
                                         </TextEditor>
                             if(element.tag==="img" || element.tag==="image")
@@ -65,10 +70,6 @@ class Container extends Component {
                                         <img className="img-fluid" src={`${element.contents.src}`}  style={{backgroundColor:"#F5F5F5"}}>
                                         </img>
                                    </div>
-
-                            
-                            
-                            
                                 
                         })
                         }

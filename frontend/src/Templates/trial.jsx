@@ -201,6 +201,8 @@ class Template extends Component {
               {container.children.map((child,id)=>this.tree(child,index+`:${id}`))}
           </Link>
         )
+        else if(container.tag==="br")
+            return <br key={`${index}`}></br>
     
     }
 
@@ -436,8 +438,18 @@ class Template extends Component {
                     return 1
                 }
             }
+            else{
+                Object.keys(component).forEach(key=>{
+                    if(typeof(component.key)===Object)
+                        template[key]={...component[key]}
+                    
+                    else
+                        template[key]=component[key]
+                // console.log(template[key],component[key])
 
-            template=component
+                })
+                return 1
+            }
             return 1
         }
 
@@ -455,6 +467,7 @@ class Template extends Component {
             if(this.updateElement(`${i}`,index,template.containers[i],component,move)==1)
                 return template   
         }
+        
         return template
 
     }
@@ -503,6 +516,10 @@ class Template extends Component {
         }
 
 
+    }
+
+    modify=(index,component)=>{
+        this.setState({template:this.update(index,component)},()=>{return 1})
     }
 
     undoDelete=()=>{
@@ -562,6 +579,7 @@ class Template extends Component {
                     move={this.move}
                     insert={this.insert}
                     models={this.state.models}
+                    modify={this.modify}
             >
 
             </Editor>
