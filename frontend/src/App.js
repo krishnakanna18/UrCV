@@ -6,6 +6,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
+
 class App extends Component {
   constructor(){
     super();
@@ -23,6 +24,7 @@ class App extends Component {
     return (
       <React.Fragment>
         <Nav user={this.state.user} pattern="Actor"/>
+        
       </React.Fragment>
        
     );

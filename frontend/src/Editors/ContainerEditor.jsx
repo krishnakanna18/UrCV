@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import '../../public/css/containerEditor.css'
 import TextEditor from './TextEditor'
+import ImgEditor from './ImgEditor'
 class Container extends Component {
     constructor(props){
         super(props);
@@ -29,7 +30,7 @@ class Container extends Component {
             {
                 editors.push(cur);
                 // console.log(cur,cur.id)
-                if(cur.tag==="p" || cur.tag==="span")
+                if(cur.tag==="p" || cur.tag==="span" || cur.tag==="img")
                     continue;
             }
             if(cur.children)
@@ -52,7 +53,7 @@ class Container extends Component {
                 <React.Fragment>
                     <div className="row col mt-n2 justify-content-start">
                         <div className="col offset-n2">
-                            <button className="btn"  onClick={()=>this.disableInner()}><img src="http://localhost:3000/icons/undo.png"   style={{width:"22px"}}  alt="REAL"   className="img-fluid"/> </button><span className="ml-n2">Back</span>
+                            <button className="btn"  onClick={()=>this.disableInner()}><img src="/icons/back.png"   style={{width:"22px"}}  alt="REAL"   className="img-fluid"/> </button><span className="ml-n2">Back</span>
                         </div>
                     </div>
 
@@ -66,10 +67,12 @@ class Container extends Component {
 
                                         </TextEditor>
                             if(element.tag==="img" || element.tag==="image")
-                            return <div key={`${id}`} className="mt-bt-1" style={{width:"10em"}}>
-                                        <img className="img-fluid" src={`${element.contents.src}`}  style={{backgroundColor:"#F5F5F5"}}>
-                                        </img>
-                                   </div>
+                                return <ImgEditor key={`${id}`} img={element}
+                                        index={element.id}
+                                        modifyImage={this.props.modifyElement}
+                                        >
+                                            
+                                        </ImgEditor>
                                 
                         })
                         }

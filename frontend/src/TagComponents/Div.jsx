@@ -14,7 +14,7 @@ class Div extends Component{
         //The parent component of the selected component
         if(editorIndex===index && nextProps.editorIndex!==editorIndex)
                         {
-                            let comp=document.getElementById(index)
+                            let comp=document.getElementById("oly:"+index)
                             comp.classList.remove('selected')
                             // comp.classList.remove('editPanel')
                         }
@@ -112,28 +112,30 @@ class Div extends Component{
         }
         let disabled=this.props.index===0?`disabled`:""
         classes=`divs ${classes}`
-        // let divs=this.props.editorIndex===parent?'selected-div':""
+        
         return(
-        // <div className={`divs ${divs} mt-1 mb-1`}>
+        // Overlay component with index of the given form contains the div in uniformed size divs
+        <div style={{width:"auto", display:"block", position:"relative"}} id={`oly:${this.props.index}`}
+        onMouseEnter={()=>{
+                    
+            if(this.props.editorIndex===parent)
+                return
+
+            let comp=document.getElementById("oly:"+this.props.index)
+            comp.classList.add('overlay')
+            // document.getElementById("eoly:"+this.props.index).style.display="block"
+            // this.displayOverlayButtons("oly:"+this.props.index);
+
+        }}
+        onMouseLeave={()=>{
+                    
+            let comp=document.getElementById("oly:"+this.props.index)
+            comp.classList.remove('overlay')
+            // document.getElementById("eoly:"+this.props.index).style.display="none"
+        }}
+        >   
             <div className={`${classes}`} id={`${this.props.index}`}  
-                onMouseEnter={()=>{
-                    
-                    if(this.props.editorIndex===parent)
-                        return
 
-                    // this.props.enableOverlay(this.props.index)
-                    let comp=document.getElementById(this.props.index)
-                    comp.classList.add('overlay')
-                    // this.displayOverlayButtons(this.props.index);
-
-                }} 
-                onMouseLeave={()=>{
-                    
-                    // this.props.disableOverlay(this.props.index)
-                    let comp=document.getElementById(this.props.index)
-                    comp.classList.remove('overlay')
-                    // this.removeOverlayButtons(this.props.index)
-                }}
                 onClick={()=>{
 
                     //If editor is already enabled return
@@ -141,48 +143,29 @@ class Div extends Component{
                         return
 
                     this.props.enableEditor(this.props.index,classes)
-                    let comp=document.getElementById(this.props.index)
+                    let comp=document.getElementById("oly:"+this.props.index)
                     comp.classList.add('selected')
                     // comp.classList.add('editPanel')
 
-                }} style={style}>
+                }} style={{...style}}>
                
                 {this.props.children}
             </div>
 
-            // <div className=" ">
-            // {   
-            //     this.props.editorIndex===parent ?
-            //         <div className="d-flex flex-row justify-content-end editPanel">
-            //             <div className="d-flex flex-row justify-content-around col">
-            //                 <button className="btn" style={{backgroundColor:"white"}}>
-            //                     <img src="http://localhost:3000/icons/edit.png"/> Edit
-            //                 </button>
-            //             </div>
+            {/* <div id={`eoly:${this.props.index}`} style={{display:"none",width:"auto",zIndex:"-1"}}>
+               <button style={{top:"0%", right:"50%", position:"absolute"}} className="btn">
+                   <img src="/icons/plus-add.png"></img>
 
-            //             <div className="d-flex flex-row justify-content-center col">
+               </button>
+               <button style={{bottom:"0%", right:"50%", position:"absolute"}} className="btn">
+                   <img src="/icons/plus-add.png"></img>
 
-            //                 <button className={`btn ${disabled}`} style={{backgroundColor:"white"}}>
-            //                     <img src="http://localhost:3000/icons/down.png"/>
-            //                 </button>
+               </button>
+            </div> */}
+        </div>
 
-            //                 <button className={`btn ${disabled}`} style={{backgroundColor:"white"}}>
-            //                     <img src="http://localhost:3000/icons/up.png"/>
-            //                 </button>
-
-            //             </div>
-            //         </div>:""
-            //     }
-            // </div>
-        // </div>
         )
-        
-       
-        
-       
     }
 }
 
 export default Div
-
-{/* <img src="https://img.icons8.com/ios/24/000000/edit.png"/> Edit icon*/ }

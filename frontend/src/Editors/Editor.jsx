@@ -67,7 +67,7 @@ class Editor extends Component {
         let owner=this.setOwner()
         return ( 
             <React.Fragment>
-                <div className="d-flex flex-column  header">
+                <div className="d-flex flex-column  header" >
                     <div className="mt-5  row justify-content-between" style={{}}>
                         <div className="offset-1 monospace font-weight-bold">
                             {owner}

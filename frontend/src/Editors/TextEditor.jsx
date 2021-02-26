@@ -316,7 +316,7 @@ class TextEditor extends Component {
 
 
                     if((selectionParent.innerHTML==="&nbsp;" || selectionParent.innerHTML===" ") && targetChild.children.length>1){
-                        console.log("Yes")
+                        // console.log("Yes")
                         e.preventDefault();
                         selectionParent.remove()
                     }
@@ -325,7 +325,6 @@ class TextEditor extends Component {
                     else if(((targetChild.children.length===1 || selectionParent.previousSibling===null) && selectionParent.innerText.length===1) || 
                         ( selectionParent.innerHTML.length===1 && targetChild.children.length>1))
                         {   
-                            console.log(selectionParent.innerText.length,selectionParent.innerText, selectionParent)
                             e.preventDefault();
                             selectionParent.innerHTML="&nbsp;"
                                         //Set the focus on the new line
@@ -404,7 +403,6 @@ class TextEditor extends Component {
         let isSameEditor=(parentEditor.previousSibling===tarAtt.parentNode)
 
         if(isSameEditor){
-            console.log("inside editor")
 
             let ancIndex=[...parentEditor.children[0].children].indexOf(ancParent),
                 focIndex=[...parentEditor.children[0].children].indexOf(focParent)
@@ -485,8 +483,6 @@ class TextEditor extends Component {
                         target=defaultStyles[attribute]
 
                     let nextSpan
-
-                    console.log(target)
 
                     if(anchorOffset>0){
                     nextSpan=document.createElement("span")
@@ -578,7 +574,7 @@ class TextEditor extends Component {
                                 {
                                     fonts.map((font,id)=>{
                                         return <a className="dropdown-item font" key={id} href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white"}} 
-                                                onClick={(e)=>{console.log("clicked");this.styleEvent(e,"fontFamily",font)}}
+                                                onClick={(e)=>{this.styleEvent(e,"fontFamily",font)}}
                                                 >{font}</a>
                                     })
                                 }

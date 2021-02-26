@@ -5,7 +5,8 @@ body{
     overflow-x: hidden;
     max-width: 100%;
     scroll-behavior: smooth;
-    background-color: #333333;
+    background-color: #e0e0e0;
+    
 }
 
 #siteHeader{
@@ -15,7 +16,10 @@ body{
     margin-bottom: -1%;
 }
 
-
+.navbar{
+    /* box-shadow:  0 2px 5px 0 rgb(32 48 60 / 5%); */
+    border-bottom: 2px solid #eff1f2;
+}
 
 
 
