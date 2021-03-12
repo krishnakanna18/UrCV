@@ -59,10 +59,15 @@ class Template extends Component {
     }
 
     async componentDidMount(){
-        let result=await fetch('http://localhost:9000/template/1')
+        let tempId=this.props.location.state.id
+        let result=await fetch('http://localhost:9000/template/'+tempId,{
+            method:"GET",
+            credentials:"include"
+        })
         let template=await result.json()
         let skillTemplate
         this.setState({template:template,fetched:1},function(){
+            try{
              skillTemplate=this.search(undefined,"skills");
              for(let i=0; i<skillTemplate.children.length; i++)
              {
@@ -72,6 +77,10 @@ class Template extends Component {
                  }
     
              }
+            }
+            catch(e){
+                // console.log(e)
+            }
              this.changeState({models:{skillTemplate}})
              document.querySelector("body").addEventListener("keydown",(e)=>this.changes_stacks_event(e))
             

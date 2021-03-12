@@ -13,7 +13,10 @@ class App extends Component {
     this.state={user:""};
   }
   componentDidMount(){
-    fetch('http://localhost:9000')
+    fetch('http://localhost:9000',{
+      method:"get",
+      credentials:"include"
+    })
     .then(res=>res.json())
     .then(res=>{
       this.setState({user:res});
@@ -23,8 +26,19 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
-        <Nav user={this.state.user} pattern="Actor"/>
-        
+        <Nav/>
+
+
+        {/* <div>
+          Things that needs to be fetched here:
+              1. The user details - with websites unpopulated
+              2. The templates - populated 
+              3. Sample websites created - populated
+          Things that needs to be passed as props to Nav:
+              1. User details
+              
+        </div> */}
+
       </React.Fragment>
        
     );

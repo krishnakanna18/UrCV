@@ -22,7 +22,7 @@ let makeContainer=async(container)=>{
     new_container={...container.toObject(),_id:new_container._id}
     new_container.children=await Promise.all(container.children.map(async(child)=>await makeContainer(child)))
     await Container.create(new_container,(err,res)=>{
-        console.log(res._id)
+        // console.log(res._id)
     })
     return new_container._id
 }
@@ -34,8 +34,8 @@ let makeSite=async(id,template=undefined)=>{
     if(template===undefined)
         template=await Template.retrieve(id);
     // Site.template_id=template.id
-    Site.name="User trial"
-    Site.id="LosingTime"
+    Site.name="User"
+    Site.id=""
     Site.containers=await Promise.all(template.containers.map(async(container)=>await makeContainer(container)))
     console.log(Site._id)
     await Website.create(Site);
@@ -45,7 +45,7 @@ let makeSite=async(id,template=undefined)=>{
 //Given the id of a website recursively populate the website and return it
 let retrieve=async(id)=>{
     let site=await Website.findById(id)
-    console.log(site)
+    // console.log(site)
     site.containers=await Promise.all(site.containers.map(async(container)=>{
         return await Container.retrieve(container._id)
     }))

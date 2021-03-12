@@ -5,6 +5,6 @@ import './index.css';
 
 
 ReactDOM.render(
-  <App name="Krishna"/>,
+  <App name="UrCV"/>,
   document.getElementById('root')
 );
