@@ -5,7 +5,7 @@ class Link extends Component{
 
     render(){
         let classes=""
-        let style={},href="javascript:void(0)",target="",text="",role=""
+        let style={},href="#",target="",text="",role=""
         if(this.props.classes!==undefined)
             classes=`${this.props.classes.join(' ')}`
         if(this.props.styles!==undefined)

@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { Redirect } from "react-router-dom";
+import { withRouter } from 'react-router-dom';
 class LogIn extends Component {
-    constructor(){
-        super();
-        this.state={loggedin:false}
+
+    componentDidMount(){
+        console.log("Mounted Login")
+
     }
+
     async signin(){
-        // console.log(this.props.redirect.pathname)
-        let res=await fetch('http://localhost:9000/user/login',{
+        let res,state,status,loginUser,redirect
+
+        res=await fetch('http://localhost:9000/user/login',{
             method:"post",
             credentials:"include",
             headers:{
@@ -19,32 +23,42 @@ class LogIn extends Component {
 
             })
         })
-        let {status}=res
+        status=res.status
         res=await res.json()
-        let {login}=this.props
-        if(status===200)
-            if(login(res.user,res.loggedin))
-                this.setState({loggedin:true})
 
+        loginUser=this.props.loginUser
+        try{
+            state=JSON.parse(this.props.location.state)
+        }
+        catch(e){
+            state={redirect:'/'}
+        }
+        redirect=state.redirect
+
+        if(status===200){
+            loginUser(res.user,res.loggedin)
+                this.props.history.push({
+                    pathname:redirect
+                })
+            }
+
+    }
+
+    componentWillUnmount(){
+        console.log("Unmounted Login")
     }
 
     render(){
         return(
             <div>
-              {this.state.loggedin===false?  
-              <button className="btn btn-drak"
-              onClick={async()=>this.signin()}
-              >
-                  Sign in
-            </button>:<p></p>
-                 }
-              {this.state.loggedin===true?
-              <Redirect to={this.props.redirect.pathname}></Redirect>
-              :<div></div>
-              }
+                <button className="btn btn-drak"
+                onClick={async()=>await this.signin()}
+                >
+                    Sign in
+                </button>
             </div>
         )
     }
 }
  
-export default LogIn;
+export default withRouter(LogIn);

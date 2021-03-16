@@ -34,6 +34,16 @@ let retrieve=async(id)=>{
 }
 
 
+let getContainerIds=async(id,arr)=>{
+    let current=await Container.findById(id)
+    arr.push(current._id)
+    if(current.children.length==0)
+        return 
+    await Promise.all(current.children.map(async(child)=>await getContainerIds(child._id,arr)))
+    return
+}
+
 let Container=mongoose.model('containers',containerSchema)
 Container.retrieve=retrieve
+Container.getContainerIds=getContainerIds
 module.exports=Container

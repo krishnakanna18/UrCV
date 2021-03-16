@@ -9,7 +9,7 @@ let webisteSchema=new mongoose.Schema({
     name:String,
     id:String,
     containers:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
-    isDeployed:{type:Boolean,default:0},
+    isDeployed:{type:Boolean,default:false},
     gitlink:String,
     template_id:{type:mongoose.Schema.Types.ObjectId,ref:'templates'}
 })
@@ -18,7 +18,7 @@ let Website=mongoose.model("websites",webisteSchema)
 
 //Clone the containers in the template recursively and save it to the container database
 let makeContainer=async(container)=>{                      
-    let new_container=Container(); 
+    let new_container=new Container(); 
     new_container={...container.toObject(),_id:new_container._id}
     new_container.children=await Promise.all(container.children.map(async(child)=>await makeContainer(child)))
     await Container.create(new_container,(err,res)=>{
@@ -34,10 +34,8 @@ let makeSite=async(id,template=undefined)=>{
     if(template===undefined)
         template=await Template.retrieve(id);
     // Site.template_id=template.id
-    Site.name="User"
-    Site.id=""
+    Site.name="Test"
     Site.containers=await Promise.all(template.containers.map(async(container)=>await makeContainer(container)))
-    console.log(Site._id)
     await Website.create(Site);
     return Site._id
 }
@@ -45,7 +43,6 @@ let makeSite=async(id,template=undefined)=>{
 //Given the id of a website recursively populate the website and return it
 let retrieve=async(id)=>{
     let site=await Website.findById(id)
-    // console.log(site)
     site.containers=await Promise.all(site.containers.map(async(container)=>{
         return await Container.retrieve(container._id)
     }))

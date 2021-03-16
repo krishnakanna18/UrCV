@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import SkillsEditor from './SkillsEditor'
 import MenuEditor from './MenuEditor'
 import ContainerEditor from './ContainerEditor'
-import '../../public/css/Editor.css'
+import '../css/Editor.css'
 class Editor extends Component {
     constructor(){
         super()

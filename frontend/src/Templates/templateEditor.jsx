@@ -1,18 +1,13 @@
 import React, { Component } from 'react';
-import '../../public/css/trial.css'
-import '../../public/css/trailc.css'
+import '../css/trial.css'
+import '../css/trailc.css'
 import Editor from '../Editors/Editor'
 import Div from '../TagComponents/Div'
 import Img from '../TagComponents/Img'
 import P from '../TagComponents/P'
 import Span from '../TagComponents/Span'
 import Link from '../TagComponents/Link'
-// import Perf from 'react-addons-perf'; // ES6
-import { Switch } from 'react-router-dom';
-import {
-  BrowserRouter as Router,
-  Route,
-} from "react-router-dom";
+import { withRouter } from 'react-router-dom'
 
 
 //Convert the css style object to react style object
@@ -38,7 +33,7 @@ let styleParser=(styles)=>{
 class Template extends Component {
     constructor(){
         super();
-        this.state={template:"",fetched:0,
+        this.state={template:"",fetched:0, user:{},
         editor:{
             enabled:false,
             index:"",
@@ -59,14 +54,29 @@ class Template extends Component {
     }
 
     async componentDidMount(){
-        let tempId=this.props.location.state.id
-        let result=await fetch('http://localhost:9000/template/'+tempId,{
+        console.log("Mounted Editor")
+
+        if(this.props.loggedin===false)     //If the user logs out when the editor component is open
+            this.props.history.push({
+                pathname:'/'
+            })
+
+
+        let tempId=this.props.location.state.id,
+            user=this.props.location.state.user
+
+        
+        
+        // console.log(tempId,user)
+
+        let template=await fetch('http://localhost:9000/website/'+tempId,{
             method:"GET",
             credentials:"include"
         })
-        let template=await result.json()
+        template=await template.json()
+
         let skillTemplate
-        this.setState({template:template,fetched:1},function(){
+        this.setState({template:template.website,fetched:1,user:user},function(){
             try{
              skillTemplate=this.search(undefined,"skills");
              for(let i=0; i<skillTemplate.children.length; i++)
@@ -86,6 +96,7 @@ class Template extends Component {
             
 
         })
+
     }
 
     undo_change=()=>{
@@ -115,6 +126,10 @@ class Template extends Component {
         }
 
 
+    }
+
+    componentWillUnmount(){
+        console.log("Unmounted Editor")
     }
 
     redo_change=()=>{
@@ -653,4 +668,4 @@ class Template extends Component {
 
 
  
-export default Template;
+export default withRouter(Template);

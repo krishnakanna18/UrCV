@@ -10,7 +10,12 @@ class Home extends Component {
         super()
         this.state={loggedin:false}
     }
-   
+    componentDidMount(){
+        console.log("Mounted Home")
+    }
+    componentWillUnmount(){
+        console.log("Unmounted Home")
+    }
     render() { 
         return ( 
             <React.Fragment>

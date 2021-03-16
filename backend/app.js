@@ -186,19 +186,32 @@ app.get('/user/profile/:username',isLoggedin,async(req,res)=>{
 })
 
 
-
-app.post('/website/create',async(req,res)=>{
-      let id=req.body.template_id;
+//Create a website according to the template
+app.post('/website/create',isLoggedin,async(req,res)=>{
+      let id=req.body.id;  
       let template=req.body.template;
+      if(req.session.username!==req.body.username)
+            res.status(401).json({log_data:"Unauthorized access"})
       let website_id=await Website.makeSite(id,template)
-      let user=await User.findOneAndUpdate({username:req.session.username},{$set:{wesbite:`${website_id}`}},{new: true, upsert: true, setDefaultsOnInsert: true})
-      res.json(user)
+      let user=await User.findOneAndUpdate({username:req.session.username},{$push:{websites:`${website_id}`}},{returnOriginal: false, upsert: true, setDefaultsOnInsert: true,useFindAndModify: false})
+      res.status(200).json({user:user,website_id:website_id})
+
+})
+ 
+app.get('/website/:id',isLoggedin,async(req,res)=>{
+      let id=req.params.id;  
+      let sites=await User.findOne({username:req.session.username},{websites:1})
+      sites=sites.websites
+      if(sites.indexOf(id)===-1)
+            res.status(401).json({log_data:"Unauthorized access"})
+      let site=await Website.retrieve(id);
+      res.status(200).json({website:site})
 
 })
 
 app.get('/user',async(req,res)=>{
       let user=await User.findById(req.query.id)
-      res.json(user)
+      res.json(user) 
 
 })
 

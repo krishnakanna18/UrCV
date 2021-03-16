@@ -1,10 +1,8 @@
 import React,{Component, useRef} from 'react';
-import './../../public/css/navbar.css'
+import { withRouter } from 'react-router-dom'
+import '../css/navbar.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import Popper from 'popper.js'
-// import Template from '../Templates/exports';
-// import App from '../Templates/dev/1/app';
 import TemplateEditor from '../Templates/templateEditor';
 import Home from './Home';
 import LogIn from './LogIn';
@@ -39,7 +37,6 @@ class Navbar extends Component {
         this.state={loggedin:false,user:{},templates:[]}
         this.loginUser=this.loginUser.bind(this)
         this.logoutUser=this.logoutUser.bind(this)
-
     }
 
     //Initial rendering to see if the user is already logged in
@@ -51,21 +48,20 @@ class Navbar extends Component {
         })
         res=await res.json()
         this.setState({...res},()=>{
-            console.log(res)
         })
+        console.log("Mounted Nav")
+    }
 
-
+    componentWillUnmount(){
+        console.log("Unmounted Nav")
     }
 
     //Log in a user
     loginUser(user,loggedin){
 
         this.setState({user,loggedin},()=>{
-            console.log(user)
             return true
         })
-
-
 
     }
 
@@ -76,8 +72,7 @@ class Navbar extends Component {
             credentials:"include"
         })
         res=await res.json()
-        this.setState({loggedin:false,user:{}},()=>{
-        })
+        this.setState({loggedin:false,user:{}})
         
     }
 
@@ -159,14 +154,11 @@ class Navbar extends Component {
                     </nav>
                     <Switch>
                         <Route exact path='/' component={Home}></Route>
-                        <Route exact path='/template/test' component={TemplateEditor}></Route>
-                        <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin}></Templates>}></Route>
-                        <Route exact path="/user/login" component={()=><LogIn login={this.loginUser} redirect={window.location}></LogIn>}></Route>
-                        <Route exact path='/template/edit' component={TemplateEditor}></Route>
+                        <Route exact path="/user/login" component={()=><LogIn loginUser={this.loginUser}></LogIn>}></Route>
+                        <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin} updateUser={this.updateUser} loginUser={this.loginUser}></Templates>}></Route>
+                        <Route exact path='/template/edit' component={()=><TemplateEditor loggedin={this.state.loggedin}></TemplateEditor>}></Route>
                     </Switch>
                 </Router>
-
-                
             </React.Fragment>
          );
     }

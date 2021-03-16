@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import '../../public/css/TextEditor.css'
-import fonts from '../../public/jsonFiles/bestFonts.json'
+import '../css/TextEditor.css'
+import fonts from '../jsonFiles/bestFonts.json'
 import { debounce , throttle } from 'lodash'
 
 // import TextareaAutosize from 'react-textarea-autosize';
