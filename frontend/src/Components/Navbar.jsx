@@ -1,5 +1,5 @@
 import React,{Component, useRef} from 'react';
-import './../../public/css/navbar.css'
+import '../css/navbar.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Popper from 'popper.js'
@@ -56,6 +56,12 @@ class Navbar extends Component {
 
 
     }
+
+    // updateUser(user){
+    //     this.setState({user:user},()=>{
+    //         return 1;
+    //     })
+    // }
 
     //Log in a user
     loginUser(user,loggedin){
@@ -160,7 +166,7 @@ class Navbar extends Component {
                     <Switch>
                         <Route exact path='/' component={Home}></Route>
                         <Route exact path='/template/test' component={TemplateEditor}></Route>
-                        <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin}></Templates>}></Route>
+                        <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin} updateUser={this.updateUser}></Templates>}></Route>
                         <Route exact path="/user/login" component={()=><LogIn login={this.loginUser} redirect={window.location}></LogIn>}></Route>
                         <Route exact path='/template/edit' component={TemplateEditor}></Route>
                     </Switch>

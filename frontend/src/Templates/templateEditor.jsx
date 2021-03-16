@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import '../../public/css/trial.css'
-import '../../public/css/trailc.css'
+import '../css/trial.css'
+import '../css/trailc.css'
 import Editor from '../Editors/Editor'
 import Div from '../TagComponents/Div'
 import Img from '../TagComponents/Img'
@@ -38,7 +38,7 @@ let styleParser=(styles)=>{
 class Template extends Component {
     constructor(){
         super();
-        this.state={template:"",fetched:0,
+        this.state={template:"",fetched:0, user:{},
         editor:{
             enabled:false,
             index:"",
@@ -59,14 +59,25 @@ class Template extends Component {
     }
 
     async componentDidMount(){
-        let tempId=this.props.location.state.id
-        let result=await fetch('http://localhost:9000/template/'+tempId,{
-            method:"GET",
-            credentials:"include"
+        let tempId=this.props.location.state.id,
+            user=this.props.location.state.user,
+            updateUser=this.props.location.state.updateUser
+        console.log(tempId,user)
+        let site=await fetch('http://localhost:9000/website/create',{
+            method:"POST",
+            credentials:"include",
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                username:user.username,
+                id:tempId
+            })
         })
-        let template=await result.json()
+        site=await site.json()
+        let template=site.website
         let skillTemplate
-        this.setState({template:template,fetched:1},function(){
+        this.setState({template:template,fetched:1,user:site.user},function(){
             try{
              skillTemplate=this.search(undefined,"skills");
              for(let i=0; i<skillTemplate.children.length; i++)
@@ -86,6 +97,9 @@ class Template extends Component {
             
 
         })
+        // if(updateUser(site.user)!==1)
+        //     return ;
+
     }
 
     undo_change=()=>{

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import '../../public/css/containerEditor.css'
+import '../css/containerEditor.css'
 import TextEditor from './TextEditor'
 import ImgEditor from './ImgEditor'
 class Container extends Component {

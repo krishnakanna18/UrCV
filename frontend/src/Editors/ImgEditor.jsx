@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // @ts-ignore
 import "bootstrap/dist/js/bootstrap.min.js";
 import 'jquery/dist/jquery.min.js';
-import '../../public/css/ImgEditor.css'
+import '../css/ImgEditor.css'
 class ImgEditor extends Component {
     constructor(props){
         super(props);

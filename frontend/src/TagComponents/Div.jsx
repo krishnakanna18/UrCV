@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import '../../public/editPanel.css'
+import '../css/editPanel.css'
 class Div extends Component{
 
     //Check if the next selected component is same as the existing component
