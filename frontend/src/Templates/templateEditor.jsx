@@ -54,16 +54,24 @@ class Template extends Component {
     }
 
     async componentDidMount(){
-        console.log("Mounted Editor")
+        // console.log("Mounted Editor")
 
         if(this.props.loggedin===false)     //If the user logs out when the editor component is open
             this.props.history.push({
                 pathname:'/'
             })
-
-
-        let tempId=this.props.location.state.id,
+        
+        let tempId,user;
+        try{
+        tempId=this.props.location.state.id;
             user=this.props.location.state.user
+        }
+        catch(e){
+            this.props.history.push({
+                pathname:'/'
+            })
+
+        }
 
         
         
@@ -103,7 +111,7 @@ class Template extends Component {
         let undo_stack=[...this.state.changes_stacks.undo_stack]
         let redo_stack=[...this.state.changes_stacks.redo_stack]
         let {redo_top}=this.state.changes_stacks
-        // console.log(`${undo_stack}`);
+        // console.log(`${undo_stack.length}`);
         if(undo_stack.length===0){
             // console.log("Empty stack")
             // this.setState({changes_stacks:{undo_stack,redo_stack,undo_top:"",redo_top}})
@@ -119,7 +127,7 @@ class Template extends Component {
             let changes_stacks={undo_stack,redo_stack,redo_top,undo_top:`${top.index}`}
             // console.log(`Top index is ${top.index}`);
             this.setState({changes_stacks})
-            location.href=`#${top.index}`   //Move to the changed element's location
+              //Move to the changed element's location
         }
         else{
             console.log("Operation failed");
@@ -128,9 +136,9 @@ class Template extends Component {
 
     }
 
-    componentWillUnmount(){
-        console.log("Unmounted Editor")
-    }
+    // componentWillUnmount(){
+    //     console.log("Unmounted Editor")
+    // }
 
     redo_change=()=>{
 
@@ -151,7 +159,7 @@ class Template extends Component {
             // console.log("Changes->",changes_stacks)
             let changes_stacks={undo_stack,redo_stack,undo_top,redo_top:`${top.index}`}
             this.setState({changes_stacks})
-            location.href=`#${top.index}`    //Move to the changed element's location
+                //Move to the changed element's location
         }
         else{
             console.log("Operation failed");
@@ -312,7 +320,7 @@ class Template extends Component {
                                                                //StackCall -- if -1 adds operation to change stack 
                                                                //          -- else(called from undo,redo operations) don't add operation
         // console.log("parent",p_id)
-        if(p_id===-1)
+        if(p_id===-1)   //Yet to add module to add seperate container
             return;
         let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
         let old_value=[];
@@ -337,8 +345,12 @@ class Template extends Component {
                 undo_stack.push(change_obj)
             }
                 this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
+
+                //Procedure to post data to server -- post the new container to the server. 
+                //                                 -- post the new container's id to the parent and send to the server.
                 return 1
             }
+
         // console.log("INSIDE INSERT")
         return 0;
 
@@ -347,19 +359,21 @@ class Template extends Component {
     //Delete an element recursive 
     //Current - current recursion tree index ; index - index to delete ; 
     //parent - index's parent ; template; current container
-    deleteElement=(current,index,parent,template,old_value)=>{
+    deleteElement=(current,index,parent,template,old_value,dbid)=>{
         if(current===parent){
             try{
-                old_value.push(template.children[index])            
+                old_value.push(template.children[index])  
+                dbid.id=template.children[index]._id
                 template.children.splice(index,1);
                 return 1
             }
             catch(err){
+                console.log(err)
                 return 0;
             }
         }
         for(let i=0; i< template.children.length; i++)
-            if(this.deleteElement(current+`:${i}`,index,parent,template.children[i],old_value)===1)
+            if(this.deleteElement(current+`:${i}`,index,parent,template.children[i],old_value,dbid)===1)
                 return 1 
         return 0
 
@@ -374,12 +388,13 @@ class Template extends Component {
         // let before_update=JSON.parse(JSON.stringify(this.state.template))
         let pid=index.split(':'),parent;                          //Split the index to get its element's parent
         if(pid.length>=2){
+            
             parent=pid.slice(0,pid.length-1).join(':')            //Retrieve the parent index by joining till the second last
             index=parseInt(pid[pid.length-1])                     //The index to delete
-            let old_value=[];
+            let old_value=[],dbid={id:""}                         //Dbid is used to retrieve the _id of the container in the database
             // for(let i=0; i<template.containers.length; i++)
             let i=pid[0];                   // i - index of parent
-                if(this.deleteElement(`${i}`,index,parent,template.containers[i],old_value)===1){
+                if(this.deleteElement(`${i}`,index,parent,template.containers[i],old_value,dbid)===1){
                     if(stackCall===-1){
                     let change_obj={             //Object to log operations
                         undo:{
@@ -395,6 +410,7 @@ class Template extends Component {
                     }
                     undo_stack.push(change_obj)
                 }
+                console.log("Deleted id:",dbid.id)
 
                     this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}}),
                         setTimeout(()=>{
@@ -408,9 +424,25 @@ class Template extends Component {
                         },4000)
                     },500);
 
+                   fetch('http://localhost:9000/website/container/delete',{
+                       method:"delete",
+                       credentials:"include",
+                       headers:{'Content-Type':'application/json'},
+                       body:JSON.stringify({id:dbid.id})
+                   })
+                   .then((res)=>{
+                       return res.json()
+                   })
+                   .then((res)=>{
+                        console.log(res)
+                   })
+                   .catch(e=>{
+                       console.log(e)
+                   })
+
                     return 1;
                 }
-            return 0;
+            return 1;
         }
         else{
             index=parseInt(pid[pid.length-1])                //If pid size less than 2 delete the entire container
@@ -451,11 +483,13 @@ class Template extends Component {
 
 
     //Function for upadting an element in index target with component
-    updateElement=(index,target,template,component,move)=>{
+    updateElement=(index,target,template,component,move,old_val=undefined,dbid)=>{
         if(index===target){
             if(move!==undefined){
                 if(template.children.length>0){
                     let temp=template.children[move.index]
+                    dbid.id=template._id           //Set the id of the old db element
+               
                     template.children[move.index]=template.children[move.index+move.pos]
                     template.children[move.index+move.pos]=temp
                     move.changedIndex=`${index}:${move.index+move.pos}`
@@ -463,32 +497,34 @@ class Template extends Component {
                 }
             }
             else{
+                old_val.val=JSON.parse(JSON.stringify(template))
+                dbid.id=template._id
+                // console.log("Old value",old_val.val,"New",component)
                 Object.keys(component).forEach(key=>{
                     if(typeof(component.key)===Object)
                         template[key]={...component[key]}
-                    
                     else
                         template[key]=component[key]
                 // console.log(template[key],component[key])
-
                 })
+                dbid.modified=JSON.parse(JSON.stringify(template))
                 return 1
             }
             return 1
         }
 
         for(let i=0; i< template.children.length; i++)
-            if(this.updateElement(index+`:${i}`,target,template.children[i],component,move)===1)
+            if(this.updateElement(index+`:${i}`,target,template.children[i],component,move,old_val,dbid)===1)
                 return 1 
         return 0
     }
 
     //Helper function for upaditing the element at index with component  ; Used in updating and moving an element
     //Returns:  Updated template ; move - moveObject in case of moving
-    update=(index,component,move=undefined)=>{
+    update=(index,component,move=undefined,old_val=undefined,dbid)=>{
         let template=JSON.parse(JSON.stringify(this.state.template))
         for(let i=0; i<template.containers.length; i++){
-            if(this.updateElement(`${i}`,index,template.containers[i],component,move)==1)
+            if(this.updateElement(`${i}`,index,template.containers[i],component,move,old_val,dbid)==1)
                 return template   
         }
         
@@ -508,8 +544,9 @@ class Template extends Component {
             index=parseInt(pid[pid.length-1])
             // console.log(index)
             let moveObj={index:index,pos:pos}                    //Describe the update object
-            template=this.update(parent_index,[],moveObj)
-            // console.log(this.state.editor.index)
+            let dbid={id:"",index:moveObj.index,pos:moveObj.pos}
+            template=this.update(parent_index,[],moveObj,undefined,dbid)
+            console.log("Update id: ",dbid.id)
             if(stackCall===-1){
                 let change_obj={             //Object to log operations
                     undo:{
@@ -542,8 +579,45 @@ class Template extends Component {
 
     }
 
-    modify=(index,component)=>{
-        this.setState({template:this.update(index,component)},()=>{return 1})
+    //Modify a given container -- used primarily for text components and image components
+    modify=(index,component,stackCall=-1)=>{
+        let params=[index,JSON.parse(JSON.stringify(component))]
+        let old_val={val:{}},undo_stack=[...this.state.changes_stacks.undo_stack]
+        let dbid={id:"",modified:{}}                         //Dbid is used to retrieve the _id of the container in the database
+        let modifiedTemp=this.update(index,component,undefined,old_val,dbid);
+        console.log("Modify ID: ",dbid.id,dbid.modified)
+        if(stackCall===-1){
+            let change_obj={
+                undo:{
+                    func:this.modify,
+                    args:[index,old_val.val]
+                },
+                redo:{
+                    func:this.modify,
+                    args:params
+                },
+                index:index
+            }
+            undo_stack.push(change_obj)
+        }
+        this.setState({template:modifiedTemp,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
+
+        fetch('http://localhost:9000/website/container/modify',{
+            method:"put",
+            credentials:"include",
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({id:dbid.id, component:dbid.modified})
+        })
+        .then((res)=>{
+            return res.json()
+        })
+        .then((res)=>{
+             console.log(res)
+        })
+        .catch(e=>{
+            console.log(e)
+        })
+        return 1;
     }
 
     undoDelete=()=>{

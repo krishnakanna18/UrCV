@@ -2,6 +2,8 @@ const  mongoose=require("mongoose");
        Template = require("./templateSchema");
        fs=require("fs");
        Container = require("./containerSchema");
+       Website=require("./websiteSchema");
+       User=require("./userSchema")
 
 let ids=["5f215e4eca32cc5faca29122","5f293f4fb4fe004d5c5080f2",
 "5f293fcaf555334ee3a75f00","5f215e4eca32cc5faca29124","5f215e4eca32cc5faca29125"]
@@ -22,7 +24,13 @@ let containers=[];
     let s=new Set(containers)
     console.log(containers.length,sum,s.size)
     let res=await Container.remove({_id: {$nin:containers}})
+    res=await Website.deleteMany({})
+    res=await User.findOneAndUpdate({username:"test"},{websites:[]},{returnOriginal:false})
+    console.log(res)
     
+
+
+
     // res=res.map(r=>r._id)
     // res.sort()
     // containers.sort();

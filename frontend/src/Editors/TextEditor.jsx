@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 import '../css/TextEditor.css'
 import fonts from '../jsonFiles/bestFonts.json'
-import { debounce , throttle } from 'lodash'
-
-// import TextareaAutosize from 'react-textarea-autosize';
-// import autosize from 'autosize'
-// import { initial, range } from 'lodash';
+import { debounce , throttle , isEqual} from 'lodash'
 
 class TextEditor extends Component {
 
@@ -17,14 +13,28 @@ class TextEditor extends Component {
             color:['#4D4D4D', '#999999', '#FFFFFF', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00', '#A4DD00', '#68CCCA', '#73D8FF', '#AEA1FF', '#FDA1FF', '#333333', '#808080', '#cccccc', '#D33115', '#E27300', '#FCC400', '#B0BC00', '#68BC00', '#16A5A5', '#009CE0', '#7B64FF', '#FA28FF', '#000000', '#666666', '#B3B3B3', '#9F0500', '#C45100', '#FB9E00', '#808900', '#194D33', '#0C797D', '#0062B1', '#653294', '#AB149E']},
             test:0,
             debouceChange:throttle(this.updateParent,692),
+            text:this.props.text,
+            prevText:undefined,
+            undo_stack:[],
+            redo_stack:[],
+            stateChange:true,
+            z:false,
+            y:false
             // debouceChange:this.updateParent
 
         }
     }
 
+
+    componentDidMount(){
+
+        let prevText=document.getElementById("editorTextKey"+this.props.domId).children[0]
+        this.setState({prevText:prevText.cloneNode(true)})
+
+    }
     //Completely avoid re-rendering the component(Allow rendring only after component mounts)
-    shouldComponentUpdate=()=>{
-        return false
+    shouldComponentUpdate=(nextProps,nextState)=>{
+        return false; 
     }
 
     // Group the nested sentences along with the styles
@@ -112,7 +122,6 @@ class TextEditor extends Component {
     }
 
     updateParent=(targetChild)=>{
-
         let propText=this.props.text
 
         let propClass=propText.classlist, propStyle=propText.styles;
@@ -181,8 +190,18 @@ class TextEditor extends Component {
                 }
             )  
         }
-        // console.log(textComponent)
-        this.props.modifyText(this.props.index,textComponent)
+        let undo_stack=[...this.state.undo_stack],
+            redo_stack=[...this.state.redo_stack]
+        undo_stack.push({
+            "undo":this.state.prevText,
+            "redo":targetChild.cloneNode(true)
+                }
+            )
+        // console.log("Change:",targetChild.cloneNode(true))
+
+        this.setState({undo_stack,redo_stack,prevText:targetChild.cloneNode(true)},()=>{
+            this.props.modifyText(this.props.index,textComponent)
+        })  //Update the undo and redo stack
     }
 
 
@@ -201,7 +220,57 @@ class TextEditor extends Component {
     //Function to respond to changes in the Text
     //Under construction
     onChange=(e)=>{
-        
+
+        if(e.ctrlKey && e.which === 90 && e.type==="keyup"){
+            e.preventDefault();
+            let undo_stack=[...this.state.undo_stack]
+            let redo_stack=[...this.state.redo_stack]
+            if(undo_stack.length===0){
+                return
+            }
+            let top=undo_stack.pop();
+            redo_stack.push(top);
+            top=top["undo"]
+            document.getElementById("editorTextKey"+this.props.domId).innerHTML=''
+            document.getElementById("editorTextKey"+this.props.domId).append(top)
+            this.setState({text:top,undo_stack,redo_stack,stateChange:!this.state.stateChange,z:true})
+            return
+        }
+        else if(e.ctrlKey && e.which === 90 && e.type==="keydown")
+            return
+
+        if(e.which === 90 && this.state.z===true){
+            this.setState({z:false})
+            return
+        }
+
+        if(e.ctrlKey && e.which === 89 && e.type==="keyup"){
+            e.preventDefault();
+            let undo_stack=[...this.state.undo_stack]
+            let redo_stack=[...this.state.redo_stack]
+            if(redo_stack.length===0){
+                return
+            }
+            let top=redo_stack.pop();
+            undo_stack.push(top);
+            top=top["redo"]
+            document.getElementById("editorTextKey"+this.props.domId).innerHTML=''
+            document.getElementById("editorTextKey"+this.props.domId).append(top)
+            this.setState({text:top,undo_stack,redo_stack,stateChange:!this.state.stateChange,y:true})
+            return
+        }
+
+        else if(e.ctrlKey && e.which === 89 && e.type==="keydown")
+            return
+
+        if(e.which === 89 && this.state.y===true){
+                this.setState({y:false})
+                return
+            }
+        if(e.which===17){
+            // console.log("Ctrl down")
+            return
+        }
         let targetChild=e.target.children[0],   //Parent Paragraph of the editable text
             Selection=document.getSelection(),   //Selection object
             {anchorNode,focusNode, anchorOffset, focusOffset}=Selection,
@@ -298,6 +367,9 @@ class TextEditor extends Component {
                     targetChild.children[ancIndex+1].remove()    
             }
         }
+
+        if( e.type==="keydown")
+            return
 
         this.state.debouceChange(e.target.children[0])
         return
@@ -520,22 +592,10 @@ class TextEditor extends Component {
     }
 
 
-    //Function to resize textarea size on initial mouseenter
-    reSize=(e)=>{
-            if(this.state.initial===0){
-                e.target.setAttribute('style', 'height:' + (e.target.scrollHeight) + 'px;overflow-y:hidden;');
-                this.setState({initial:1})
-            }
-    }
-
-
-
     render() { 
-        // console.log("Im called",this.props.text)
         let displayStrings=[]                       //Array of strings to be displayed and edited
         let Text=JSON.parse(JSON.stringify(this.props.text))
         this.groupTextStyles(Text,displayStrings)
-        // console.log(displayStrings)
         let {editStyles:{color}}={...this.state}
 
         return ( 
@@ -616,11 +676,13 @@ class TextEditor extends Component {
                                         this.setStyleEditor(e); 
                                 }}
 
+
                                 // onMouseDown={()=>this.setSelection()}
 
 
                                 contentEditable={true}
                                 suppressContentEditableWarning={true}
+                                id={"editorTextKey"+this.props.domId}
                                 >
                                 <p  className="editorText" 
                                 >

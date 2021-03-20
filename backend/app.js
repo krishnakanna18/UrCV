@@ -13,7 +13,7 @@ const express=require("express");
       Tool = require("./Schemas/toolSchema");           //Tool model and functions associated with it
       session=require("express-session")
 
-app.use(cors({credentials:true, origin:"http://localhost:3000"}));
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000"]}));
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
@@ -209,6 +209,37 @@ app.get('/website/:id',isLoggedin,async(req,res)=>{
 
 })
 
+app.get('/website/info/:id',isLoggedin,async(req,res)=>{
+      let id=req.params.id;  
+      let site=await Website.findById(id)
+      res.status(200).json({website:site})
+
+})
+
+//To delete a container from a website
+app.delete('/website/container/delete',isLoggedin,async(req,res)=>{
+      // console.log("Container to be deleted: ",req.body.id);
+
+      let {id}=req.body
+      if(id===undefined || id===null)
+            res.status(404).json({log_data:"Not found"})
+      let val=await Container.deleteContainer(req.body.id)
+      res.status(200).json({log_data:"Deleted"})
+
+})
+
+
+//To modify a container of a website
+app.put('/website/container/modify',isLoggedin,async(req,res)=>{
+      console.log(req.body.id)
+      let {id,component}=req.body
+      if(id===undefined || id===null)
+            res.status(404).json({log_data:"Not found"})
+      let cont=await Container.modifyContainer(id,component)
+      res.status(200).json({log_data:"Modified"})
+
+})
+
 app.get('/user',async(req,res)=>{
       let user=await User.findById(req.query.id)
       res.json(user) 
@@ -256,6 +287,8 @@ app.get('/template/:id',async(req,res)=>{
       }
 })
 
+
+app.delete('/')
 
 // app.get('/deploy/:id',(req,res)=>{
 //       Website.findById("5f1960e6ae19995738827339",(err,result)=>{
@@ -402,10 +435,12 @@ app.get('/jsonview',async(req,res)=>{
      
 // })
 
-app.listen(process.env.PORT||9000,(err)=>{    // ---FINAL
+let server=app.listen(process.env.PORT||9000,(err)=>{    // ---FINAL
       if(err)
             throw err;
       else
             console.log("Connected!");
+     
 
 })
+

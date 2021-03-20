@@ -23,6 +23,7 @@ class Templates extends Component {
                     {templates.map((template,id)=>{
                        return <Template template={template} key={id} 
                                loggedin={this.props.loggedin} user={this.props.user}
+                               updateUser={this.props.updateUser}
                               history={this.props.history} 
                        ></Template>
                     })}

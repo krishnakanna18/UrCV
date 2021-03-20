@@ -196,7 +196,7 @@ class Skillset extends Component {
                 <div className="mt-4  pt-1 d-flex flex-column  align-items-center">
                     {set.map((skill,index)=>{
                        return ( 
-                           <React.Fragment >
+                           <React.Fragment key={`${index}`}>
                                {/* Autocomplete to add skill above */}
                                 {index===insertPosition.index && insertPosition.pos===-1?
                                     <div className="col">

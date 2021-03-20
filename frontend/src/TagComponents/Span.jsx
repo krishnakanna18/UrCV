@@ -3,7 +3,7 @@ class Span extends Component{
     
 
     render(){
-        // console.log(`I'm ${this.props.index} and im a text`);
+        // console.log(`I'm ${this.props.index} and im a span text: `,this.props.contents);
         let classes=""
         let style={}
         if(this.props.classes!==undefined)

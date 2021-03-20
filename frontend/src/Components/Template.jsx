@@ -63,6 +63,8 @@ class Template extends Component{
         })
         site=await site.json()
         user=site.user
+        this.props.updateUser(user)
+
         let site_id=site.website_id
         this.props.history.push({
             pathname:'/template/edit',

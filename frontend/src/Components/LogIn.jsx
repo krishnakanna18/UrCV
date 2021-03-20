@@ -3,10 +3,10 @@ import { Redirect } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 class LogIn extends Component {
 
-    componentDidMount(){
-        console.log("Mounted Login")
+    // componentDidMount(){
+    //     console.log("Mounted Login")
 
-    }
+    // }
 
     async signin(){
         let res,state,status,loginUser,redirect
@@ -34,7 +34,7 @@ class LogIn extends Component {
             state={redirect:'/'}
         }
         redirect=state.redirect
-
+        console.log(this.props.location,"Location")
         if(status===200){
             loginUser(res.user,res.loggedin)
                 this.props.history.push({
@@ -44,9 +44,9 @@ class LogIn extends Component {
 
     }
 
-    componentWillUnmount(){
-        console.log("Unmounted Login")
-    }
+    // componentWillUnmount(){
+    //     console.log("Unmounted Login")
+    // }
 
     render(){
         return(

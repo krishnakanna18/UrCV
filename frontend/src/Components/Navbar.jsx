@@ -7,6 +7,7 @@ import TemplateEditor from '../Templates/templateEditor';
 import Home from './Home';
 import LogIn from './LogIn';
 import Templates from './Templates';
+import Profile from './Profile';
 import {
     BrowserRouter as Router,
     Route,
@@ -49,12 +50,11 @@ class Navbar extends Component {
         res=await res.json()
         this.setState({...res},()=>{
         })
-        console.log("Mounted Nav")
     }
 
-    componentWillUnmount(){
-        console.log("Unmounted Nav")
-    }
+    // componentWillUnmount(){
+    //     console.log("Unmounted Nav")
+    // }
 
     //Log in a user
     loginUser(user,loggedin){
@@ -76,6 +76,13 @@ class Navbar extends Component {
         
     }
 
+    updateUser=(user)=>{
+        this.setState({user:user},()=>{
+            console.log("Called")
+
+        })
+    }
+
     userMenu(){
         if(!this.state.loggedin)
            return <li  className="nav-item ml-auto" >
@@ -94,7 +101,18 @@ class Navbar extends Component {
                 </li>
              
         
-        return  <li  className="nav-item">        
+        return <React.Fragment>
+               <li  className="nav-item"> 
+                        <Link className="nav-link" to={{
+                            pathname:'/user/profile',
+                            state:{
+                                user:this.state.user
+                            }
+                        }}>
+                            Your Sites
+                        </Link>
+                </li>
+                <li  className="nav-item" style={{left:"100%"}}>        
                     <div className="dropdown show">
                     <a className="btn btn-secondary" href="#" role="button" id="userMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style={{border:"none",background:"none"}}>
                         <img src="/icons/userIcon.png" style={{width:"32px", heigh:"10px"}}></img>
@@ -103,9 +121,7 @@ class Navbar extends Component {
                         <Link className="dropdown-item col mr-2" to={{
                                             pathname:"/user/profile",
                                             state:{
-                                                params:{
-                                                    user:this.state.user
-                                                }
+                                                user:this.state.user
                                             }
                                         }}>
                             <svg viewBox="0 0 24 24" width="1em" height="1em" className="mr-3"><path fillRule="evenodd" d="M17 3c1.1 0 2 .9 2 2v16l-7-3-7 3 .01-16c0-1.1.89-2 1.99-2h10zm-5 10.43L14.472 15l-.656-2.96L16 10.048l-2.876-.256L12 7l-1.124 2.792L8 10.048l2.184 1.992L9.528 15 12 13.43z"></path>
@@ -117,7 +133,8 @@ class Navbar extends Component {
                         Sign out</a> 
                     </div>
                 </div>
-            </li>
+                </li>
+                </React.Fragment>  
     }
    
     isloggedin(){
@@ -132,7 +149,7 @@ class Navbar extends Component {
         return ( 
             <React.Fragment>
                 <Router>
-                    <nav className="navbar navbar-expand-lg navbar-light  sticky-top" style={{backgroundColor:"white", fontSize:"110%"}}>
+                    <nav className="navbar navbar-expand-lg navbar-light  sticky-top navMenu" style={{backgroundColor:"white", fontSize:"110%"}}>
                         <Link className="navbar-brand"  to="/" >
                             UrCV    
                         </Link>
@@ -155,6 +172,7 @@ class Navbar extends Component {
                     <Switch>
                         <Route exact path='/' component={Home}></Route>
                         <Route exact path="/user/login" component={()=><LogIn loginUser={this.loginUser}></LogIn>}></Route>
+                        <Route exact path="/user/profile" component={()=><Profile loggedin={this.state.loggedin}></Profile>}></Route>
                         <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin} updateUser={this.updateUser} loginUser={this.loginUser}></Templates>}></Route>
                         <Route exact path='/template/edit' component={()=><TemplateEditor loggedin={this.state.loggedin}></TemplateEditor>}></Route>
                     </Switch>

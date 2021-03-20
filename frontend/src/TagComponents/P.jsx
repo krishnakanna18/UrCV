@@ -30,7 +30,7 @@ class P extends Component{
      
     
     render(){
-        // console.log(`I'm ${this.props.index} and im a text`);
+        // console.log(`I'm ${this.props.index} and im a text :`,this.props.contents,"chidlren: ",this.props.children);
         let link=<Link to="/getEditorIndex">
 
                 </Link>

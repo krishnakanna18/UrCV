@@ -6,12 +6,14 @@ const Container = require("./containerSchema");
 mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } )
 
 let webisteSchema=new mongoose.Schema({
-    name:String,
+    name:{type:String, default:"Site"},
     id:String,
     containers:[{type:mongoose.Schema.Types.ObjectId,ref:'containers'}],
     isDeployed:{type:Boolean,default:false},
     gitlink:String,
-    template_id:{type:mongoose.Schema.Types.ObjectId,ref:'templates'}
+    template_id:{type:mongoose.Schema.Types.ObjectId,ref:'templates'},
+    createDate:{type: Date, default: Date.now},
+    updateDate:{type: Date, default: Date.now}
 })
 
 let Website=mongoose.model("websites",webisteSchema)
@@ -34,7 +36,6 @@ let makeSite=async(id,template=undefined)=>{
     if(template===undefined)
         template=await Template.retrieve(id);
     // Site.template_id=template.id
-    Site.name="Test"
     Site.containers=await Promise.all(template.containers.map(async(container)=>await makeContainer(container)))
     await Website.create(Site);
     return Site._id

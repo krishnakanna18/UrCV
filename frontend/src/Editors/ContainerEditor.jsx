@@ -62,7 +62,7 @@ class Container extends Component {
                             if(element.tag==="p" || element.tag==="span")
                                 return <TextEditor key={`${id}`} text={element} 
                                         modifyText={this.props.modifyElement}
-                                        index={element.id}
+                                        index={element.id} domId={`${id}`}
                                         >
 
                                         </TextEditor>
