@@ -209,6 +209,7 @@ app.get('/website/:id',isLoggedin,async(req,res)=>{
 
 })
 
+<<<<<<< HEAD
 app.get('/website/info/:id',isLoggedin,async(req,res)=>{
       let id=req.params.id;  
       let site=await Website.findById(id)
@@ -240,6 +241,8 @@ app.put('/website/container/modify',isLoggedin,async(req,res)=>{
 
 })
 
+=======
+>>>>>>> 02c71b354be8625af152ede67471c084d6047837
 app.get('/user',async(req,res)=>{
       let user=await User.findById(req.query.id)
       res.json(user) 

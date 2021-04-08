@@ -52,9 +52,15 @@ class Navbar extends Component {
         })
     }
 
+<<<<<<< HEAD
     // componentWillUnmount(){
     //     console.log("Unmounted Nav")
     // }
+=======
+    componentWillUnmount(){
+        console.log("Unmounted Nav")
+    }
+>>>>>>> 02c71b354be8625af152ede67471c084d6047837
 
     //Log in a user
     loginUser(user,loggedin){

@@ -54,7 +54,11 @@ class Template extends Component {
     }
 
     async componentDidMount(){
+<<<<<<< HEAD
         // console.log("Mounted Editor")
+=======
+        console.log("Mounted Editor")
+>>>>>>> 02c71b354be8625af152ede67471c084d6047837
 
         if(this.props.loggedin===false)     //If the user logs out when the editor component is open
             this.props.history.push({
