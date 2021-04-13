@@ -101,7 +101,13 @@ class Container extends Component {
 
     //Display the list of components present in the outer container
     displayOuter=()=>{
-            let components=[...this.props.component.children]
+        let components
+        try{
+            components=[...this.props.component.children]
+        }
+        catch(e){
+            components=[]
+        }
             let index=this.props.index
             // console.log(index)
             return( 
