@@ -19,7 +19,9 @@ class TextEditor extends Component {
             redo_stack:[],
             stateChange:true,
             z:false,
-            y:false
+            y:false,
+            editorTextRef:React.createRef(),
+            editorMenuRef:React.createRef()
             // debouceChange:this.updateParent
 
         }
@@ -429,22 +431,11 @@ class TextEditor extends Component {
 
     }
 
-  
-
     // End of the change function
 
     styleEvent=(e,attribute,value=undefined)=>{
 
         let Selection=document.getSelection()
-        // if(attribute==="color"){
-        //     Selection=this.state.selection
-        //     console.log(Selection)
-
-        // }
-
-
-        
-
 
         let {editStyles, defaultStyles}=this.state,
             {anchorNode,focusNode, anchorOffset, focusOffset}=Selection,
@@ -452,7 +443,6 @@ class TextEditor extends Component {
             tarAtt=e.target.parentNode,
             isSingleChar=(ancParent===focParent && anchorOffset===focusOffset),
             parentEditor=ancParent.parentNode.parentNode
-
 
         let fontProps=false
         if(attribute==="fontWeight"||attribute==="fontStyle"||attribute==="textDecoration")
@@ -467,14 +457,9 @@ class TextEditor extends Component {
         if(e.target.getAttribute("class").includes("color"))
             tarAtt=e.target.parentNode.parentNode.parentNode
 
-      
-
-            // console.log(parentEditor,tarAtt.parentNode)
-        
-
         let isSameEditor=(parentEditor.previousSibling===tarAtt.parentNode)
-
-        if(isSameEditor){
+        
+        if(isSameEditor || isColor){
 
             let ancIndex=[...parentEditor.children[0].children].indexOf(ancParent),
                 focIndex=[...parentEditor.children[0].children].indexOf(focParent)
@@ -603,7 +588,7 @@ class TextEditor extends Component {
                 <div className="mt-2 mb-2 editorTextBoxOuter" style={{}}>
 
                      {/* Contains the editors elements/options */}
-                    <div className="editorStyleBox d-flex flex-row justify-content-center">
+                    <div className="editorStyleBox d-flex flex-row justify-content-center" ref={this.state.editorMenuRef}>
 
                         <button  className="btn styleAtb" type="btn"  style={{  padding: 0,border:"none"}}  data-toggle="tooltip" data-placement="top" title="Bold"
                                  onClick={(e)=>{this.styleEvent(e,"fontWeight")}} 
@@ -652,15 +637,15 @@ class TextEditor extends Component {
                                 <div className="d-flex flex-row  flex-wrap" style={{backgroundColor:"white"}} >
                                     {
                                         color.map((c,id)=>{
-                                            return <div onClick={(e)=>{e.preventDefault();this.styleEvent(e,"color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
+                                            return <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); console.log("Im clicked");this.styleEvent(e,"color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
                                             data-toggle="tooltip" data-placement="top" title={c}>
-                                                   </div>
+                                                   </a>
                                         })
                                     }
                                 </div>
                             </div>
                         </div>
-                        <div className="lineBreak" ></div>
+                        {/* <div className="lineBreak" ></div> */}
                     </div>                  
 
                     {/*Contains the text being edited*/} 
@@ -684,7 +669,8 @@ class TextEditor extends Component {
                                 suppressContentEditableWarning={true}
                                 id={"editorTextKey"+this.props.domId}
                                 >
-                                <p  className="editorText" 
+                                <p  className="editorText"
+                                ref={this.state.editorTextRef} 
                                 >
                                     {   displayStrings.length>0?
                                             displayStrings.map((st,id)=>{

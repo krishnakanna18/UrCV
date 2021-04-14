@@ -42,6 +42,9 @@ class Navbar extends Component {
 
     //Initial rendering to see if the user is already logged in
     async componentDidMount(){
+        let btn=document.getElementById("publishBtn")           //Remove P
+        if(btn)
+            btn.remove()
 
         let res=await fetch('http://localhost:9000/',{
             method:"GET",
@@ -52,15 +55,12 @@ class Navbar extends Component {
         })
     }
 
-<<<<<<< HEAD
     // componentWillUnmount(){
     //     console.log("Unmounted Nav")
     // }
-=======
-    componentWillUnmount(){
-        console.log("Unmounted Nav")
-    }
->>>>>>> 02c71b354be8625af152ede67471c084d6047837
+    // componentWillUnmount(){
+    //     console.log("Unmounted Nav")
+    // }
 
     //Log in a user
     loginUser(user,loggedin){
@@ -155,7 +155,7 @@ class Navbar extends Component {
         return ( 
             <React.Fragment>
                 <Router>
-                    <nav className="navbar navbar-expand-lg navbar-light  sticky-top navMenu" style={{backgroundColor:"white", fontSize:"110%"}}>
+                    <nav className="navbar navbar-expand-lg navbar-light  sticky-top navMenu" id="navBarSite" style={{backgroundColor:"white", fontSize:"110%"}}>
                         <Link className="navbar-brand"  to="/" >
                             UrCV    
                         </Link>
@@ -174,6 +174,7 @@ class Navbar extends Component {
                                 {this.userMenu()}
                             </ul>
                         </div>
+
                     </nav>
                     <Switch>
                         <Route exact path='/' component={Home}></Route>
@@ -181,6 +182,7 @@ class Navbar extends Component {
                         <Route exact path="/user/profile" component={()=><Profile loggedin={this.state.loggedin}></Profile>}></Route>
                         <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin} updateUser={this.updateUser} loginUser={this.loginUser}></Templates>}></Route>
                         <Route exact path='/template/edit' component={()=><TemplateEditor loggedin={this.state.loggedin}></TemplateEditor>}></Route>
+                        {/* <Route exact path='/site/preview' component={()=>}></Route> */}
                     </Switch>
                 </Router>
             </React.Fragment>

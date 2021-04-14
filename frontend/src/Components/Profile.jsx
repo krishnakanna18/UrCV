@@ -10,24 +10,27 @@ class Profile extends Component {
         super();
         this.state={sites:[]}
     }
-    
-    async componentDidMount(){
-        let state,user,sites,loggedin
 
-        // console.log("Mounted Profile");
-        loggedin=this.props.loggedin
-
-        if(loggedin===0 || loggedin===false)  //Go to home if the user has logged out
+    shouldComponentUpdate=(props,state)=>{
+        if(this.props.loggedin===0 || this.props.loggedin===false)  //Go to home if the user has logged out
             this.props.history.push({
                 pathname:'/'
             })
-
+        return true
+    }
+    
+    async componentDidMount(){
         
+        let state,user,sites,loggedin
+
+        // console.log("Mounted Profile");
+
         try{
             state=this.props.location.state
         }
         catch(e){
-            state={redirect:'/',user:{websites:[]}}
+            window.location.href='http://localhost:300'
+
         }
 
         let {user:{websites}}=state
@@ -54,7 +57,7 @@ class Profile extends Component {
 
 
     displayUserSites(){
-
+        
         let {sites}=this.state,
             {user}=this.props.location.state
 
@@ -140,8 +143,13 @@ class Profile extends Component {
     }
 
     render() { 
+        try{
         let {user}=this.props.location.state
         console.log(user)
+        }
+        catch(e){
+            window.location.href='http://localhost:3000'
+        }
         return ( 
 
             <React.Fragment>

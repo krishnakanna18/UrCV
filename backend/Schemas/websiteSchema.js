@@ -50,8 +50,69 @@ let retrieve=async(id)=>{
     return site
 }
 
+
+//Delete containers from a website
+let deleteContainer=async(id,site)=>{
+    try{
+        let result=await Container.deleteContainer(id)
+        let web=await Website.findById(site)
+        let {containers}=web
+        containers.splice(containers.indexOf(id),1);
+        let newc=await Website.findByIdAndUpdate(site,{'$set':{containers:containers}},{returnOriginal:false})
+        return newc
+  }
+  catch(e){
+        return e
+  }
+}
+
+
+//Move containers from a website
+let moveContainer=async(id,index,pos,site)=>{
+    try{
+        let web=await Website.findById(site)
+        let {containers}=web
+        let temp=containers[index]
+        containers[index]=containers[index+pos]
+        containers[index+pos]=temp
+        let newc=await Website.findByIdAndUpdate(site,{'$set':{containers:containers}},{returnOriginal:false})
+        return newc
+    }
+    catch(e){
+        return e
+    }
+}
+
+//Insert a container in a website
+let insertContainer=async(component,position,site)=>{
+    try{
+        let newContainer=await Container.addContainers(component)
+        let web=await Website.findById(site)
+        let {containers}=web
+        containers.splice(position,0,newContainer)
+        let newc=await Website.findByIdAndUpdate(site,{'$set':{containers:containers}},{returnOriginal:false})
+        return newContainer
+    }
+    catch(e){
+        return e
+    }
+}
+
+
+//Update a website last modified date
+let updateModifiedDate=async(site)=>{
+    let web=await Website.findById(site)
+    let date=Date.now()
+    let newc=await Website.findByIdAndUpdate(site,{'$set':{updateDate:date}},{returnOriginal:false})
+
+}
+
 Website.makeSite=makeSite
 Website.retrieve=retrieve
+Website.deleteContainer=deleteContainer
+Website.moveContainer=moveContainer
+Website.insertContainer=insertContainer
+Website.updateModifiedDate=updateModifiedDate
 module.exports=Website
 
 

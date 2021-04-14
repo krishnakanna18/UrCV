@@ -1,4 +1,5 @@
 const express=require("express");
+const Container = require("./Schemas/containerSchema");
       app=express();
       bodyParser=require("body-parser");
       fetch=require("node-fetch");
@@ -16,7 +17,7 @@ const express=require("express");
 app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000"]}));
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));                  //limit enables to parse requests of size less than or equal to 50mb...Anything bigger the request will not be processed
 app.use(express.static(path.join(__dirname,'/public')));
 
 mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
@@ -209,7 +210,6 @@ app.get('/website/:id',isLoggedin,async(req,res)=>{
 
 })
 
-<<<<<<< HEAD
 app.get('/website/info/:id',isLoggedin,async(req,res)=>{
       let id=req.params.id;  
       let site=await Website.findById(id)
@@ -219,12 +219,24 @@ app.get('/website/info/:id',isLoggedin,async(req,res)=>{
 
 //To delete a container from a website
 app.delete('/website/container/delete',isLoggedin,async(req,res)=>{
-      // console.log("Container to be deleted: ",req.body.id);
 
-      let {id}=req.body
+      let {id,site,isFull}=req.body
       if(id===undefined || id===null)
             res.status(404).json({log_data:"Not found"})
+      if(isFull===true){
+            try{
+                  let res=await Website.deleteContainer(id,site)
+                  await Website.updateModifiedDate(site)
+                  res.status(200).json({log_data:"Deleted"})
+                  return
+            }
+            catch(e){
+                  res.status(200).json({log_data:"Failed"})
+                  return
+            }
+      }
       let val=await Container.deleteContainer(req.body.id)
+      await Website.updateModifiedDate(site)
       res.status(200).json({log_data:"Deleted"})
 
 })
@@ -232,17 +244,77 @@ app.delete('/website/container/delete',isLoggedin,async(req,res)=>{
 
 //To modify a container of a website
 app.put('/website/container/modify',isLoggedin,async(req,res)=>{
-      console.log(req.body.id)
-      let {id,component}=req.body
+      let {id,component,site}=req.body
       if(id===undefined || id===null)
             res.status(404).json({log_data:"Not found"})
       let cont=await Container.modifyContainer(id,component)
+      await Website.updateModifiedDate(site)
       res.status(200).json({log_data:"Modified"})
 
 })
 
-=======
->>>>>>> 02c71b354be8625af152ede67471c084d6047837
+
+//To add a container to a website
+app.post('/website/container/insert',isLoggedin,async(req,res)=>{
+      let {p_id,component,position,isFull,site}=req.body
+      if(p_id===undefined || p_id===null)
+            res.status(404).json({log_data:"Not found"})
+      if(isFull===true){
+            try{
+            let newContainer=await Website.insertContainer(component,position,site)
+            await Website.updateModifiedDate(site)
+            res.status(200).json({log_data:"Inserted", id:newContainer})
+            }
+            catch(e){
+                  res.status(200).json({log_data:"Failed"})
+            }
+            return
+      }
+      else{
+      let cont=await Container.insertContainer(p_id,component,position)
+      await Website.updateModifiedDate(site)
+      res.status(200).json({log_data:"Inserted", id:cont})
+      }
+})
+
+
+//Retrieve a container (Populate the contianer)
+app.get('/website/container/retrieve/:id',isLoggedin,async(req,res)=>{
+      let id=req.params.id
+      try{
+            let container=await Container.retrieve(id)
+            res.status(200).json({container})
+      }
+      catch(e){
+            res.status(400).json({log_data:"Not found"})
+      }
+      
+})
+
+//Move a container given its parent's id and its index and by number of position it should move
+app.put('/website/container/move',isLoggedin,async(req,res)=>{
+      let {id,index,pos,isFull,site}=req.body
+      if(id===undefined || id===null)
+            res.status(404).json({log_data:"Not found"})
+      if(isFull===true){
+            try{
+                  let res=await Website.moveContainer(id,index,pos,site)
+                  await Website.updateModifiedDate(site)
+                  res.status(200).json({log_data:"Deleted"})
+                  return
+            }
+            catch(e){
+                  res.status(200).json({log_data:"Failed"})
+                  return
+            }
+      }
+      else{
+      let cont=await Container.moveContainer(id,index,pos)
+      await Website.updateModifiedDate(site)
+      res.status(200).json({log_data:"Moved"})
+      }
+})
+
 app.get('/user',async(req,res)=>{
       let user=await User.findById(req.query.id)
       res.json(user) 
@@ -290,8 +362,41 @@ app.get('/template/:id',async(req,res)=>{
       }
 })
 
+//Get the access token for github authentication
+app.get('/publish/code',isLoggedin,async(req,res)=>{
+    console.log(req.headers)  
+    return  res.redirect('https://github.com/login/oauth/authorize?client_id=ed386413882419f33d05&scope=public_repo%20user%20delete_repo')
+})
 
-app.delete('/')
+app.get('/publish/access_token',isLoggedin,async(req,res)=>{
+      let {code}=req.query
+      req.session.oauth_code=code
+      try{
+      let resp=await fetch('https://github.com/login/oauth/access_token',{
+            method:"post",
+            headers:{'Accept-Type':'application/json'},
+            body:JSON.stringify({
+                  code:code,
+                  client_id:'ed386413882419f33d05',
+                  client_secret:'02cebfa889b903c377871f53f29687acad8bcc5e'
+                  // redirect_uri:'https://localhost:9000/publish/site'
+            })
+      })
+      resp=await resp.json()
+      console.log(resp)
+      res.json({log:"success"})
+      }
+      catch(e){
+            res.json({log:"Invalid request"})
+      }
+})
+
+
+// app.get('/publish/site',async(req,res)=>{
+//       res.json({log:"Success"})
+// })
+
+// app.delete('/')
 
 // app.get('/deploy/:id',(req,res)=>{
 //       Website.findById("5f1960e6ae19995738827339",(err,result)=>{

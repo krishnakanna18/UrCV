@@ -19,26 +19,27 @@ class Div extends Component{
                             // comp.classList.remove('editPanel')
                         }
         
-        if(editorIndex.length>0 && next_editorIndex.length===0)  //editor closed - from an open state----No need to render
-            return 0;
+        //Commented for now since the editor option doesn't show the result immediately.....
+        //Don't try to optimize the performace...the pipeline and the structure is messed up....Sikes
 
-        if(editorIndex.length===0 && index.indexOf(nextProps.editorIndex)===0) //Editor opened -- render only the editor enabled component
-            return 1;
+        // if(editorIndex.length>0 && next_editorIndex.length===0)  //editor closed - from an open state----No need to render
+        //     return 0;
+
+        // if(editorIndex.length===0 && index.indexOf(nextProps.editorIndex)===0) //Editor opened -- render only the editor enabled component
+        //     return 1;
         
-        // Render the editor enabled component -- found in nextProps.editor
-        if((index.indexOf(editorIndex)===0 && editorIndex===next_editorIndex)|| index.indexOf(nextProps.editorIndex)===0) 
-            return 1;
+        // // Render the editor enabled component -- found in nextProps.editor
+        // if((index.indexOf(editorIndex)===0 && editorIndex===next_editorIndex)|| index.indexOf(nextProps.editorIndex)===0) 
+        //     return 1;
         
-        // Render the component edited in undo or redo operation 
-        if((index.indexOf(nextProps.undoIndex)===0 && nextProps.undoIndex.length>0)|| (index.indexOf(nextProps.redoIndex)===0) && nextProps.redoIndex.length>0 )
-            return 1;
+        // // Render the component edited in undo or redo operation 
+        // if((index.indexOf(nextProps.undoIndex)===0 && nextProps.undoIndex.length>0)|| (index.indexOf(nextProps.redoIndex)===0) && nextProps.redoIndex.length>0 )
+        //     return 1;
         
-        if(editorIndex.length===0 && index.indexOf(nextProps.editorIndex)!==0) //Do not render otherwise
-            return 0;
+        // if(editorIndex.length===0 && index.indexOf(nextProps.editorIndex)!==0) //Do not render otherwise
+        //     return 0;
                         
-        return 0;  //Do not render otherwise
-     
-      
+        return 1;  //Do not render otherwise
     }
 
     displayOverlayButtons=(ind)=>{

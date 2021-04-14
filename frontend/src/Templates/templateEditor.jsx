@@ -49,22 +49,38 @@ class Template extends Component {
             stack_element_index:"",  //Store the stack element index
             undo_top:"",
             redo_top:""
-            }
+            },
+        siteId:""
+        
+        }
+        this.elementRef = React.createRef()
+    }
+
+    // shouldComponentUpdate=(props,state)=>{
+    //     if(props.loggedin===false){     //If the user logs out when the editor component is open
+    //     props.history.push({
+    //         pathname:'/'
+    //     })
+    //     return 0
+    // }
+    // return 1
+    
+    // }
+
+    removePublishBtn=()=>{
+
+        if(this.props.loggedin===0 || this.props.loggedin===false){  //Go to home if the user has logged out
+            let btn=document.getElementById("publishBtn")
+            if(btn)
+                btn.remove()
+            this.props.history.push({
+                pathname:'/'
+            })
         }
     }
 
     async componentDidMount(){
-<<<<<<< HEAD
-        // console.log("Mounted Editor")
-=======
-        console.log("Mounted Editor")
->>>>>>> 02c71b354be8625af152ede67471c084d6047837
 
-        if(this.props.loggedin===false)     //If the user logs out when the editor component is open
-            this.props.history.push({
-                pathname:'/'
-            })
-        
         let tempId,user;
         try{
         tempId=this.props.location.state.id;
@@ -77,27 +93,26 @@ class Template extends Component {
 
         }
 
-        
-        
-        // console.log(tempId,user)
 
         let template=await fetch('http://localhost:9000/website/'+tempId,{
             method:"GET",
             credentials:"include"
         })
         template=await template.json()
-
         let skillTemplate
-        this.setState({template:template.website,fetched:1,user:user},function(){
+        this.setState({template:template.website,fetched:1,user:user,siteId:tempId},function(){
             try{
              skillTemplate=this.search(undefined,"skills");
              for(let i=0; i<skillTemplate.children.length; i++)
              {
                  if(skillTemplate.children[i].children){
-                     skillTemplate=skillTemplate.children[i].children[0];
-                     break
+                     for(let skill of skillTemplate.children[i].children){
+                            if(skill){
+                                skillTemplate=skill;
+                                break;
+                            }
+                     }
                  }
-    
              }
             }
             catch(e){
@@ -109,6 +124,54 @@ class Template extends Component {
 
         })
 
+        try{
+            let nav= document.getElementById("navBarSite")
+            let btn=document.getElementById("publishBtn")
+            if(btn)
+                return
+            btn=document.createElement("button")
+            btn.classList.add("btn","nav-item")
+            btn.style.backgroundColor="var(--wsr-color-10, #3899EC)"
+            btn.style.color="white"
+            btn.style.borderRadius="var(--wsr-button-border-radius, 18px)"
+            btn.style.width="6%"
+            btn.innerText="Publish"
+            btn.style.fontFamily="HelveticaNeueW01-55Roma,HelveticaNeueW02-55Roma,HelveticaNeueW10-55Roma,sans-serif"
+            btn.setAttribute("id","publishBtn")
+            btn.onclick=async()=>{
+                await this.getAccessTokenGit()
+                }
+            nav.appendChild(btn)
+            window.addEventListener('beforeunload', this.removePublishBtn);
+        }
+        catch(e){
+            return
+        }
+
+    }
+
+
+    getAccessTokenGit=async()=>{
+        console.log("Getting Access Token from git....");
+        // let res=await fetch('http://localhost:9000/publish/code',{
+        //     method:"get",
+        //     credentials:"include",
+        // })
+        // res=await res.json()
+        // console.log(res)
+        // let auth=window.open('','wnd')
+        // auth.document.body.innerHTML=res
+        window.location.href='http://localhost:9000/publish/code'
+    }
+
+
+
+    componentWillUnmount=()=>{
+        let btn=document.getElementById("publishBtn")
+        if(btn)
+            btn.remove()
+       window.removeEventListener('beforeunload', this.removePublishBtn);
+        
     }
 
     undo_change=()=>{
@@ -259,10 +322,16 @@ class Template extends Component {
 
     }
 
+    addId=()=>{
+
+    }
+
     //Search for an element in the tree                                            
-    searchElement=(index,target,template,condition)=>{           //index - the current element's index
+    searchElement=(index,target,template,condition,dbid=undefined)=>{           //index - the current element's index
                                                        // target- the target index; //template-current tree element
         if(index===target){
+            if(dbid!==undefined)
+                dbid.id=template._id
             return template
         }
 
@@ -275,7 +344,7 @@ class Template extends Component {
             return undefined
 
         for(let i=0; i< template.children.length; i++){
-            let res=this.searchElement(index+`:${i}`,target,template.children[i],condition)
+            let res=this.searchElement(index+`:${i}`,target,template.children[i],condition,dbid)
             if(res!==undefined)
                 return res  
         }
@@ -283,11 +352,11 @@ class Template extends Component {
 
     //helper function for searching an element given its index
     //Returns the element at index if found or undefined
-    search=(index,condition=undefined)=>{                   //Condition - optional for matching conditions
+    search=(index,condition=undefined,dbid=undefined)=>{                   //Condition - optional for matching conditions
         let template={...this.state.template}
         let result
         for(let i=0; i<template.containers.length; i++){
-            result=this.searchElement(`${i}`,index,template.containers[i],condition)
+            result=this.searchElement(`${i}`,index,template.containers[i],condition,dbid)
             if(result!==undefined)
                 break
         }
@@ -296,9 +365,11 @@ class Template extends Component {
     }
 
     //Insert an element in the tree
-    insertElement=(element,index,parent,template,position,old_value)=>{    //element-element to add ; //index-current element index
+    insertElement=(element,index,parent,template,position,old_value,dbid)=>{    //element-element to add ; //index-current element index
                                                         //parent- Parent index of element to add //template-parent
         if(index===parent){
+            if(dbid!==undefined)
+                dbid.id=template._id
             if(position===-1){
                 template.children.push(element)
                 old_value.push(`${index}:${template.children.length-1}`)
@@ -311,7 +382,7 @@ class Template extends Component {
         }
 
         for(let i=0; i< template.children.length; i++){
-             if(this.insertElement(element,index+`:${i}`,parent,{...template.children[i]},position,old_value)===1){
+             if(this.insertElement(element,index+`:${i}`,parent,{...template.children[i]},position,old_value,dbid)===1){
                 return 1   
              }
             }
@@ -324,15 +395,80 @@ class Template extends Component {
                                                                //StackCall -- if -1 adds operation to change stack 
                                                                //          -- else(called from undo,redo operations) don't add operation
         // console.log("parent",p_id)
-        if(p_id===-1)   //Yet to add module to add seperate container
-            return;
+
         let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
-        let old_value=[];
-        // template.containers=[]
-        // return 1;
-        // for(let i=0; i<template.containers.length; i++)
+        let old_value=[],dbid={p_id:""}
+        if(p_id===-1)   
+        {   
+            fetch('http://localhost:9000/website/container/insert',{
+                method:"post",
+                credentials:"include",
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    p_id:-1,
+                    component: element,
+                    position:position,
+                    isFull:true,
+                    site:this.state.siteId
+                })
+            })
+            .then(res=>res.json())
+            .then(async(res)=>{
+                let comp=await fetch('http://localhost:9000/website/container/retrieve/'+res.id,{
+                    method:"get",
+                    credentials:"include",
+                })
+                comp=await comp.json()
+                comp=comp.container
+                if(position===-1){
+                    template.containers.push(comp)
+                    position=template.containers.length-1
+                }
+                else
+                    template.containers.splice(position,0,comp)
+                if(stackCall===-1){
+                    let change_obj={             //Object to log operations
+                        undo:{
+                            func:this.delete,
+                            args:[position]
+                        },
+                        redo:{
+                            func:this.insert,
+                            args:[p_id,element,position]
+                            
+                        },
+                        index:`${i}`
+                    }
+                    undo_stack.push(change_obj)
+                }
+                this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
+                return 1
+            })
+            return 1;
+        }
+        this.search(p_id,undefined,dbid)
         let i=p_id.split(":")[0];   //i- index of parent
-            if(this.insertElement(element,`${i}`,p_id,{...template.containers[i]},position,old_value)===1){
+        fetch('http://localhost:9000/website/container/insert',{
+            method:"post",
+            credentials:"include",
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                p_id:dbid.id,
+                component: element,
+                position:position,
+                isFull:false,
+                site:this.state.siteId
+            })
+        })
+        .then(res=>res.json())
+        .then(async(res)=>{
+            let comp=await fetch('http://localhost:9000/website/container/retrieve/'+res.id,{
+                method:"get",
+                credentials:"include",
+            })
+            comp=await comp.json()
+            comp=comp.container
+            if(this.insertElement(comp,`${i}`,p_id,{...template.containers[i]},position,old_value,dbid)===1){
                 if(stackCall===-1){
                 let change_obj={             //Object to log operations
                     undo:{
@@ -349,14 +485,14 @@ class Template extends Component {
                 undo_stack.push(change_obj)
             }
                 this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
-
                 //Procedure to post data to server -- post the new container to the server. 
                 //                                 -- post the new container's id to the parent and send to the server.
                 return 1
             }
 
+        })
         // console.log("INSIDE INSERT")
-        return 0;
+        return 1;
 
     }
 
@@ -366,8 +502,9 @@ class Template extends Component {
     deleteElement=(current,index,parent,template,old_value,dbid)=>{
         if(current===parent){
             try{
-                old_value.push(template.children[index])  
-                dbid.id=template.children[index]._id
+                old_value.push(template.children[index]) 
+                if(dbid!==undefined) 
+                    dbid.id=template.children[index]._id
                 template.children.splice(index,1);
                 return 1
             }
@@ -414,7 +551,6 @@ class Template extends Component {
                     }
                     undo_stack.push(change_obj)
                 }
-                console.log("Deleted id:",dbid.id)
 
                     this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}}),
                         setTimeout(()=>{
@@ -432,13 +568,12 @@ class Template extends Component {
                        method:"delete",
                        credentials:"include",
                        headers:{'Content-Type':'application/json'},
-                       body:JSON.stringify({id:dbid.id})
+                       body:JSON.stringify({id:dbid.id, isFull:false, site:this.state.siteId})
                    })
                    .then((res)=>{
                        return res.json()
                    })
                    .then((res)=>{
-                        console.log(res)
                    })
                    .catch(e=>{
                        console.log(e)
@@ -450,18 +585,19 @@ class Template extends Component {
         }
         else{
             index=parseInt(pid[pid.length-1])                //If pid size less than 2 delete the entire container
+            let id=template.containers[index]._id
             try{
-                let old_value=[template.containers[index]]
+                let old_value=[JSON.parse(JSON.stringify(template.containers[index]))]
                 template.containers.splice(index,1);
                 if(stackCall===-1){
                 let change_obj={             //Object to log operations
                     undo:{
-                        func:this.delete,
-                        args:params
-                    },
-                    redo:{
                         func:this.insert,
                         args:[-1,old_value[0],index]
+                    },
+                    redo:{
+                        func:this.delete,
+                        args:params
                     },
                     index:`${pid[0]}`
                 }
@@ -475,6 +611,22 @@ class Template extends Component {
                             undo.style.display="none"
                         },4000)
                 })
+                fetch('http://localhost:9000/website/container/delete',{
+                    method:"delete",
+                    credentials:"include",
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({id:id, site:this.state.siteId,isFull:true})
+                })
+                .then((res)=>{
+                    return res.json()
+                })
+                .then((res)=>{
+                })
+                .catch(e=>{
+                    console.log(e)
+                })
+
+
                 return 1;
             }
             catch(err){
@@ -492,7 +644,8 @@ class Template extends Component {
             if(move!==undefined){
                 if(template.children.length>0){
                     let temp=template.children[move.index]
-                    dbid.id=template._id           //Set the id of the old db element
+                    if(dbid!==undefined)
+                        dbid.id=template._id           //Set the id of the old db element
                
                     template.children[move.index]=template.children[move.index+move.pos]
                     template.children[move.index+move.pos]=temp
@@ -502,7 +655,8 @@ class Template extends Component {
             }
             else{
                 old_val.val=JSON.parse(JSON.stringify(template))
-                dbid.id=template._id
+                if(dbid!==undefined)
+                    dbid.id=template._id
                 // console.log("Old value",old_val.val,"New",component)
                 Object.keys(component).forEach(key=>{
                     if(typeof(component.key)===Object)
@@ -548,9 +702,8 @@ class Template extends Component {
             index=parseInt(pid[pid.length-1])
             // console.log(index)
             let moveObj={index:index,pos:pos}                    //Describe the update object
-            let dbid={id:"",index:moveObj.index,pos:moveObj.pos}
+            let dbid={id:"",index:index,pos:pos}
             template=this.update(parent_index,[],moveObj,undefined,dbid)
-            console.log("Update id: ",dbid.id)
             if(stackCall===-1){
                 let change_obj={             //Object to log operations
                     undo:{
@@ -567,17 +720,72 @@ class Template extends Component {
                 undo_stack.push(change_obj)
             }
             this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
+            fetch('http://localhost:9000/website/container/move',{
+                method:"put",
+                credentials:"include",
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    id:dbid.id,
+                    index:dbid.index,
+                    pos:dbid.pos,
+                    isFull:false,
+                    site:this.state.siteId
+                })
+
+            })
+            .then(res=>res.json())
+            .then(res=>{
+            })
+            .catch(e=>{
+                console.log(e)
+            })
+
             return 1;
 
         }
         else{
             index=parseInt(pid[pid.length-1]) 
-            let temp=template.containers[index]
-            template.containers[index]=template.containers[index+pos]
+            let id=template.containers[index]._id
+            if(index===0 && pos===-1 || index===template.containers.length-1 && pos===1)
+                return false;
+            let temp=JSON.parse(JSON.stringify(template.containers[index]))
+            template.containers[index]=JSON.parse(JSON.stringify(template.containers[index+pos]))
             template.containers[index+pos]=temp
-            // console.log(this.state.editor.index)
+            if(stackCall===-1){
+                let change_obj={             //Object to log operations
+                    undo:{
+                        func:this.move,
+                        args:[String(parseInt(index)+pos),-pos]
+                    },
+                    redo:{
+                        func:this.move,
+                        args:[String(index),pos]
+                    },
+                    index:`${index}`
+                }
+                undo_stack.push(change_obj)
+            }
+            this.setState({template:template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
+            fetch('http://localhost:9000/website/container/move',{
+                method:"put",
+                credentials:"include",
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    id:id,
+                    index:index,
+                    pos:pos,
+                    isFull:true,
+                    site:this.state.siteId
+                })
 
-            this.setState({template:template},()=>{return 1})
+            })
+            .then(res=>res.json())
+            .then(res=>{
+            })
+            .catch(e=>{
+                console.log(e)
+            })
+            return 1 
         }
 
 
@@ -589,7 +797,6 @@ class Template extends Component {
         let old_val={val:{}},undo_stack=[...this.state.changes_stacks.undo_stack]
         let dbid={id:"",modified:{}}                         //Dbid is used to retrieve the _id of the container in the database
         let modifiedTemp=this.update(index,component,undefined,old_val,dbid);
-        console.log("Modify ID: ",dbid.id,dbid.modified)
         if(stackCall===-1){
             let change_obj={
                 undo:{
@@ -610,13 +817,12 @@ class Template extends Component {
             method:"put",
             credentials:"include",
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({id:dbid.id, component:dbid.modified})
+            body:JSON.stringify({id:dbid.id, component:dbid.modified,site:this.state.siteId})
         })
         .then((res)=>{
             return res.json()
         })
         .then((res)=>{
-             console.log(res)
         })
         .catch(e=>{
             console.log(e)
@@ -690,8 +896,11 @@ class Template extends Component {
     }
 
     render() { 
+        if(this.props.loggedin===0 || this.props.loggedin===false){  //Go to home if the user has logged out
+            this.removePublishBtn()
+        }
         return ( 
-            <React.Fragment> 
+            <React.Fragment > 
 
                 {/* Undo changes button */}
                 <div id="undoChanges"  style={{display:"none"}} className="container">
@@ -727,8 +936,7 @@ class Template extends Component {
                     </div>
 
                     <div className="col-lg-10 mt-5 col-12 container-fluid" id="site-container">
-                        <div className="mt-5 pt-5 container-fluid mb-5 col" id="site" style={{overflowY:"scroll",overflow:"auto"}}>
-                            
+                        <div className="mt-2 pt-5 container-fluid mb-5 col" id="site" style={{overflowY:"scroll",overflow:"auto"}}>
                             {this.siteDisplay()}
                         </div>
                     </div>

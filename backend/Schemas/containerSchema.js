@@ -27,6 +27,7 @@ let insert=async(...args)=>{
 //Recursively populate the children of the containers and return it
 let retrieve=async(id)=>{
     let current=await Container.findById(id).populate('children');
+    if(current===null || current===undefined) return current
     if(current.children.length==0)
         return current
     current.children=await Promise.all(current.children.map(async(child)=>await retrieve(child._id)))
@@ -47,6 +48,7 @@ let getContainerIds=async(id,arr)=>{
 //Delete a container synchronously along with all its children
 let deleteContainer=async(id)=>{
     let cont=await Container.findById(id)
+    if(cont===null || cont===undefined) return
     if(cont.children===undefined || cont.children.length===0){
             await Container.deleteOne({_id:id})
             return 1
@@ -62,6 +64,9 @@ let deleteContainer=async(id)=>{
 let addContainers=async(component)=>{
     if(component===undefined || component===null) return 
     let cont={...component,children:[]}
+    if(cont._id){
+        delete cont._id
+    }
     if(component.children===undefined || component.children.length===0){
         cont = new Container(cont)
         cont=await cont.save()
@@ -99,9 +104,52 @@ let modifyContainer=async(id,component)=>{
     return cont
 }
 
+
+//Create a container and insert it if not already inserted
+//Returns the new container to the frontend which updates it in the template
+let insertContainer=async(p_id,component,position)=>{
+    let cont
+    let child=await addContainers(component)
+    if(position===-1)
+        cont=await Container.updateOne({_id:p_id},{$push:{children:child}},{returnOriginal: false })
+    else{
+        cont=await Container.updateOne({_id:p_id},
+            {"$push":{
+                children:
+                    {   
+                        "$each":[child],
+                        "$position":position
+                    }
+            }},{returnOriginal: false })
+    }
+    return child
+    
+}
+
+
+//Move a container from its parent's children array
+let moveContainer=async(id,index,pos)=>{
+    if(id===-1){
+
+    }
+    else{
+        let template=await Container.findById(id)
+        console.log(template.children[index],template.children[index+pos])
+        let temp=template.children[index]
+        template.children[index]=template.children[index+pos]
+        template.children[index+pos]=temp
+        let res=await Container.findByIdAndUpdate(id,{'$set':{children:template.children}},{new:true, useFindAndModify:false})
+        console.log("Updated:",res.children[index],res.children[index+pos])
+        return template
+    }
+}
+
 let Container=mongoose.model('containers',containerSchema)
 Container.retrieve=retrieve
 Container.getContainerIds=getContainerIds
 Container.deleteContainer=deleteContainer
 Container.modifyContainer=modifyContainer
-module.exports=Container
+Container.insertContainer=insertContainer
+Container.addContainers=addContainers
+Container.moveContainer=moveContainer
+module.exports=Container 
