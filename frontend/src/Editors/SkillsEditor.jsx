@@ -6,7 +6,7 @@ import Autocomplete from '../Components/Autocomplete'
 //     Link,
 //     Switch
 //   } from "react-router-dom";
-import '../../public/SkillEditor.css'
+import '../css/SkillEditor.css'
 
 class Skillset extends Component {
     constructor(props){
@@ -218,14 +218,14 @@ class Skillset extends Component {
                                         <div className="d-flex justify-content-end" >
                                             <div className="dropdown">
                                                 <button className="btn " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <img className="img-fluid" alt="Alt" src="https://img.icons8.com/ios/24/000000/more.png"/>
+                                                    <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/more.png"/>
                                                 </button>
                                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
                                                     {/* Add a skill above */}
                                                     <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.setAddPos(index,-1)}>
                                                         <span className="pl-3">
-                                                            <img alt="Alt" src="https://img.icons8.com/ios/24/000000/plus-math.png"/>
+                                                            <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
                                                             Add skill Above
                                                         </span>
                                                     </button>
@@ -235,7 +235,7 @@ class Skillset extends Component {
                                                    {index>0?
                                                     <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}} onClick={()=>this.moveSkill(index,`${p_id}:${index}`,-1)} >
                                                         <span className="pl-3">
-                                                            <img className="img-fluid" alt="Alt" src="https://img.icons8.com/ios/24/000000/up.png"/>
+                                                            <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/up.png"/>
                                                             Move Up
                                                         </span>
                                                     </button>
@@ -247,7 +247,7 @@ class Skillset extends Component {
                                                     {index<set.length-1?
                                                     <button  className="btn dropdown-item " type="btn"  style={{  padding:0,border:"none"}} onClick={()=>this.moveSkill(index,`${p_id}:${index}`,+1)}>
                                                         <span className="pl-3">
-                                                            <img className="img-fluid" alt="Alt" src="https://img.icons8.com/ios/24/000000/down.png"/>
+                                                            <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/down.png"/>
                                                             Move down
                                                         </span>
                                                     </button>
@@ -258,7 +258,7 @@ class Skillset extends Component {
                                                     {/* Remove Skill button */}
                                                     <button className="btn dropdown-item " type="btn" style={{  padding:0,border:"none"}}  onClick={()=>this.deleteSkill(index,`${p_id}:${index}`)} >
                                                         <span className="pl-3">
-                                                            <img className="img-fluid" alt="Alt" src="https://img.icons8.com/ios/24/000000/multiply.png"/>
+                                                            <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/multiply.png"/>
                                                             Remove Skill
                                                         </span>  
                                                     </button>
@@ -267,7 +267,7 @@ class Skillset extends Component {
                                                     {/* Add a skill below */}
                                                     <button className="btn dropdown-item " type="btn" style={{  padding:0,border:"none"}}  onClick={()=>this.setAddPos(index,+1)} >
                                                         <span className="pl-3">
-                                                            <img alt="Alt" src="https://img.icons8.com/ios/24/000000/plus-math.png"/>
+                                                            <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
                                                             Add skill below
                                                         </span>  
                                                     </button>
@@ -308,7 +308,7 @@ class Skillset extends Component {
             <React.Fragment>
                 <div className="row  mt-n2 justify-content-start">
                     <div className="col offset-n2">
-                        <button className="btn"  onClick={this.changeInner}><img src="https://img.icons8.com/ios/50/000000/undo.png"   style={{width:"22px"}}  alt="REAL"   className="img-fluid"/> </button><span className="ml-n2">Back</span>
+                        <button className="btn"  onClick={this.changeInner}><img src="http://localhost:3000/icons/undo.png"   style={{width:"22px"}}  alt="REAL"   className="img-fluid"/> </button><span className="ml-n2">Back</span>
                     </div>
                 </div>
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import '../../public/autocomplete.css'
+import '../css/autocomplete.css'
 class Node{
     constructor(value,index=-1){
         this.index=index
@@ -153,6 +153,7 @@ class Autocomplete extends Component {
     selectOption(e){
         const {active_index,filtered_list,active}=this.state;
         let ai;
+        let string=filtered_list[active_index]!==undefined?filtered_list[active_index].string:""
         if(e.keyCode===13 && active===true){
             this.setState({
                 active_index:0,

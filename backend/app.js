@@ -1,4 +1,5 @@
 const express=require("express");
+const Container = require("./Schemas/containerSchema");
       app=express();
       bodyParser=require("body-parser");
       fetch=require("node-fetch");
@@ -13,18 +14,22 @@ const express=require("express");
       Tool = require("./Schemas/toolSchema");           //Tool model and functions associated with it
       session=require("express-session")
 
-app.use(cors());
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000"]}));
+app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json());
-app.use(express.static(__dirname+'public'));
+app.use(bodyParser.json({limit: '50mb'}));                  //limit enables to parse requests of size less than or equal to 50mb...Anything bigger the request will not be processed
+app.use(express.static(path.join(__dirname,'/public')));
+
 mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
 
 app.use(session({
       resave:true,
-      secret:"There is a third world",
+      secret:"Failures are the stepping stones of success",
       saveUninitialized:true,
+      name:"UrCvcookie",
       cookie : {
             maxAge: 1000* 60 * 60 *24 * 365,
+            secure:false,
         }
 
 }))
@@ -36,18 +41,7 @@ let disableCache=(req,res,next)=>{
   }
 app.use(disableCache)
 
-let allowCredentials=(req,res,next)=>{
-      // let headers=["localhost:9000","localhost:3000"]
-      // if(headers.indexOf(req.headers.origin)>-1)
-      // {
-      //       res.setHeader('Access-Control-Allow-Origin',req.headers.origin );
-      // }
-      res.set("Access-Control-Allow-Credentials",true);
-      // console.log(req.headers.origin)
-      // res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
-      next();
-}
-app.use(allowCredentials)
+
 
 //Middleware to save the previous request ----FINAL
 const savePrev=(req,res,next)=>{
@@ -61,12 +55,10 @@ let loggedinUserDetails=(req,res,next)=>{
       let loggedin=0;
       let username="";
       if(req.session.loggedin==true){
-          console.log("Logged in and done");
           loggedin=1;
           username=req.session.username;
-          console.log(username);
       }
-      res.locals={username:username,loggedin:loggedin};
+      res.locals={user:username,loggedin:loggedin};
 
       next();
   }
@@ -87,6 +79,7 @@ let isLoggedin=(req,res,next)=>{
 
 //Check if the user is not already logged in
 let notLoggedin=(req,res,next)=>{
+      // console.log(req.session)
       if(req.session.loggedin==undefined || req.session.loggedin==null)
           next();
       else
@@ -94,15 +87,30 @@ let notLoggedin=(req,res,next)=>{
   
 }
 
+//Append user data to the response
+let userData=async(req,res,next)=>{  
+      let user={};
+      if(req.session.loggedin===true)
+            user=await User.findOne({username:req.session.username})
+      res.locals={user,...res.locals}
+      next()
+}
 
-app.get('/',savePrev,isLoggedin,(req,res)=>{
-      console.log(req.session,"In root")
-      res.status(200).json({log_data:"logged in",...res.locals})
+app.get('/',savePrev,async (req,res)=>{
+      let templates={},user={},data;
+      if(req.session.loggedin===true){ 
+            data=await Promise.all([await User.findOne({username:req.session.username},{name:1,username:1,websites:1,gitURL:1}),await Template.find({})])
+            user=data[0];
+            templates=data[1];
+      }
+      else
+            templates=await Template.find({},{id:1,name:1})
+      res.status(200).json({...res.locals,user,templates:templates})
 })
-
 
 //Login post method --- Input sanitization required
 app.post('/user/login',notLoggedin,async(req,res)=>{
+      // console.log(req.body,"The request",req.session)
       let username=req.body.username;
       let user=await User.findOne({username:username})
       if(user===null){
@@ -115,7 +123,9 @@ app.post('/user/login',notLoggedin,async(req,res)=>{
       req.session.loggedin=true
       req.session.username=username
       req.session.save()
-      res.status(200).json({log_data:"Logged in Successfully",username,loggedin:true})
+      // console.log(req.session)
+      res.set("Content-Type","application/json")
+      res.status(200).json({user,loggedin:true})
 
 })
 
@@ -124,9 +134,8 @@ app.post('/user/login',notLoggedin,async(req,res)=>{
 app.post('/user/signup',notLoggedin,async(req,res)=>{
       let name=req.body.name;
       let username=req.body.username;
-      let uname=await User.findOne({username:username})
-      console.log(uname)
-      if(uname!==null){
+      let user=await User.findOne({username:username})
+      if(user!==null){
             res.status(409).json({log_data:"Username already exists"})
             return
       }
@@ -148,12 +157,12 @@ app.post('/user/signup',notLoggedin,async(req,res)=>{
       })
       }
       catch(err){
-            res.send(404).json({log_data:"Server error"})
+            res.status(404).json({log_data:"Server error"})
       }
       req.session.loggedin=true
       req.session.username=username
       req.session.save()
-      res.status(202).json({log_data:"Account Created Successfully",username,loggedin:true})
+      res.status(202).json({user,loggedin:true})
 })
 
 
@@ -163,45 +172,155 @@ app.post('/user/logout',isLoggedin,(req,res)=>{
       res.status(200).json({log_data:"Logged out"})
 })
 
+//Match a user's profile and send websites of the user
+app.get('/user/profile/:username',isLoggedin,async(req,res)=>{
 
-app.post('/website/create',async(req,res)=>{
-      let id=req.body.template_id;
+      if(req.params.username!==req.session.username)
+            res.status(406).json({log_data:"Username mismatch"})
+
+      let user=await User.findOne({username:req.params.username})
+      if(user===null)
+            res.status(404).json({log_data:"User not found"})
+
+      user=await User.populateSites(req.params.username)
+      res.status(200).json({user})
+})
+
+
+//Create a website according to the template
+app.post('/website/create',isLoggedin,async(req,res)=>{
+      let id=req.body.id;  
       let template=req.body.template;
+      if(req.session.username!==req.body.username)
+            res.status(401).json({log_data:"Unauthorized access"})
       let website_id=await Website.makeSite(id,template)
-      let user=await User.findOneAndUpdate({username:req.session.username},{$set:{wesbite:`${website_id}`}},{new: true, upsert: true, setDefaultsOnInsert: true})
-      res.json(user)
+      let user=await User.findOneAndUpdate({username:req.session.username},{$push:{websites:`${website_id}`}},{returnOriginal: false, upsert: true, setDefaultsOnInsert: true,useFindAndModify: false})
+      res.status(200).json({user:user,website_id:website_id})
 
+})
+ 
+app.get('/website/:id',isLoggedin,async(req,res)=>{
+      let id=req.params.id;  
+      let sites=await User.findOne({username:req.session.username},{websites:1})
+      sites=sites.websites
+      if(sites.indexOf(id)===-1)
+            res.status(401).json({log_data:"Unauthorized access"})
+      let site=await Website.retrieve(id);
+      res.status(200).json({website:site})
+
+})
+
+app.get('/website/info/:id',isLoggedin,async(req,res)=>{
+      let id=req.params.id;  
+      let site=await Website.findById(id)
+      res.status(200).json({website:site})
+
+})
+
+//To delete a container from a website
+app.delete('/website/container/delete',isLoggedin,async(req,res)=>{
+
+      let {id,site,isFull}=req.body
+      if(id===undefined || id===null)
+            res.status(404).json({log_data:"Not found"})
+      if(isFull===true){
+            try{
+                  let res=await Website.deleteContainer(id,site)
+                  await Website.updateModifiedDate(site)
+                  res.status(200).json({log_data:"Deleted"})
+                  return
+            }
+            catch(e){
+                  res.status(200).json({log_data:"Failed"})
+                  return
+            }
+      }
+      let val=await Container.deleteContainer(req.body.id)
+      await Website.updateModifiedDate(site)
+      res.status(200).json({log_data:"Deleted"})
+
+})
+
+
+//To modify a container of a website
+app.put('/website/container/modify',isLoggedin,async(req,res)=>{
+      let {id,component,site}=req.body
+      if(id===undefined || id===null)
+            res.status(404).json({log_data:"Not found"})
+      let cont=await Container.modifyContainer(id,component)
+      await Website.updateModifiedDate(site)
+      res.status(200).json({log_data:"Modified"})
+
+})
+
+
+//To add a container to a website
+app.post('/website/container/insert',isLoggedin,async(req,res)=>{
+      let {p_id,component,position,isFull,site}=req.body
+      if(p_id===undefined || p_id===null)
+            res.status(404).json({log_data:"Not found"})
+      if(isFull===true){
+            try{
+            let newContainer=await Website.insertContainer(component,position,site)
+            await Website.updateModifiedDate(site)
+            res.status(200).json({log_data:"Inserted", id:newContainer})
+            }
+            catch(e){
+                  res.status(200).json({log_data:"Failed"})
+            }
+            return
+      }
+      else{
+      let cont=await Container.insertContainer(p_id,component,position)
+      await Website.updateModifiedDate(site)
+      res.status(200).json({log_data:"Inserted", id:cont})
+      }
+})
+
+
+//Retrieve a container (Populate the contianer)
+app.get('/website/container/retrieve/:id',isLoggedin,async(req,res)=>{
+      let id=req.params.id
+      try{
+            let container=await Container.retrieve(id)
+            res.status(200).json({container})
+      }
+      catch(e){
+            res.status(400).json({log_data:"Not found"})
+      }
+      
+})
+
+//Move a container given its parent's id and its index and by number of position it should move
+app.put('/website/container/move',isLoggedin,async(req,res)=>{
+      let {id,index,pos,isFull,site}=req.body
+      if(id===undefined || id===null)
+            res.status(404).json({log_data:"Not found"})
+      if(isFull===true){
+            try{
+                  let res=await Website.moveContainer(id,index,pos,site)
+                  await Website.updateModifiedDate(site)
+                  res.status(200).json({log_data:"Deleted"})
+                  return
+            }
+            catch(e){
+                  res.status(200).json({log_data:"Failed"})
+                  return
+            }
+      }
+      else{
+      let cont=await Container.moveContainer(id,index,pos)
+      await Website.updateModifiedDate(site)
+      res.status(200).json({log_data:"Moved"})
+      }
 })
 
 app.get('/user',async(req,res)=>{
       let user=await User.findById(req.query.id)
-      res.json(user)
+      res.json(user) 
 
 })
 
-
-
-app.get('/infinite/:id',(req,res)=>{
-      let sliced=parseInt(req.params.id);
-
-      console.log(req.session,"THE UPD");
-      let arr=[
-            {
-                  img:"data:image/jpeg;base64,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",
-                  Sub:"1st"
-            },
-            {
-                  img:"data:image/jpeg;base64,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",
-                  Sub:"2nd"
-            },
-            {
-                  img:"data:image/jpeg;base64,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",
-                  Sub:"3rd",
-
-            }
-      ]
-      res.json(arr);
-})
 app.post('/update/:id',(req,res)=>{
       // console.log(req.params.id,req.body.Containers[0].Inner[0].Title,"Insied");
       Website.findByIdAndUpdate(req.params.id,req.body,{new: true, upsert: true, setDefaultsOnInsert: true},(err,res)=>{
@@ -215,6 +334,70 @@ app.post('/update/:id',(req,res)=>{
       res.send("Saved");
 })
 
+
+app.get('/template/html/:file',(req,res)=>{
+
+      if(fs.existsSync(path.join(__dirname,'/public/htmlTemplates',req.params.file))){
+            let file=fs.readFileSync(path.join(__dirname,'/public/htmlTemplates',req.params.file)).toString()
+            res.status(200).json({html:file})
+      }
+      else{
+            res.status(404).json({log_data:"File not found"})
+      }
+
+
+
+})
+
+//Get the template with its id
+app.get('/template/:id',async(req,res)=>{
+      try{
+            let id=req.params.id
+            res.json(await Template.retrieve(`${id}`))
+      }
+      catch(e){
+            res.send("SOrry OOps")                 
+            //Error page to be added...................Coldn't find the page you are looking for
+
+      }
+})
+
+//Get the access token for github authentication
+app.get('/publish/code',isLoggedin,async(req,res)=>{
+    console.log(req.headers)  
+    return  res.redirect('https://github.com/login/oauth/authorize?client_id=ed386413882419f33d05&scope=public_repo%20user%20delete_repo')
+})
+
+app.get('/publish/access_token',isLoggedin,async(req,res)=>{
+      let {code}=req.query
+      req.session.oauth_code=code
+      try{
+      let resp=await fetch('https://github.com/login/oauth/access_token',{
+            method:"post",
+            headers:{'Accept-Type':'application/json'},
+            body:JSON.stringify({
+                  code:code,
+                  client_id:'ed386413882419f33d05',
+                  client_secret:'02cebfa889b903c377871f53f29687acad8bcc5e'
+                  // redirect_uri:'https://localhost:9000/publish/site'
+            })
+      })
+      resp=await resp.json()
+      console.log(resp)
+      res.json({log:"success"})
+      }
+      catch(e){
+            res.json({log:"Invalid request"})
+      }
+})
+
+
+// app.get('/publish/site',async(req,res)=>{
+//       res.json({log:"Success"})
+// })
+
+// app.delete('/')
+
 // app.get('/deploy/:id',(req,res)=>{
 //       Website.findById("5f1960e6ae19995738827339",(err,result)=>{
 //             let website=[result]
@@ -226,21 +409,6 @@ app.post('/update/:id',(req,res)=>{
 //       })
       
 // })
-
-
-//Get the template with its id
-app.get('/template/:id',async(req,res)=>{
-      try{
-            let test="5f215e4eca32cc5faca29122"
-            res.json(await Template.retrieve(`${test}`))
-      }
-      catch(e){
-            res.send("SOrry OOps")                 
-            //Error page to be added...................Coldn't find the page you are looking for
-
-      }
-})
-
 
 // app.get('/website',async(req,res)=>{
 //       let template=await Template.findById("5f215e4eca32cc5faca29122")
@@ -259,6 +427,61 @@ app.get('/tools',async(req,res)=>{
       let skills=await Tool.find();
       res.json(JSON.parse(JSON.stringify(skills)))
 })
+
+app.get('/jsonview',async(req,res)=>{
+      // res.sendFile('/home/krishna/Documents/UrCV/backend/Schemas/editContents.json');
+      // res.redirect('/me.svg');   
+      res.json(await Template.retrieve("5f215e4eca32cc5faca29125"))
+})
+
+
+
+
+
+
+
+
+// app.get('/testings/:id',(req,res)=>{
+
+//       res.send("Testings"+req.params.id)
+// })
+
+// app.get('/testings',(req,res)=>{
+
+//       res.send("Testings me")
+// })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // app.get('/gitauth',(req,res)=>{
@@ -320,10 +543,12 @@ app.get('/tools',async(req,res)=>{
      
 // })
 
-app.listen(process.env.PORT||9000,(err)=>{    // ---FINAL
+let server=app.listen(process.env.PORT||9000,(err)=>{    // ---FINAL
       if(err)
             throw err;
       else
             console.log("Connected!");
+     
 
 })
+
