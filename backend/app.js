@@ -315,11 +315,14 @@ app.put('/website/container/move',isLoggedin,async(req,res)=>{
       }
 })
 
+
+//Get a user info
 app.get('/user',async(req,res)=>{
       let user=await User.findById(req.query.id)
       res.json(user) 
 
 })
+
 
 app.post('/update/:id',(req,res)=>{
       // console.log(req.params.id,req.body.Containers[0].Inner[0].Title,"Insied");
@@ -334,7 +337,7 @@ app.post('/update/:id',(req,res)=>{
       res.send("Saved");
 })
 
-
+//Get the html file of a template with id->file
 app.get('/template/html/:file',(req,res)=>{
 
       if(fs.existsSync(path.join(__dirname,'/public/htmlTemplates',req.params.file))){
