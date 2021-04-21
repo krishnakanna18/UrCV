@@ -8,7 +8,7 @@ import P from '../TagComponents/P'
 import Span from '../TagComponents/Span'
 import Link from '../TagComponents/Link'
 import { withRouter } from 'react-router-dom'
-
+// import * as ImgToBase64 from 'img-to-base64';
 
 //Convert the css style object to react style object
 // Perf.start()
@@ -28,6 +28,8 @@ let styleParser=(styles)=>{
      })
     return temp
  }
+
+
 
 
 class Template extends Component {
@@ -50,10 +52,13 @@ class Template extends Component {
             undo_top:"",
             redo_top:""
             },
-        siteId:""
+        siteId:"",
+        templateModelId:"",
+        name:""
         
-        }
-        this.elementRef = React.createRef()
+        },
+        this.elementRef = React.createRef(),
+        this.jsonToHtml=this.jsonToHtml.bind(this)
     }
 
     // shouldComponentUpdate=(props,state)=>{
@@ -67,16 +72,108 @@ class Template extends Component {
     
     // }
 
+
+
+    jsonToHtml=(component)=>{
+
+        if(component.styles)
+            component.styles=styleParser(component.styles)
+        if(component.classlist!==undefined)
+        component.classlist=`${component.classlist.join(' ')}`
+        if(component.tag==="div")
+            return(<div style={component.styles} className={component.classlist}>
+                        {component.children!==null && component.children!==undefined?
+                            component.children.map(child=>this.jsonToHtml(child))
+                        :""}
+                    </div>)
+        if(component.tag==="p")
+            return(<p style={component.styles} className={component.classlist}>
+                  {component.contents.text}
+                {component.children!==null && component.children!==undefined?
+                    component.children.map(child=>this.jsonToHtml(child))
+                :""}
+            </p>)
+        if(component.tag==="span")
+            return(<span style={component.styles} className={component.classlist}>
+                {component.contents.text}
+            </span>)
+        if(component.tag==="img" || component.tag==="image")
+          return(<img style={component.styles} className={component.classlist} src={component.contents.src}>
+          </img>)
+        
+    
+    }
+
+
     removePublishBtn=()=>{
 
         if(this.props.loggedin===0 || this.props.loggedin===false){  //Go to home if the user has logged out
             let btn=document.getElementById("publishBtn")
+            let btn2=document.getElementById("downloadBtn")
+
             if(btn)
                 btn.remove()
+
+            if(btn2!==null)
+                btn2.remove()
             this.props.history.push({
                 pathname:'/'
             })
         }
+    }
+
+    getBase64Image=(imgUrl, callback)=> {
+
+        var img = new Image();
+    
+        // onload fires when the image is fully loadded, and has width and height
+    
+        img.onload = function(){
+    
+          var canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          var dataURL=canvas.toDataURL()
+        //   var dataURL = canvas.toDataURL("image/"),
+            //   dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    
+          callback(dataURL); // the base64 string
+    
+        };
+    
+        // set attributes and src 
+        img.setAttribute('crossOrigin', 'anonymous'); //
+        img.src = imgUrl;
+    }
+
+    //Download the website as PDF
+    downloadPdf=()=>{
+        let source=document.getElementById('site')
+        let pdf = new jsPDF();
+        let images=source.getElementsByTagName('img')
+        for(let node of images){
+            if(node.getAttribute('src').match(/^http/g)){
+                console.log("Match")
+                this.getBase64Image(node.getAttribute('src'),(base64)=>{
+                    // let data='data:image/png;base64,'+base64
+                    let data=base64
+                    // pdf.addImage(data, 'PNG', 40,50);
+
+                    // console.log(data)
+                    node.setAttribute('src',data)
+                })
+            
+                // node.src = path.resolve(node.getAttribute('src'));
+                // pdf.addImage(node, 'JPEG', 1, 2);
+            }
+            
+        }
+        let name=this.state.name
+        pdf.addHTML(source,function() {
+            pdf.save(name+'.pdf');
+        });
     }
 
     async componentDidMount(){
@@ -99,8 +196,15 @@ class Template extends Component {
             credentials:"include"
         })
         template=await template.json()
+
+        let templateModelId
+        if(template!==undefined || template!==null)
+            templateModelId=template.website.template_id
+        else
+            templateModelId=""
+
         let skillTemplate
-        this.setState({template:template.website,fetched:1,user:user,siteId:tempId},function(){
+        this.setState({template:template.website,fetched:1,user:user,siteId:tempId,templateModelId,name:template.website.name},function(){
             try{
              skillTemplate=this.search(undefined,"skills");
              for(let i=0; i<skillTemplate.children.length; i++)
@@ -125,9 +229,14 @@ class Template extends Component {
         })
 
         try{
+
+
+
             let nav= document.getElementById("navBarSite")
             let btn=document.getElementById("publishBtn")
-            if(btn)
+            let btn2=document.getElementById("downloadBtn")
+
+            if(btn || btn2)
                 return
             btn=document.createElement("button")
             btn.classList.add("btn","nav-item")
@@ -135,12 +244,29 @@ class Template extends Component {
             btn.style.color="white"
             btn.style.borderRadius="var(--wsr-button-border-radius, 18px)"
             btn.style.width="6%"
-            btn.innerText="Publish"
             btn.style.fontFamily="HelveticaNeueW01-55Roma,HelveticaNeueW02-55Roma,HelveticaNeueW10-55Roma,sans-serif"
+
+            btn2=btn.cloneNode(true);
+
+
+            btn.innerText="Publish"
+            btn2.innerText="Download"
+            btn2.setAttribute('data-toggle','tooltip')
+            btn2.setAttribute('title','Download as PDF')
+
+            
             btn.setAttribute("id","publishBtn")
+            btn2.setAttribute("id","downloadBtn")
+            btn2.style.marginRight="2%"
             btn.onclick=async()=>{
                 await this.getAccessTokenGit()
                 }
+
+            btn2.onclick=async()=>{
+               this.downloadPdf()
+            }
+
+            nav.appendChild(btn2)
             nav.appendChild(btn)
             window.addEventListener('beforeunload', this.removePublishBtn);
         }
@@ -168,8 +294,15 @@ class Template extends Component {
 
     componentWillUnmount=()=>{
         let btn=document.getElementById("publishBtn")
-        if(btn)
+        let btn2=document.getElementById("downloadBtn")
+
+        
+        if(btn!=null)
             btn.remove()
+
+        if(btn2!=null)
+            btn2.remove()
+
        window.removeEventListener('beforeunload', this.removePublishBtn);
         
     }
@@ -394,7 +527,7 @@ class Template extends Component {
     insert=(p_id=-1,element,position=-1,stackCall=-1)=>{       //position  -- position to insert in the parent's children array
                                                                //StackCall -- if -1 adds operation to change stack 
                                                                //          -- else(called from undo,redo operations) don't add operation
-        // console.log("parent",p_id)
+        console.log("parent",p_id)
 
         let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
         let old_value=[],dbid={p_id:""}
@@ -437,7 +570,7 @@ class Template extends Component {
                             args:[p_id,element,position]
                             
                         },
-                        index:`${i}`
+                        index:`${p_id}`
                     }
                     undo_stack.push(change_obj)
                 }
@@ -888,6 +1021,8 @@ class Template extends Component {
                     insert={this.insert}
                     models={this.state.models}
                     modify={this.modify}
+                    templateModelId={this.state.templateModelId}
+                    jsonToHtml={this.jsonToHtml}
             >
 
             </Editor>
@@ -955,3 +1090,30 @@ class Template extends Component {
 
  
 export default withRouter(Template);
+
+
+
+// var source=document.getElementById('root')
+// var pdf = new jsPDF('p','pt','a4');
+
+// //    pdf.addHTML(document.body,function() {
+// //     var string = pdf.output('datauristring');
+// //     // $('.preview-pane').attr('src', string);
+// //     var c=document.getElementsByClassName('preview-pane')
+// //     console.log(c)
+// //     c[0].setAttribute("src",string)
+// //     });
+// margins = {
+//     width: 1000
+// };
+// pdf.fromHTML(
+// source,
+// margins.left,
+// margins.top, {
+//     'width': margins.width, // max width of content on PDF
+// },
+// function (dispose) {
+//     // dispose: object with X, Y of the last line add to the PDF 
+//     //          this allow the insertion of new lines after html
+//     pdf.save('Test.pdf');
+// }, margins);

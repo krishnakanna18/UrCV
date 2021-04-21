@@ -15,6 +15,7 @@ import {
     Switch
   } from "react-router-dom";
 import { Redirect } from "react-router-dom";
+import addContainer from '../Editors/addingContainer';
  
 // class Git extends Component{
 //     constructor(){
@@ -182,6 +183,7 @@ class Navbar extends Component {
                         <Route exact path="/user/profile" component={()=><Profile loggedin={this.state.loggedin}></Profile>}></Route>
                         <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin} updateUser={this.updateUser} loginUser={this.loginUser}></Templates>}></Route>
                         <Route exact path='/template/edit' component={()=><TemplateEditor loggedin={this.state.loggedin}></TemplateEditor>}></Route>
+                        <Route exact path='/insert/container' component={addContainer}></Route>
                         {/* <Route exact path='/site/preview' component={()=>}></Route> */}
                     </Switch>
                 </Router>

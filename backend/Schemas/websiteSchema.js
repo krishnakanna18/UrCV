@@ -33,6 +33,7 @@ let makeContainer=async(container)=>{
 let makeSite=async(id,template=undefined)=>{
     
     let Site=new Website();
+    Site.template_id=id
     if(template===undefined)
         template=await Template.retrieve(id);
     // Site.template_id=template.id

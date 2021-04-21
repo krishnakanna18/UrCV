@@ -33,11 +33,19 @@ let getContainerIds=async(id)=>{
 
     }))
     return cids
-    
-    
+}
 
+
+let getContainers=async(id)=>{
+    let template=await Template.findById(id)
+    let containers=[]
+    containers=await Promise.all(template.containers.map(async(container)=>{
+       return await Container.retrieve(container._id)
+    }))
+    return containers
 }
 
 Template.retrieve=retrieve
 Template.getContainerIds=getContainerIds
+Template.getContainers=getContainers
 module.exports=Template

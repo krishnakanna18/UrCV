@@ -26,8 +26,17 @@ class ImgEditor extends Component {
 
     }
 
+
+    openImageEditor=()=>{
+        let constructor_options ={apikey: '3agdg7w3puw0'};
+        let editor = new Pixo.Bridge(constructor_options);
+        let image=document.getElementById(`${this.props.index}:imageEditor`)
+        editor.edit(image);
+    }
+
     render() { 
         let {img,index}=this.props
+
         // console.log(img)
         return  <div  className="mt-2 mb-2 imgEditorOverlay" style={{}}
         >           
@@ -37,7 +46,7 @@ class ImgEditor extends Component {
                         />
                         <div style={{ width: "2px",background:  "white"}}>
                         </div>
-                        <label className="imgEdtOpt col">
+                        <label className="imgEdtOpt col" onClick={this.openImageEditor}>
                             Edit
                         </label>
                     </div>
@@ -45,7 +54,7 @@ class ImgEditor extends Component {
                    
                     
                     <div className="mt-1 mb-1 imgEditor d-flex justify-content-center align-items-center">
-                        <img className="img-fluid imgEdt" src={`${img.contents.src}`}  
+                        <img className="img-fluid imgEdt" src={`${img.contents.src}`} id={`${index}:imageEditor`} 
                         >
                         </img>
                     </div>

@@ -365,6 +365,20 @@ app.get('/template/:id',async(req,res)=>{
       }
 })
 
+
+//Get the retrieved containers from a template with id
+app.get('/template/containers/:id',isLoggedin,async(req,res)=>{
+      try{  
+            let id=req.params.id
+            let containers=await Template.getContainers(id)
+            res.status(200).json({containers:containers})
+
+      }
+      catch(e){
+            res.status(404).json({log_data:"Not found"})
+      }
+})
+
 //Get the access token for github authentication
 app.get('/publish/code',isLoggedin,async(req,res)=>{
     console.log(req.headers)  

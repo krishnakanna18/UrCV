@@ -134,12 +134,10 @@ let moveContainer=async(id,index,pos)=>{
     }
     else{
         let template=await Container.findById(id)
-        console.log(template.children[index],template.children[index+pos])
         let temp=template.children[index]
         template.children[index]=template.children[index+pos]
         template.children[index+pos]=temp
         let res=await Container.findByIdAndUpdate(id,{'$set':{children:template.children}},{new:true, useFindAndModify:false})
-        console.log("Updated:",res.children[index],res.children[index+pos])
         return template
     }
 }

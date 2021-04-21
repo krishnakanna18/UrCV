@@ -112,23 +112,35 @@ class Container extends Component {
             // console.log(index)
             return( 
                 <React.Fragment>
-                    {/* <div className="mt-2 row">
-                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.removeElement(`${index}`)}>
-                            <span className="pl-3">
-                                <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/multiply.png"/>
-                                    Remove 
-                            </span> 
-                    </button>
-                    </div> */}
+
+                    <div className="parentContainer">
+
+                    </div>
+
                     <div className="mt-4 d-flex flex-column">
                         {components.map((component,id)=>{
                             return(
                             <div key={`${id}`} className="mt-2 mb-2 pt-2 pb-2 d-flex flex-row justify-content-between align-contents-center" style={{backgroundColor:"#F5F5F5"}}
-                                 onMouseEnter={()=>{let a=1;}}
+                                 onMouseEnter={()=>{
+                                     let ele=document.getElementById(index+`:${id}`)
+                                     ele.setAttribute("data-pre-color",ele.style.backgroundColor)
+                                     if(ele)
+                                        ele.style.backgroundColor="#D6F1F1"
+                                    }}
+                                 onMouseLeave={()=>{
+
+                                    let ele=document.getElementById(index+`:${id}`)
+                                    if(ele)
+                                       ele.style.backgroundColor=ele.getAttribute("data-pre-color")
+
+                                 }}
                             >
                                 <div className="col" 
                                      
-                                     onClick={()=>{this.enableInner(id)}}
+                                     onClick={()=>{this.enableInner(id); 
+                                        let ele=document.getElementById(index+`:${id}`)
+                                        if(ele)
+                                           ele.style.backgroundColor=ele.getAttribute("data-pre-color")}}
                                  >
                                     {`Container ${id}`} 
                                 </div>
@@ -139,14 +151,6 @@ class Container extends Component {
                                             <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/more.png"/>
                                         </button>
                                         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-
-                                            {/* Add a section above ----  To be added in later versions*/} 
-                                            {/* <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.setAddPos(index,-1)}>
-                                                <span className="pl-3">
-                                                    <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
-                                                    Add skill Above
-                                                </span>
-                                            </button> */}
 
                                             {/* Remove the component */}
                                             <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.removeElement(`${index}:${id}`)}>

@@ -459,7 +459,7 @@ class TextEditor extends Component {
 
         let isSameEditor=(parentEditor.previousSibling===tarAtt.parentNode)
         
-        if(isSameEditor || isColor){
+        if(isSameEditor){
 
             let ancIndex=[...parentEditor.children[0].children].indexOf(ancParent),
                 focIndex=[...parentEditor.children[0].children].indexOf(focParent)
@@ -645,7 +645,26 @@ class TextEditor extends Component {
                                 </div>
                             </div>
                         </div>
-                        {/* <div className="lineBreak" ></div> */}
+                        <div className="lineBreak" ></div>
+
+                        <div className="dropdown">
+                            <button className="btn dropdown-toggle styleAtb" type="button" id="dropdownMenuButtonBg" data-toggle="dropdown" aria-haspopup="true" data-display="static">
+                                <img alt="Alt" data-toggle="tooltip" data-placement="top" style={{width:"22px"}}
+                                      title="Background Color" className="img-responsive styleImg" src="http://localhost:3000/icons/bgColor.png">
+                                </img>
+                            </button>
+                            <div className="dropdown-menu dropdown-menu-right colorParent" aria-labelledby="dropdownMenuButtonBg"                            >
+                                <div className="d-flex flex-row  flex-wrap" style={{backgroundColor:"white"}} >
+                                    {
+                                        color.map((c,id)=>{
+                                            return <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); console.log("Im clicked");this.styleEvent(e,"background-color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
+                                            data-toggle="tooltip" data-placement="top" title={c}>
+                                                   </a>
+                                        })
+                                    }
+                                </div>
+                            </div>
+                        </div>
                     </div>                  
 
                     {/*Contains the text being edited*/} 

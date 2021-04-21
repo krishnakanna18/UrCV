@@ -2,11 +2,23 @@ import React, { Component } from 'react';
 import SkillsEditor from './SkillsEditor'
 import MenuEditor from './MenuEditor'
 import ContainerEditor from './ContainerEditor'
+import ProjectEditor from './ProjectEditor'
 import '../css/Editor.css'
+import '../css/modal.css'
+import { withRouter } from 'react-router-dom'
+import ReactDOM from 'react-dom';
+import Modal from './ModalEditor';
+
 class Editor extends Component {
     constructor(){
         super()
-        this.state={owner:""}
+        this.state={owner:"",
+        insertModal:false,
+        pos:0
+        },
+        this.disableOverlay=this.disableOverlay.bind(this),
+        this.insertContainer=this.insertContainer.bind(this)
+
     }
 
 
@@ -61,6 +73,22 @@ class Editor extends Component {
                         </MenuEditor>
                     )
         }
+        else if(this.props.type==="project"){
+
+                return (
+                    <ProjectEditor  key={`${this.props.index}`}
+                                    component={this.props.component} 
+                                    index={this.props.index} 
+                                    removeElement={this.props.delete}
+                                    moveElement={this.props.move}
+                                    modifyElement={this.props.modify}
+                                    addElement={this.props.insert}
+                    >
+
+                    </ProjectEditor>
+                )
+
+        }
 
     }
 
@@ -73,23 +101,54 @@ class Editor extends Component {
         this.props.move(index,pos)
     }
 
+    addContainer(pos){
+        this.setState({insertModal:true,pos})
+    }
 
+    insertContainer(component){
+        let index=String(parseInt(this.props.index)+this.state.pos)
+        this.props.insert(-1,component,index)
+
+
+    }
+    // enableOverlay(){
+    //     this.setState({insertModal:true})
+    // }
+
+    disableOverlay(){
+        this.setState({insertModal:false})
+    }
+
+
+
+    modalRender(){
+        ReactDOM.render(
+            <Modal  index={this.props.index}
+                    templateId={this.props.templateModelId}
+                    key={this.props.index}
+                    closeModalParent={this.disableOverlay}
+                    jsonToHtml={this.props.jsonToHtml}
+                    insertContainer={this.insertContainer}
+                    >
+            </Modal>,
+            document.getElementById('modalRoot')
+          );
+    }
 
     render() { 
         let {index}=this.props
         let owner=this.setOwner()
         return ( 
-            <React.Fragment>
+            <React.Fragment key={index}>
+                {this.state.insertModal===true?
+                    this.modalRender()
+                :""}
                 <div className="d-flex flex-column  header" >
                     <div className="mt-5  row justify-content-between" style={{}}>
                         <div className="offset-1 monospace font-weight-bold">
                             {owner}
                         </div>
-                        <div className="font-weight-bold">
-                            <button type="button" className="close" aria-label="Close"  onClick={()=>this.props.disableEditor()} style={{marginLeft:""}}>
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
+ 
                         <div className="d-flex col justify-content-end" >
                             <div className="dropdown">
                                 <button className="btn " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -104,17 +163,21 @@ class Editor extends Component {
                                                     Remove 
                                             </span> 
                                     </button>
-                                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}} >
+                                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}
+                                    onClick={()=>{this.addContainer(0)}}
+                                     >
                                         <span className="pl-3">
                                             <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
-                                            Add skill Above
+                                            Add a container Above
                                         </span>
                                     </button>
 
-                                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}>
+                                    <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}
+                                    onClick={()=>{this.addContainer(1)}}
+                                    >
                                         <span className="pl-3">
                                             <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
-                                            Add skill Below
+                                            Add a container Below
                                         </span>
                                     </button>
 
@@ -135,6 +198,11 @@ class Editor extends Component {
                                 </div>
                             </div>
                         </div>
+                        <div className="font-weight-bold"  style={{marginLeft:"", marginTop:"3%"}}>
+                            <button type="button" className="close" aria-label="Close"  onClick={()=>this.props.disableEditor()}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div className="mt-5 pt-2">
@@ -145,4 +213,4 @@ class Editor extends Component {
     }
 }
  
-export default Editor;
+export default withRouter(Editor);
