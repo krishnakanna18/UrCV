@@ -5,6 +5,7 @@
     border-bottom: none;
     cursor: pointer;
     color: inherit;
+    width: 10%;
     
     /* box-shadow:
     0 2.8px 2.2px rgba(0, 0, 0, 0.034),
@@ -35,6 +36,12 @@
 
 
 }
+.intro{
+    font-family: Madefor Display,Helvetica Neue,Helvetica,Arial,メイリオ,meiryo,ヒラギノ角ゴ pro w3,hiragino kaku gothic pro,sans-serif;
+    border-bottom: 1px solid grey;
+    color: black;
+    
+}
 
 .itemTemplate{
     overflow-y: auto;
@@ -60,12 +67,16 @@
 
 .itemTemplateDesc{
     color:#45b29a;
-    background-color: white;
+    /* background-color: white; */
     /* height: fit-content; */
     font-size: 1.3rem;
 }
 
-.itemContainer{
+.header{
 
     margin: 0 auto;
+    margin-top: 4%;
+    font-weight: 700;
+    font-size: 30px;
+    margin-left: 6%;
 }

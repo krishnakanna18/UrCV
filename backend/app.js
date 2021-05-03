@@ -1,3 +1,4 @@
+const { response } = require("express");
 const express=require("express");
 const Container = require("./Schemas/containerSchema");
       app=express();
@@ -12,12 +13,21 @@ const Container = require("./Schemas/containerSchema");
       Website=require("./Schemas/websiteSchema");       //Website model and functions associated with it
       User=require("./Schemas/userSchema")              //User model and functions associated with it
       Tool = require("./Schemas/toolSchema");           //Tool model and functions associated with it
-      session=require("express-session")
+      session=require("express-session");
+      gitAuth=require("./config")
 
-app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000"]}));
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com"]}));
+
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json({limit: '50mb'}));                  //limit enables to parse requests of size less than or equal to 50mb...Anything bigger the request will not be processed
+
+app.get(new RegExp('.svg$'),(req,res)=>{
+      // console.log(req.path.slice(0,-3))
+      res.sendFile(path.join(__dirname,'/public'+req.path.slice(0,-3)+'png'))
+})
+
+
 app.use(express.static(path.join(__dirname,'/public')));
 
 mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
@@ -33,6 +43,8 @@ app.use(session({
         }
 
 }))
+
+
 
 //Middleware to disable the cache ---FINAL
 let disableCache=(req,res,next)=>{
@@ -316,6 +328,29 @@ app.put('/website/container/move',isLoggedin,async(req,res)=>{
 })
 
 
+//Delete an entire site
+app.delete('/website/delete',isLoggedin,async(req,res)=>{
+      let { id , user}=req.body
+      if(id===undefined || id===null){
+            res.status(404).json({log_data:"Not found"})
+            return
+      }
+
+      try{
+            let resp=await Website.deleteSite(id)
+            resp=await User.deleteSite(user,id)
+            res.status(200).json({log_data:"Deleted"})
+            return
+
+      }
+      catch(e){
+            console.log(e)
+            res.status(200).json({log_data:"Failed"})
+            return
+      }
+      
+})
+
 //Get a user info
 app.get('/user',async(req,res)=>{
       let user=await User.findById(req.query.id)
@@ -380,58 +415,122 @@ app.get('/template/containers/:id',isLoggedin,async(req,res)=>{
 })
 
 //Get the access token for github authentication
-app.get('/publish/code',isLoggedin,async(req,res)=>{
-    console.log(req.headers)  
-    return  res.redirect('https://github.com/login/oauth/authorize?client_id=ed386413882419f33d05&scope=public_repo%20user%20delete_repo')
+app.get('/publish/code',async(req,res)=>{
+
+      if(req.session===undefined || req.session===null || req.session.loggedin===false )
+           return res.redirect('http://localhost:3000')
+
+      req.session.toDeploy=req.query.siteID
+    return  res.redirect('https://github.com/login/oauth/authorize?client_id='+gitAuth.client_id+'&scope=public_repo&redirect_uri=http://localhost:9000/publish/access_token/getToken')
 })
 
-app.get('/publish/access_token',isLoggedin,async(req,res)=>{
+
+app.get("/publish/access_token/getToken",async(req,res)=>{
+
       let {code}=req.query
       req.session.oauth_code=code
-      try{
-      let resp=await fetch('https://github.com/login/oauth/access_token',{
-            method:"post",
-            headers:{'Accept-Type':'application/json'},
-            body:JSON.stringify({
-                  code:code,
-                  client_id:'ed386413882419f33d05',
-                  client_secret:'02cebfa889b903c377871f53f29687acad8bcc5e'
-                  // redirect_uri:'https://localhost:9000/publish/site'
+
+      let client_id=gitAuth.client_id, client_secret=gitAuth.client_secret
+      try{  
+            //Request to get access Token for the autheticated user
+            let resp=await fetch('https://github.com/login/oauth/access_token?code='+code+'&client_id='+client_id+'&client_secret='+client_secret,{
+                  method:"post",
+                  headers:{'Accept':'application/json'},
             })
-      })
-      resp=await resp.json()
-      console.log(resp)
-      res.json({log:"success"})
+            resp=await resp.json()
+            req.session.access_token=resp.access_token
+            //Request to get the authenticated user info
+            resp=await fetch('https://api.github.com/user',{
+                  method:"get",
+                  headers:{'Authorization':'token '+resp.access_token}
+            })
+            resp=await resp.json()
+            let user= {
+                  username:resp.login,
+                  name:resp.name,
+                  giturl:resp.html_url
+            }
+            req.session.gitusername=resp.login
+            return res.redirect('/publish/access_token')
       }
       catch(e){
-            res.json({log:"Invalid request"})
+
       }
+
 })
 
+//Publish the code in users's git
+app.get('/publish/access_token',async(req,res)=>{
+      let {code}=req.query
+      req.session.oauth_code=code
+      let html,site,js,css
+      try{
+            site=await Website.retrieve(req.session.toDeploy)
 
-// app.get('/publish/site',async(req,res)=>{
-//       res.json({log:"Success"})
-// })
+            html=fs.readFileSync(path.join(__dirname,"/deploySite/index.html"))
+            js=fs.readFileSync(path.join(__dirname,"/deploySite/creator.js"))
+            css=fs.readFileSync(path.join(__dirname,"/public/css/"+site.template_id+".css"))
+            js=`let site= ${JSON.stringify(site)}; ${js}`
+            fs.writeFileSync(path.join(__dirname,'/deploySite/index.js'),js)
+      }
+      catch(e){
+            console.log(e)
+      }
+      // Request to get the repository information
+      resp=await fetch('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io',{
+            method:"get",
+            headers:{'Authorization':'token '+req.session.access_token}
+      })
 
-// app.delete('/')
+      if(resp.status!==200)
+      {           
+            console.log("Repository not found")
+            let body=JSON.stringify({name:req.session.gitusername+'.github.io'})
+            fetch('https://api.github.com/user/repos',{
+                        method:"post",
+                        headers:{'Authorization':'token '+ req.session.access_token ,
+                              'Content-Type':'application/json',
+                              'accept':"application/vnd.github.v3+json"   
+                  },
+                        body:body
+                  })
+                  .then(resp=>resp.json())
+                  .then(resp=>{
+                        
+                        Promise.all([
+                              Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.html',req.session.access_token,html,"Index HTML"),
+                              Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.js',req.session.access_token,js,"Index JS"),
+                              Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.css',req.session.access_token,css,"Index CSS")
+                        ])
+                        .then(function(){
+                              console.log("Redirecting site")
+                              return res.redirect(`https://${req.session.gitusername}.github.io`)
+                        })
+                        .catch(e=>{
+                              console.log(e)
+                        })
 
-// app.get('/deploy/:id',(req,res)=>{
-//       Website.findById("5f1960e6ae19995738827339",(err,result)=>{
-//             let website=[result]
-//             // let contents=fs.readFileSync(path.join(__dirname,'./Schemas/website.js'));
-//             let cont=`const vari=${JSON.stringify([result])}\n`;
-//             console.log(cont);
-//             fs.writeFileSync(path.join(__dirname,'/deploySites/index2.js'),cont);
+                  })
 
-//       })
-      
-// })
-
-// app.get('/website',async(req,res)=>{
-//       let template=await Template.findById("5f215e4eca32cc5faca29122")
-//       let site=await Website.makeSite()
-//       res.json({Template:template,Website:site})
-// })
+      }
+      else{
+            console.log("Repository found")
+            //Wait for all the files to be pushed to the repo before redirecting
+            Promise.all([
+                  Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.html',req.session.access_token,html,"Index HTML"),
+                  Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.js',req.session.access_token,js,"Index JS"),
+                  Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.css',req.session.access_token,css,"Index CSS")
+            ])
+            .then(function(){
+                  console.log("Redirecting site")
+                  return res.redirect(`https://${req.session.gitusername}.github.io`)
+            })
+            .catch(e=>{
+                  console.log(e)
+            })
+      }
+           
+})
 
 app.get('/website/ret',isLoggedin,async(req,res)=>{
       let site=await Website.retrieve("5f2953d47896ab6f7c0078b2");
@@ -450,115 +549,6 @@ app.get('/jsonview',async(req,res)=>{
       // res.redirect('/me.svg');   
       res.json(await Template.retrieve("5f215e4eca32cc5faca29125"))
 })
-
-
-
-
-
-
-
-
-// app.get('/testings/:id',(req,res)=>{
-
-//       res.send("Testings"+req.params.id)
-// })
-
-// app.get('/testings',(req,res)=>{
-
-//       res.send("Testings me")
-// })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// app.get('/gitauth',(req,res)=>{
-//       console.log(req.query.code,"THe code");
-//       const code=req.query.code;
-//       const client_id='ed386413882419f33d05'
-//       const client_secret='02cebfa889b903c377871f53f29687acad8bcc5e'
-//       fetch(`https://github.com/login/oauth/access_token?client_id=${client_id}&client_secret=${client_secret}&code=${code}`,{
-//             method:'post',
-//             headers:{
-//                   accept: 'application/json'
-//             }
-//       })
-//       .then(res=>{
-//             console.log(res);
-//             return res.json()})
-//       .then(resu=>{
-//             // console.log(res);
-//             // console.log(res.acess_token);
-//             const accessToken=resu.access_token;
-//             req.session.accessToken=accessToken;
-//             console.log(req.session);
-//             res.redirect('http://localhost:3000/test/Dev')
-
-//             fetch(`https://api.github.com/user`,{
-//                   headers: {
-// 				// Include the token in the Authorization header
-// 				Authorization: 'token ' + accessToken
-// 			}
-//             })
-//             .then(res=>{
-                  
-//                  return res.json()})
-//             .then(async(res)=>{
-                
-//                   const user=res.login;
-//                   const contents = fs.readFileSync(path.join(__dirname,'/deploySites/index2.html'), {encoding: 'base64'});
-//                   fetch(`https://api.github.com/repos/${user}/${user}.github.io/contents/index2.html`,{
-//                   method:"put",
-//                   body:JSON.stringify({
-//                         message:"Deploy in trial",
-//                         content:`${contents}`
-//                   }),
-//                   headers:{
-//                         Authorization: 'token ' + accessToken,
-//                         accept:"application/vnd.github.v3+json"
-//                   }
-//             }).then(res=>res.json()).then(res=>{
-//                   console.log(res);
-//             }).catch(err=>{
-//                   console.log(err);
-//             })                 
-//             })
-            
-//       }).catch(err=>{
-//             console.log(err);
-//       })
-//       // res.redirect('http://localhost:3000/test/Dev')
-     
-// })
 
 let server=app.listen(process.env.PORT||9000,(err)=>{    // ---FINAL
       if(err)

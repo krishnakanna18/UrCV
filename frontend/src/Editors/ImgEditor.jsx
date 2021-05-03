@@ -9,6 +9,34 @@ class ImgEditor extends Component {
         super(props);
     }
 
+
+
+    getBase64Image=(imgUrl, callback)=> {
+
+        var img = new Image();
+    
+        // onload fires when the image is fully loadded, and has width and height
+    
+        img.onload = function(){
+    
+          var canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          var dataURL=canvas.toDataURL()
+        //   var dataURL = canvas.toDataURL("image/"),
+            //   dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    
+          callback(dataURL); // the base64 string
+    
+        };
+    
+        // set attributes and src 
+        img.setAttribute('crossOrigin', 'anonymous'); //
+        img.src = imgUrl;
+    }
+
     //Upload the image and send to parent
     uploadImage=(e)=>{
 
@@ -28,10 +56,47 @@ class ImgEditor extends Component {
 
 
     openImageEditor=()=>{
-        let constructor_options ={apikey: '3agdg7w3puw0'};
+        let constructor_options ={apikey: '3agdg7w3puw0',onSave: (image)=>{
+            let img=JSON.parse(JSON.stringify(this.props.img))
+            let data='data:image/png;base64,'+image.toBase64()
+            img.contents.src=data;
+            document.getElementById(`${this.props.index}:imageEditor`).setAttribute('src',data)
+            let index=this.props.index
+            this.props.modifyImage(index,img); 
+
+        }};
         let editor = new Pixo.Bridge(constructor_options);
         let image=document.getElementById(`${this.props.index}:imageEditor`)
-        editor.edit(image);
+        if(image.getAttribute('src').match('http://localhost:9000/'))  
+        {   
+            (async()=>{
+                let data=await fetch(image.getAttribute('src'),{
+                    method:"get",
+                    credentials:"include"
+
+                })
+                data=await data.blob()
+                let reader=new FileReader()
+                reader.onload=()=>{
+                    editor.edit(reader.result)
+
+                }
+                reader.readAsDataURL(data) ;
+               
+                // editor.edit(encodedData)
+                // console.log(data)
+            })()
+        }
+        else 
+            editor.edit(image)
+
+        // catch(e){
+        //     console.log(e,"Edit error")
+        //     this.getBase64Image(document.getElementById(`${this.props.index}:imageEditor`).getAttribute("src"),(img)=>{
+        //         console.log(img)
+        //         editor.image(img)
+        //     })
+        // }
     }
 
     render() { 

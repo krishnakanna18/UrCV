@@ -148,27 +148,43 @@ class Template extends Component {
         img.src = imgUrl;
     }
 
-    //Download the website as PDF
-    downloadPdf=()=>{
-        let source=document.getElementById('site')
-        let pdf = new jsPDF();
-        let images=source.getElementsByTagName('img')
-        for(let node of images){
-            if(node.getAttribute('src').match(/^http/g)){
-                console.log("Match")
-                this.getBase64Image(node.getAttribute('src'),(base64)=>{
-                    // let data='data:image/png;base64,'+base64
-                    let data=base64
-                    // pdf.addImage(data, 'PNG', 40,50);
 
-                    // console.log(data)
-                    node.setAttribute('src',data)
+
+
+    //Download the website as PDF
+    downloadPdf=async()=>{
+        let source=document.getElementById('site')
+        let pdf = new jsPDF('p', 'pt', 'a4');
+        let images=source.getElementsByTagName('img')
+        for(let node of images){        //Fetch all images from the local server
+            if(node.getAttribute('src').match(/^http:/g)){
+                let data=await fetch(node.getAttribute('src'),{
+                    method:"get",
+                    credentials:"include"
                 })
-            
-                // node.src = path.resolve(node.getAttribute('src'));
-                // pdf.addImage(node, 'JPEG', 1, 2);
+                    data=await data.blob()
+                    let reader = new FileReader() ;
+                    reader.onload = function(){ 
+                        node.setAttribute('src',this.result)
+                    } 
+                    reader.readAsDataURL(data) ;
             }
-            
+            else if(node.getAttribute('src').match(/^https:/g)){
+                let data=await fetch(node.getAttribute('src'),{
+                    method:"get",
+                    headers:{'Access-Control-Allow-Origin':'*'},
+                    mode:"no-cors"
+                })
+                // console.log(data)
+
+                data=await data.blob()
+                let reader = new FileReader() ;
+                reader.onload = function(){ 
+                    node.setAttribute('src',this.result)
+
+                } 
+                reader.readAsDataURL(data) ;
+            }
         }
         let name=this.state.name
         pdf.addHTML(source,function() {
@@ -182,6 +198,7 @@ class Template extends Component {
         try{
         tempId=this.props.location.state.id;
             user=this.props.location.state.user
+        // console.log(this.props.match, this.props.location, this.props.history)
         }
         catch(e){
             this.props.history.push({
@@ -245,6 +262,8 @@ class Template extends Component {
             btn.style.borderRadius="var(--wsr-button-border-radius, 18px)"
             btn.style.width="6%"
             btn.style.fontFamily="HelveticaNeueW01-55Roma,HelveticaNeueW02-55Roma,HelveticaNeueW10-55Roma,sans-serif"
+            btn.setAttribute('data-toggle','tooltip')
+            btn.setAttribute('title','Publish it to your github')
 
             btn2=btn.cloneNode(true);
 
@@ -263,7 +282,7 @@ class Template extends Component {
                 }
 
             btn2.onclick=async()=>{
-               this.downloadPdf()
+               await this.downloadPdf()
             }
 
             nav.appendChild(btn2)
@@ -279,15 +298,8 @@ class Template extends Component {
 
     getAccessTokenGit=async()=>{
         console.log("Getting Access Token from git....");
-        // let res=await fetch('http://localhost:9000/publish/code',{
-        //     method:"get",
-        //     credentials:"include",
-        // })
-        // res=await res.json()
-        // console.log(res)
-        // let auth=window.open('','wnd')
-        // auth.document.body.innerHTML=res
-        window.location.href='http://localhost:9000/publish/code'
+        window.open('http://localhost:9000/publish/code?siteID='+this.state.siteId,'_blank');
+        // window.location.href='http://localhost:9000/publish/code?siteID='+this.state.siteId
     }
 
 

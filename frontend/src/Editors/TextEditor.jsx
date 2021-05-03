@@ -202,6 +202,7 @@ class TextEditor extends Component {
         // console.log("Change:",targetChild.cloneNode(true))
 
         this.setState({undo_stack,redo_stack,prevText:targetChild.cloneNode(true)},()=>{
+            // console.log(this.props)
             this.props.modifyText(this.props.index,textComponent)
         })  //Update the undo and redo stack
     }

@@ -108,12 +108,98 @@ let updateModifiedDate=async(site)=>{
 
 }
 
+//Delete an entire site
+let deleteSite=async(id)=>{
+    try{
+         let web=await Website.findById(id)
+         await Promise.all(web.containers.map(async(container)=>{
+            let result=await Container.deleteContainer(container)
+         }))
+         await Website.findByIdAndDelete(id)
+
+    }
+    catch(e){
+        return e
+    }
+
+}
+
+//Converts a given component to html
+let convertToHtml=(component)=>{
+
+    if(component===undefined || component===null) return ``;
+    if(component.children && component.children.length===0)
+        {
+            let element=document.createElement()
+        }
+
+
+}
+
+
+//Convert the website from db into html
+let convertSiteToHtml=async(id)=>{
+
+    let site=await retrieve(id)
+    let html_start=`<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${site.name}</title>
+    </head>
+    <body>`,
+    html_end=`</body>
+    </html>`
+
+    let html_content=[]
+    for(let container of site.containers){
+        html_content.push(convertToHtml(container))
+    }
+
+}
+
+
+//Push the files to the user repo
+let pushToRepo=(file,access_token,content,message)=>{
+
+    return fetch(file,{
+        method:"get"
+    })
+    .then(resp=>resp.json())
+    .then(resp=>{
+            let body={
+                message:`${message}`,
+                content:`${Buffer.from(content).toString('base64')}`
+            }
+            if(resp.sha!==undefined || resp.sha!==null)
+                        body.sha=resp.sha
+            fetch(file,{
+                method:"put",
+                headers:{'Authorization':`token ${access_token}`,
+                accept:"application/vnd.github.v3+json"},
+                body:JSON.stringify(body),
+                })
+            .then(response=>{
+                console.log(response.status)
+                return response.json()
+            })
+            .then(res=>{
+                // console.log(res)
+            })
+    })
+
+}
+
 Website.makeSite=makeSite
 Website.retrieve=retrieve
 Website.deleteContainer=deleteContainer
 Website.moveContainer=moveContainer
 Website.insertContainer=insertContainer
 Website.updateModifiedDate=updateModifiedDate
+Website.deleteSite=deleteSite
+Website.pushToRepo=pushToRepo
 module.exports=Website
 
 

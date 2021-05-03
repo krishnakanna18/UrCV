@@ -79,10 +79,10 @@ class Editor extends Component {
                     <ProjectEditor  key={`${this.props.index}`}
                                     component={this.props.component} 
                                     index={this.props.index} 
-                                    removeElement={this.props.delete}
-                                    moveElement={this.props.move}
-                                    modifyElement={this.props.modify}
-                                    addElement={this.props.insert}
+                                    delete={this.props.delete}
+                                    move={this.props.move}
+                                    modify={this.props.modify}
+                                    insert={this.props.insert}
                     >
 
                     </ProjectEditor>
@@ -145,7 +145,7 @@ class Editor extends Component {
                 :""}
                 <div className="d-flex flex-column  header" >
                     <div className="mt-5  row justify-content-between" style={{}}>
-                        <div className="offset-1 monospace font-weight-bold">
+                        <div className="offset-1 monospace font-weight-bold" style={{fontSize:"70%", fontFamily:"Calibri, sans-serif"}}>
                             {owner}
                         </div>
  

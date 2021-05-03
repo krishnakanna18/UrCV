@@ -79,19 +79,20 @@ class Template extends Component{
         if(this.state.html.length>0)
             return <div  className="col-lg-6 col-12 outerTemplate" 
                     >
-                        <div  className="viewTemplate embed-responsive embed-responsive-21by9 mt-3 mb-3"
+                        <div  className="viewTemplate embed-responsive embed-responsive-21by9 mt-3"
                         // to={to} 
                         onClick={async()=>{await this.createSite()}}
                         onMouseLeave={(e)=>{e.target.scrollTop=0}}
+                        style={{zoom:0.4}} 
                         >   
                             <div dangerouslySetInnerHTML={{__html:this.state.html}} className="embed-responsive-item itemTemplate">
                                 
                             </div>
                           
                         </div>
-                        {/* <div className="itemTemplateDesc pt-4 align-items-center justify-content-center">
+                        <div className="itemTemplateDesc pt-4 mb-3 align-items-center justify-content-center" style={{color:"black"}}>
                                 {this.props.template.name}
-                        </div> */}
+                        </div>
                     </div>
 
         return <div></div>

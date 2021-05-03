@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { Switch, withRouter } from 'react-router-dom';
 import '../css/userProfile.css';
 import {
-    Link
+    Link,BrowserRouter as Router,Route
   } from "react-router-dom";
 class Profile extends Component {
 
@@ -34,6 +34,7 @@ class Profile extends Component {
         }
 
         let {user:{websites}}=state
+
         let res=await Promise.all(websites.map((site)=>{
             return fetch('http://localhost:9000/website/info/'+site,{
                 method:"get",
@@ -44,27 +45,46 @@ class Profile extends Component {
         res=await Promise.all(res.map(r=>r.json()))
         websites=res.map(site=>site.website)
 
+
         this.setState({sites:websites},()=>{
-            console.log(websites)
         })
 
 
     }
 
-    // componentWillUnmount(){
-    //     console.log("Unmounted Profile")
-    // }
+    deleteSite=async(id)=>{
+        
+        let { sites }=this.state
+        let index=this.state.sites[id]._id
+        let user=JSON.parse(JSON.stringify(this.props.location.state.user))
 
+        let res=await fetch('http://localhost:9000/website/delete',{
+            method:"delete",
+            credentials:"include",
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                id:index,
+                user:user.username
+            })
+        })
+
+        user.websites.splice(id,1)
+        this.props.updateUser(user)
+
+    }
 
     displayUserSites(){
         
         let {sites}=this.state,
             {user}=this.props.location.state
 
+            
+
         return(
 
             <div className="mt-5">
                 <div className="d-flex flex-column justify-content-around align-items-center">
+
                     <div className="col-lg-8 col-12 userSiteList " style={{backgroundColor:"#dfe5eb",color:"#162d3d"}}>
                         <div className="p-3 d-flex flex-row justify-content-around align-items-center">
 
@@ -85,13 +105,14 @@ class Profile extends Component {
                         </div>
                     </div>
 
-          
-
                     {sites.map((site,id)=>{
+                        if(site===null || site===undefined) return
                         let status=site.isDeployed===true?"Published":"Not Published"
+                        let divSt={}
+
                         return (
-                        <div className="col-lg-8 col-12 userSiteList " key={id}>
-                            <div className="p-3 d-flex flex-row justify-content-around align-items-center">
+                        <div className="col-lg-8 col-12 userSiteList " key={id} style={divSt}>
+                            <div className="p-3 d-flex flex-row justify-content-around align-items-center" >
 
                                 <div className="col" style={{color:"#162d3d"}}>
                                     <Link className="col" to={{
@@ -116,19 +137,29 @@ class Profile extends Component {
                                         {site.name+" "+id}
                                     </Link>
                                 </div>
+                              
+
 
                                 <span className="col siteTableHeader">
                                     {status}
                                 </span>
+
                                 <span className="col siteTableHeader">
                                     {site.createDate.slice(0,10)}
                                 </span>
+                               
+
                                 <span className="col siteTableHeader">
                                     {site.updateDate.slice(0,10)}
                                 </span>
-                                {/* <span >
-                                    <img src="/icons/editArrow.png" style={{width:"35%"}}></img>
-                                </span> */}
+                               
+
+                                <span  >
+                                    <img src="/icons/bin.png"  className="siteTableHeader" style={{width:"65%"}} 
+                                    onClick={async()=>{await this.deleteSite(id)}}
+                                    /> 
+                                </span>
+
                             </div>
                         </div>
     
@@ -145,7 +176,6 @@ class Profile extends Component {
     render() { 
         try{
         let {user}=this.props.location.state
-        console.log(user)
         }
         catch(e){
             window.location.href='http://localhost:3000'
@@ -153,6 +183,7 @@ class Profile extends Component {
         return ( 
 
             <React.Fragment>
+         
 
                     <div className="pt-4 d-flex flex-row justify-content-around align-items-center intro" style={{backgroundColor:"white"}}>
                         <div className="row">
@@ -187,10 +218,11 @@ class Profile extends Component {
                     </div>
 
                     {this.displayUserSites()}
-
+                  
 
 
             </React.Fragment>
+            
 
 
 

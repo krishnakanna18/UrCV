@@ -18,4 +18,21 @@ User.populateSites=async(uname)=>{                          //find user by usern
     return user
 
 }
+
+deleteSite=async(uname,id)=>{
+    let user=await User.findOne({username:uname})
+    let websites=user.websites
+    try{
+        if(websites.indexOf(id)!==-1){
+            websites.splice(websites.indexOf(id),1)
+            let newc=await User.findByIdAndUpdate(user._id,{'$set':{websites:websites}},{returnOriginal:false})
+
+        }
+    }
+catch(e){
+    return e
+}
+}
+
+User.deleteSite=deleteSite
 module.exports=User

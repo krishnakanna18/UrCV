@@ -84,6 +84,7 @@ class Navbar extends Component {
     }
 
     updateUser=(user)=>{
+        console.log("HI Im being Printed",user)
         this.setState({user:user},()=>{
             console.log("Called")
 
@@ -180,11 +181,10 @@ class Navbar extends Component {
                     <Switch>
                         <Route exact path='/' component={Home}></Route>
                         <Route exact path="/user/login" component={()=><LogIn loginUser={this.loginUser}></LogIn>}></Route>
-                        <Route exact path="/user/profile" component={()=><Profile loggedin={this.state.loggedin}></Profile>}></Route>
+                        <Route exact path="/user/profile" component={()=><Profile loggedin={this.state.loggedin} updateUser={this.updateUser}></Profile>}></Route>
                         <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin} updateUser={this.updateUser} loginUser={this.loginUser}></Templates>}></Route>
                         <Route exact path='/template/edit' component={()=><TemplateEditor loggedin={this.state.loggedin}></TemplateEditor>}></Route>
                         <Route exact path='/insert/container' component={addContainer}></Route>
-                        {/* <Route exact path='/site/preview' component={()=>}></Route> */}
                     </Switch>
                 </Router>
             </React.Fragment>
