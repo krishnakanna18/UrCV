@@ -43,10 +43,10 @@ let makeSite=async(id,template=undefined)=>{
 }
 
 //Given the id of a website recursively populate the website and return it
-let retrieve=async(id)=>{
+let retrieve=async(id,deploy=undefined)=>{
     let site=await Website.findById(id)
     site.containers=await Promise.all(site.containers.map(async(container)=>{
-        return await Container.retrieve(container._id)
+        return await Container.retrieve(container._id,deploy)
     }))
     return site
 }
@@ -124,17 +124,7 @@ let deleteSite=async(id)=>{
 
 }
 
-//Converts a given component to html
-let convertToHtml=(component)=>{
 
-    if(component===undefined || component===null) return ``;
-    if(component.children && component.children.length===0)
-        {
-            let element=document.createElement()
-        }
-
-
-}
 
 //Deploy all the three files at the same time in the repository
 let bruteDeploy=(html,css,js,access_token,file)=>{
@@ -145,7 +135,6 @@ let bruteDeploy=(html,css,js,access_token,file)=>{
     })
     .then(resp=>resp.json())
     .then(resp=>{
-        console.log(resp.sha,"The sha",resp.message)
             let body={
                 message:`Index HTML`,
                 content:`${Buffer.from(html).toString('base64')}`
@@ -168,7 +157,6 @@ let bruteDeploy=(html,css,js,access_token,file)=>{
                 })
                 .then(resp=>resp.json())
                 .then(resp=>{
-                    console.log(resp.sha,"The sha",resp.message)
                         let body={
                             message:`Index JS`,
                             content:`${Buffer.from(js).toString('base64')}`
@@ -191,7 +179,6 @@ let bruteDeploy=(html,css,js,access_token,file)=>{
                             })
                             .then(resp=>resp.json())
                             .then(resp=>{
-                                    console.log(resp.sha,"The sha",resp.message)
                                     let body={
                                         message:`Index CSS`,
                                         content:`${Buffer.from(css).toString('base64')}`
@@ -230,3 +217,32 @@ Website.bruteDeploy=bruteDeploy
 module.exports=Website
 
 
+
+//For converting url image to base64
+// if(node.getAttribute('src').match(/^http:/g)){
+//     let data=await fetch(node.getAttribute('src'),{
+//         method:"get",
+//         credentials:"include"
+//     })
+//         data=await data.blob()
+//         let reader = new FileReader() ;
+//         reader.onload = function(){ 
+//             node.setAttribute('src',this.result)
+//         } 
+//         reader.readAsDataURL(data) ;
+// }
+// else if(node.getAttribute('src').match(/^https:/g)){
+//     let data=await fetch(node.getAttribute('src'),{
+//         method:"get",
+//         headers:{'Access-Control-Allow-Origin':'*'},
+//         mode:"no-cors"
+//     })
+
+//     data=await data.blob()
+//     let reader = new FileReader() ;
+//     reader.onload = function(){ 
+//         node.setAttribute('src',this.result)
+
+//     } 
+//     reader.readAsDataURL(data) ;
+// }

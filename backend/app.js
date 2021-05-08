@@ -466,7 +466,7 @@ app.get('/publish/access_token',async(req,res)=>{
       req.session.oauth_code=code
       let html,site,js,css
       try{
-            site=await Website.retrieve(req.session.toDeploy)
+            site=await Website.retrieve(req.session.toDeploy,true)
 
             html=fs.readFileSync(path.join(__dirname,"/deploySite/index.html"))
             let gen=crypto.randomBytes(20).toString('hex');

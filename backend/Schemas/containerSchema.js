@@ -25,12 +25,25 @@ let insert=async(...args)=>{
 
 
 //Recursively populate the children of the containers and return it
-let retrieve=async(id)=>{
+let retrieve=async(id,deploy=undefined)=>{
     let current=await Container.findById(id).populate('children');
     if(current===null || current===undefined) return current
+    if(deploy==true){
+        if(current["tag"]==="img"){
+            if(current.contents["src"].match(/^http:/g)){
+                let data=await fetch(current.contents["src"],{
+                    method:"get"
+                })
+                let image=await data.arrayBuffer()
+                const raw = Buffer.from(image).toString('base64');
+                const base64Image = "data:" + "image/jpeg"+ ";base64,"+raw;
+                current.contents["src"]=base64Image
+            }
+        }
+    }
     if(current.children.length==0)
         return current
-    current.children=await Promise.all(current.children.map(async(child)=>await retrieve(child._id)))
+    current.children=await Promise.all(current.children.map(async(child)=>await retrieve(child._id,deploy)))
     return current
 }
 
