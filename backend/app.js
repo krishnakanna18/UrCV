@@ -14,7 +14,8 @@ const Container = require("./Schemas/containerSchema");
       User=require("./Schemas/userSchema")              //User model and functions associated with it
       Tool = require("./Schemas/toolSchema");           //Tool model and functions associated with it
       session=require("express-session");
-      gitAuth=require("./config")
+      gitAuth=require("./config");
+      crypto=require("crypto")
 
 app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com"]}));
 
@@ -468,10 +469,11 @@ app.get('/publish/access_token',async(req,res)=>{
             site=await Website.retrieve(req.session.toDeploy)
 
             html=fs.readFileSync(path.join(__dirname,"/deploySite/index.html"))
+            let gen=crypto.randomBytes(20).toString('hex');
+            html+=`<!-- ${gen} -->`
             js=fs.readFileSync(path.join(__dirname,"/deploySite/creator.js"))
             css=fs.readFileSync(path.join(__dirname,"/public/css/"+site.template_id+".css"))
             js=`let site= ${JSON.stringify(site)}; ${js}`
-            fs.writeFileSync(path.join(__dirname,'/deploySite/index.js'),js)
       }
       catch(e){
             console.log(e)
@@ -496,40 +498,26 @@ app.get('/publish/access_token',async(req,res)=>{
                   })
                   .then(resp=>resp.json())
                   .then(resp=>{
-                        
-                        Promise.all([
-                              Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.html',req.session.access_token,html,"Index HTML"),
-                              Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.js',req.session.access_token,js,"Index JS"),
-                              Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.css',req.session.access_token,css,"Index CSS")
-                        ])
-                        .then(function(){
-                              console.log("Redirecting site")
+                        Website.bruteDeploy(html,css,js,req.session.access_token,'https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/')
+                        .then(resp=>{
+                              console.log(resp)
                               return res.redirect(`https://${req.session.gitusername}.github.io`)
                         })
                         .catch(e=>{
                               console.log(e)
                         })
-
                   })
-
       }
       else{
-            console.log("Repository found")
-            //Wait for all the files to be pushed to the repo before redirecting
-            Promise.all([
-                  Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.html',req.session.access_token,html,"Index HTML"),
-                  Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.js',req.session.access_token,js,"Index JS"),
-                  Website.pushToRepo('https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/index.css',req.session.access_token,css,"Index CSS")
-            ])
-            .then(function(){
-                  console.log("Redirecting site")
+            Website.bruteDeploy(html,css,js,req.session.access_token,'https://api.github.com/repos/'+req.session.gitusername+'/'+req.session.gitusername+'.github.io/contents/')
+            .then(resp=>{
+                  console.log(resp)
                   return res.redirect(`https://${req.session.gitusername}.github.io`)
             })
             .catch(e=>{
                   console.log(e)
             })
       }
-           
 })
 
 app.get('/website/ret',isLoggedin,async(req,res)=>{

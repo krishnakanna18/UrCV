@@ -136,49 +136,26 @@ let convertToHtml=(component)=>{
 
 }
 
-
-//Convert the website from db into html
-let convertSiteToHtml=async(id)=>{
-
-    let site=await retrieve(id)
-    let html_start=`<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${site.name}</title>
-    </head>
-    <body>`,
-    html_end=`</body>
-    </html>`
-
-    let html_content=[]
-    for(let container of site.containers){
-        html_content.push(convertToHtml(container))
-    }
-
-}
-
-
-//Push the files to the user repo
-let pushToRepo=(file,access_token,content,message)=>{
-
-    return fetch(file,{
-        method:"get"
+//Deploy all the three files at the same time in the repository
+let bruteDeploy=(html,css,js,access_token,file)=>{
+    // /repos/:owner/:repo/commits/master
+    return fetch(file+"index.html",{        //Check if index.html is present in the repo
+        method:"get",
+        headers:{"Accept": "application/vnd.github.v3+json"}
     })
     .then(resp=>resp.json())
     .then(resp=>{
+        console.log(resp.sha,"The sha",resp.message)
             let body={
-                message:`${message}`,
-                content:`${Buffer.from(content).toString('base64')}`
+                message:`Index HTML`,
+                content:`${Buffer.from(html).toString('base64')}`
             }
-            if(resp.sha!==undefined || resp.sha!==null)
+            if(resp.sha!==undefined || resp.sha!==null)     //If index.html is present add the sha of the previous commit
                         body.sha=resp.sha
-            fetch(file,{
+            fetch(file+"index.html",{
                 method:"put",
                 headers:{'Authorization':`token ${access_token}`,
-                accept:"application/vnd.github.v3+json"},
+                "Accept":"application/vnd.github.v3+json"},
                 body:JSON.stringify(body),
                 })
             .then(response=>{
@@ -186,11 +163,61 @@ let pushToRepo=(file,access_token,content,message)=>{
                 return response.json()
             })
             .then(res=>{
-                // console.log(res)
+                fetch(file+"index.js",{                 //Get the sha of the previous commit
+                    method:"get"
+                })
+                .then(resp=>resp.json())
+                .then(resp=>{
+                    console.log(resp.sha,"The sha",resp.message)
+                        let body={
+                            message:`Index JS`,
+                            content:`${Buffer.from(js).toString('base64')}`
+                        }
+                        if(resp.sha!==undefined || resp.sha!==null)
+                                    body.sha=resp.sha
+                        fetch(file+"index.js",{
+                            method:"put",
+                            headers:{'Authorization':`token ${access_token}`,
+                            accept:"application/vnd.github.v3+json"},
+                            body:JSON.stringify(body),
+                            })
+                        .then(response=>{
+                            console.log(response.status)
+                            return response.json()
+                        })
+                        .then(res=>{
+                            fetch(file+"index.css",{
+                                method:"get"
+                            })
+                            .then(resp=>resp.json())
+                            .then(resp=>{
+                                    console.log(resp.sha,"The sha",resp.message)
+                                    let body={
+                                        message:`Index CSS`,
+                                        content:`${Buffer.from(css).toString('base64')}`
+                                    }
+                                    if(resp.sha!==undefined || resp.sha!==null)
+                                                body.sha=resp.sha
+                                    fetch(file+"index.css",{
+                                        method:"put",
+                                        headers:{'Authorization':`token ${access_token}`,
+                                        accept:"application/vnd.github.v3+json"},
+                                        body:JSON.stringify(body),
+                                        })
+                                    .then(response=>{
+                                        console.log(response.status)
+                                        return response.json()
+                                    })
+                                    .then(res=>{
+                                    })
+                            })
+                        })
+                })
             })
     })
-
 }
+
+
 
 Website.makeSite=makeSite
 Website.retrieve=retrieve
@@ -199,7 +226,7 @@ Website.moveContainer=moveContainer
 Website.insertContainer=insertContainer
 Website.updateModifiedDate=updateModifiedDate
 Website.deleteSite=deleteSite
-Website.pushToRepo=pushToRepo
+Website.bruteDeploy=bruteDeploy
 module.exports=Website
 
 

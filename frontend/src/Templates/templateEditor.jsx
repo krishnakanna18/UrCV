@@ -136,8 +136,6 @@ class Template extends Component {
           var ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0);
           var dataURL=canvas.toDataURL()
-        //   var dataURL = canvas.toDataURL("image/"),
-            //   dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
     
           callback(dataURL); // the base64 string
     
@@ -175,7 +173,6 @@ class Template extends Component {
                     headers:{'Access-Control-Allow-Origin':'*'},
                     mode:"no-cors"
                 })
-                // console.log(data)
 
                 data=await data.blob()
                 let reader = new FileReader() ;
@@ -198,7 +195,6 @@ class Template extends Component {
         try{
         tempId=this.props.location.state.id;
             user=this.props.location.state.user
-        // console.log(this.props.match, this.props.location, this.props.history)
         }
         catch(e){
             this.props.history.push({
@@ -207,6 +203,20 @@ class Template extends Component {
 
         }
 
+        if(tempId===undefined || tempId===null)
+        {
+            tempId=localStorage.getItem("tempId");
+            user=JSON.parse(localStorage.getItem("user"))
+        }
+
+        window.onbeforeunload=()=>{
+            if(!localStorage.getItem("tempid")){
+                console.log("Refreshing and adding to storage")
+            localStorage.setItem("tempId",tempId);
+            localStorage.setItem("user",JSON.stringify(user));
+            localStorage.setItem("loggedin","true");
+            }
+        }
 
         let template=await fetch('http://localhost:9000/website/'+tempId,{
             method:"GET",
@@ -241,8 +251,6 @@ class Template extends Component {
             }
              this.changeState({models:{skillTemplate}})
              document.querySelector("body").addEventListener("keydown",(e)=>this.changes_stacks_event(e))
-            
-
         })
 
         try{
@@ -315,6 +323,9 @@ class Template extends Component {
         if(btn2!=null)
             btn2.remove()
 
+       localStorage.removeItem("tempId");
+       localStorage.removeItem("user");     
+       localStorage.removeItem("loggedin")
        window.removeEventListener('beforeunload', this.removePublishBtn);
         
     }
@@ -1043,7 +1054,10 @@ class Template extends Component {
     }
 
     render() { 
-        if(this.props.loggedin===0 || this.props.loggedin===false){  //Go to home if the user has logged out
+        let loggedin=this.props.loggedin
+        if(localStorage.getItem("loggedin")==="true") loggedin=true
+
+        if(loggedin===0 || loggedin===false){  //Go to home if the user has logged out
             this.removePublishBtn()
         }
         return ( 
