@@ -161,6 +161,13 @@ class Container extends Component {
         this.props.moveElement(index,pos)
     }
 
+    //Adding a project 
+    addProject=()=>{
+        console.log("Inside the function")
+        let project=this.props.projectTemplate
+        console.log(project,this.props.index)
+        this.props.addElement(this.props.index,project)
+    }
 
     //Display the list of components present in the outer container
     displayOuter=()=>{
@@ -175,10 +182,12 @@ class Container extends Component {
             // console.log(index)
             return( 
                 <React.Fragment>
-
-                    <div className="parentContainer">
-
-                    </div>
+                    {this.props.type && this.props.type==="project"?
+                    <button className="projectAddContainer btn" onClick={this.addProject}>
+                         <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
+                         <span className="ml-1">Add a project</span>
+                    </button>
+                    :""}
 
                     <div className="mt-4 d-flex flex-column">
                         {components.map((component,id)=>{
@@ -217,7 +226,6 @@ class Container extends Component {
                                             <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/more.png"/>
                                         </button>
                                         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-
                                             {/* Remove the component */}
                                             <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.removeElement(`${index}:${id}`)}>
                                                     <span className="pl-3">
@@ -225,6 +233,8 @@ class Container extends Component {
                                                             Remove 
                                                     </span> 
                                             </button>
+
+                                         
 
                                               {/* Move Above button */}
                                               {id>0?
@@ -248,8 +258,6 @@ class Container extends Component {
                                                 </button>
                                                 :""
                                                 }
-
-
                                         </div>
                                     </div>
                                 </div>

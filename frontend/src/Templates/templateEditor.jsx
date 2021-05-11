@@ -336,7 +336,7 @@ class Template extends Component {
         let {redo_top}=this.state.changes_stacks
         // console.log(`${undo_stack.length}`);
         if(undo_stack.length===0){
-            // console.log("Empty stack")
+            console.log("Empty stack")
             // this.setState({changes_stacks:{undo_stack,redo_stack,undo_top:"",redo_top}})
             return;
         }
@@ -550,6 +550,7 @@ class Template extends Component {
     insert=(p_id=-1,element,position=-1,stackCall=-1)=>{       //position  -- position to insert in the parent's children array
                                                                //StackCall -- if -1 adds operation to change stack 
                                                                //          -- else(called from undo,redo operations) don't add operation
+        console.log("parent",p_id)
 
         let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
         let old_value=[],dbid={p_id:""}

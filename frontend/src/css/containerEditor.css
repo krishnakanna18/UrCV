@@ -25,3 +25,9 @@
     box-shadow:  rgba(0, 0, 0, 0.2) 0px 1px 1px 0px
 
 }
+
+.projectAddContainer{
+    background-color: rgb(245, 245, 245);
+    width: 75%;
+    margin-left: 10%;
+}
