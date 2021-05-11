@@ -33,6 +33,9 @@ class Editor extends Component {
         else if(this.props.type==='menu'){
             return 'MENU'
         }
+        else if(this.props.type==='project'){
+            return 'PROJECTS'
+        }
 
     }
 
@@ -74,7 +77,6 @@ class Editor extends Component {
                     )
         }
         else if(this.props.type==="project"){
-
                 return (
                     <ProjectEditor  key={`${this.props.index}`}
                                     component={this.props.component} 

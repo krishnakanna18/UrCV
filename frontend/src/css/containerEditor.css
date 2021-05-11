@@ -3,3 +3,25 @@
     margin-bottom: 0.7rem;
     border-top: 10px solid rgba(75, 72, 72, 0.1);
 }
+
+.projectStackContainer{
+    width: calc(11vw + 40%);
+    border: 1px solid #ccc;
+    box-shadow:  rgba(0, 0, 0, 0.2) 0px 2px 5px 0px;
+    padding: 3%;
+}
+
+.projectTech{
+    background-color:#ccc; 
+    /* font-family: adobe-garamond-pro,HelveticaNeue-Light,"Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif; */
+    margin:2%;
+    color: black;
+
+}
+
+.projectStackHeader{
+    border-bottom: 1px solid #ccc;
+    border-width:calc(11vw + 40%) ;
+    box-shadow:  rgba(0, 0, 0, 0.2) 0px 1px 1px 0px
+
+}

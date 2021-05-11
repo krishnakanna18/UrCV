@@ -25,10 +25,13 @@ let convertToHtml=(component)=>{
     else if(component.tag==="img")
         cur.setAttribute('src',component.contents['src'])
 
-    else if(component.tag==="a")
+    else if(component.tag==="a"){
         Object.keys(component.contents).forEach(key=>{
-            cur.setAttribute(key,component.contents[key])
+            cur.setAttribute(`${key}`,component.contents[key])
         })
+        console.log(component.contents)
+
+    }
 
     if(component.children && component.children.length===0)
         return cur

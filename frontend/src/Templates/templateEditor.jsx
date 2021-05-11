@@ -167,21 +167,21 @@ class Template extends Component {
                     } 
                     reader.readAsDataURL(data) ;
             }
-            else if(node.getAttribute('src').match(/^https:/g)){
-                let data=await fetch(node.getAttribute('src'),{
-                    method:"get",
-                    headers:{'Access-Control-Allow-Origin':'*'},
-                    mode:"no-cors"
-                })
+            // else if(node.getAttribute('src').match(/^https:/g)){
+            //     let data=await fetch(node.getAttribute('src'),{
+            //         method:"get",
+            //         headers:{'Access-Control-Allow-Origin':'*'},
+            //         mode:"no-cors"
+            //     })
 
-                data=await data.blob()
-                let reader = new FileReader() ;
-                reader.onload = function(){ 
-                    node.setAttribute('src',this.result)
+            //     data=await data.blob()
+            //     let reader = new FileReader() ;
+            //     reader.onload = function(){ 
+            //         node.setAttribute('src',this.result)
 
-                } 
-                reader.readAsDataURL(data) ;
-            }
+            //     } 
+            //     reader.readAsDataURL(data) ;
+            // }
         }
         let name=this.state.name
         pdf.addHTML(source,function() {
@@ -550,7 +550,6 @@ class Template extends Component {
     insert=(p_id=-1,element,position=-1,stackCall=-1)=>{       //position  -- position to insert in the parent's children array
                                                                //StackCall -- if -1 adds operation to change stack 
                                                                //          -- else(called from undo,redo operations) don't add operation
-        console.log("parent",p_id)
 
         let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
         let old_value=[],dbid={p_id:""}
@@ -995,8 +994,10 @@ class Template extends Component {
         let {editor}=this.state
         if(editor.enabled===0 || editor.index!==index || editor.index===index ){
              document.getElementById('editor').style.display="block"
-             document.getElementById('site-container').classList.remove('col-lg-10')
-             document.getElementById('site-container').classList.add('col-lg-9')
+             let cont=document.getElementById('site-container')
+             cont.classList.remove('col-lg-10')
+             cont.classList.add('col-lg-9')
+             cont.style.float="right"
              this.setState({editor:{enabled:1,index:`${index}`,type:classes}})
             }
 
@@ -1088,15 +1089,15 @@ class Template extends Component {
                 </div>
 
                 <div className="d-flex flex-lg-row flex-column">
-                    <div className="col-xl-2 col-lg-3  ml-n2 container-fluid row " style={{display:"none"}} id="editor">
-                        <div className="position-fixed col-xl-2 col-lg-3  ml-n2 " style={{overflowY:"scroll",bottom: "0%", top: "52px", border:"2px solid white"}}>
+                    <div className="ml-n2 container-fluid row " style={{display:"none", width:"20%"}} id="editor">
+                        <div className="position-fixed col ml-n2 " style={{overflowY:"scroll",bottom: "0%", top: "52px", border:"2px solid white",width:"20%"}}>
                             {this.state.editor.enabled===1?
                                 this.editorDisplay()
                             :""}
                         </div>
                     </div>
 
-                    <div className="col-lg-10 mt-5 col-12 container-fluid" id="site-container">
+                    <div className="col-lg-10 mt-5  col-12 container-fluid" id="site-container" style={{width:"100%"}}>
                         <div className="mt-2 pt-5 container-fluid mb-5 col" id="site" style={{overflowY:"scroll",overflow:"auto"}}>
                             {this.siteDisplay()}
                         </div>

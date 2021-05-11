@@ -163,7 +163,10 @@ class Autocomplete extends Component {
             })
 
         let status
-        if(this.props.addPosition===undefined)
+        let sample=undefined,parent=""
+        if(this.props.techSample)
+            status= this.props.addOption(filtered_list[active_index].index,this.props.techSample,this.props.parent)
+        else if(this.props.addPosition===undefined)
             status=this.props.addOption(filtered_list[active_index].index)
         else{
             status=this.props.addOption(filtered_list[active_index].index,this.props.addPosition)
@@ -214,9 +217,11 @@ class Autocomplete extends Component {
         })
 
         let status
-
-        if(!this.props.addPosition)
-            status=this.props.addOption(index)
+        let sample=undefined,parent=""
+        if(this.props.techSample)
+            status= this.props.addOption(index,this.props.techSample,this.props.parent)
+        else if(!this.props.addPosition)
+            status=this.props.addOption(index,-1)
         else
             status=this.props.addOption(index,this.props.addPosition)
         
@@ -281,11 +286,14 @@ class Autocomplete extends Component {
     
     render(){
         let {errMessage}=this.state;
+        let id="skill-search"
+        if(this.props.type && this.props.type==="project")
+            id="tech-search"
         return(
             <React.Fragment>
                 <div className="d-flex flex-column">
                     <div className="flex justify-content-center">
-                        <input autoComplete="off" type="search-box" id="skill-search" className="form-control mb-2 mt-2 shadow-sm" placeholder="Add a language, framework, database.."
+                        <input autoComplete="off" type="search-box" id={id} className="form-control mb-2 mt-2 shadow-sm" placeholder="Add a language, framework, database.."
                         value={`${this.state.input}`}
                         onChange={(e)=>this.changeInput(e)}
                         onKeyDown={(e)=>this.selectOption(e)}

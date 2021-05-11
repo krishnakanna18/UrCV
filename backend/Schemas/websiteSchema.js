@@ -1,7 +1,8 @@
 const mongoose=require("mongoose");
 const Container = require("./containerSchema");
       fs=require("fs");
-      Template=require("./templateSchema")
+      Template=require("./templateSchema");
+      crypto=require("crypto");
 
 mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } )
 
@@ -196,6 +197,35 @@ let bruteDeploy=(html,css,js,access_token,file)=>{
                                         return response.json()
                                     })
                                     .then(res=>{
+
+                                        fetch(file+"Readme.md",{
+                                            method:"get"
+                                        })
+                                        .then(resp=>resp.json())
+                                        .then(resp=>{
+                                            let gen=crypto.randomBytes(20).toString('hex');
+                                                let body={
+                                                    message:`Readme file`,
+                                                    content:`${Buffer.from('Read me file'+gen).toString('base64')}`
+                                                }
+                                                if(resp.sha!==undefined || resp.sha!==null)
+                                                            body.sha=resp.sha
+                                                fetch(file+"Readme.md",{
+                                                    method:"put",
+                                                    headers:{'Authorization':`token ${access_token}`,
+                                                    accept:"application/vnd.github.v3+json"},
+                                                    body:JSON.stringify(body),
+                                                    })
+                                                .then(response=>{
+                                                    console.log(response.status)
+                                                    return response.json()
+                                                })
+                                                .then(res=>{
+                                                })
+                                        })
+
+
+
                                     })
                             })
                         })

@@ -2,13 +2,25 @@ import React, { Component } from 'react';
 import '../css/containerEditor.css'
 import TextEditor from './TextEditor'
 import ImgEditor from './ImgEditor'
+import LinkEditor from './LinkEditor'
+import Autocomplete from '../Components/Autocomplete'
 class Container extends Component {
     constructor(props){
         super(props);
         this.state={ innerPage:{
             enabled:false,
-            index:""
+            index:"",
+            global_skills:[]
         } }
+    }
+
+    componentDidMount=async()=>{
+        if(this.props.type && this.props.type==="project"){
+            let tools=await fetch ('http://localhost:9000/tools')
+            let skills=await tools.json()
+            this.setState({global_skills:skills})
+
+        }
     }
 
    
@@ -21,7 +33,7 @@ class Container extends Component {
 
     }
 
-    innerTree=(component,pid)=>{
+    innerTree=(component,pid,projectStack=undefined)=>{
         let queue=[{...component,id:pid}],editors=[]
         while(queue.length)
         {
@@ -29,9 +41,16 @@ class Container extends Component {
             if(cur.tag!=="div")
             {
                 editors.push(cur);
-                // console.log(cur,cur.id)
                 if(cur.tag==="p" || cur.tag==="span" || cur.tag==="img")
                     continue;
+            }
+            if(cur.tag==="div" && cur.classlist.includes("project-stack")){
+                if(projectStack!==undefined){
+                    projectStack["techs"]=JSON.parse(JSON.stringify(cur.children))
+                    projectStack["techType"]=projectStack["techs"][0]
+                    projectStack["parent"]=cur.id
+                }
+                continue
             }
             if(cur.children)
                 for(let i=0; i<cur.children.length; i++)
@@ -44,11 +63,30 @@ class Container extends Component {
 
     }
 
+
+
+    createTech=(index,sample=undefined,parent="")=>{
+        let tech=this.state.global_skills[index]
+        let techs=document.getElementsByClassName(`projectTechContainer:${this.props.index}`)[0].children
+        techs=[...techs].map(tech=>tech.outerText)
+        if(techs.includes(tech["tool"])){
+            return {success:-1,message:"Framework already Present"}
+        }
+        sample["contents"].text=tech["tool"]
+        this.props.addElement(parent,sample)
+        return {success:1}
+    }
+
     displayInner=()=>{
         let {innerPage:{index}}=this.state
         let containerIndex=`${this.props.index}:${index}`
         let innerComponent=JSON.parse(JSON.stringify(this.props.component.children[index]))
-        let disp=this.innerTree(innerComponent,containerIndex)
+        let projectStack=undefined
+
+        if(this.props.type!==undefined && this.props.type==="project")
+            projectStack={"techs":[],"techType":{},"parent":""}
+
+        let disp=this.innerTree(innerComponent,containerIndex,projectStack)
         return(
                 <React.Fragment>
                     <div className="row col mt-n2 justify-content-start">
@@ -56,8 +94,29 @@ class Container extends Component {
                             <button className="btn"  onClick={()=>this.disableInner()}><img src="/icons/back.png"   style={{width:"22px"}}  alt="REAL"   className="img-fluid"/> </button><span className="ml-n2">Back</span>
                         </div>
                     </div>
-
-                    <div className="mt-5 d-flex flex-column col" >
+                    {this.props.type!==undefined && this.props.type==="project"?
+                    <div className="mt-5 mb-1  projectStackContainer">
+                        <div className="mb-2 projectStackHeader" >
+                        <Autocomplete  key={`${this.props.index}:autocomplete`}
+                            options={this.state.global_skills.map((skill)=>skill["tool"])}
+                            addOption={this.createTech}
+                            type="project"
+                            techSample={projectStack.techType}
+                            parent={projectStack.parent}
+                            // addPosition={index}         //Specify the add position
+                        >
+                        </Autocomplete>
+                        </div>
+                        <div className={`mb-3 d-flex d-inline-flex flex-row flex-wrap projectTechContainer:${this.props.index}`}>
+                        {projectStack["techs"].map((tech,id)=>{
+                            return <div className="btn col-auto projectTech" key={id}>
+                                        {tech.contents["text"]}
+                                    </div>
+                        })}
+                        </div>
+                    </div>
+                    :""}
+                    <div className="mt-2 d-flex flex-column col" >
                         {disp.map((element,id)=>{
                             if(element.tag==="p" || element.tag==="span")
                                 return <TextEditor key={`${id}`} text={element} 
@@ -73,6 +132,10 @@ class Container extends Component {
                                         >
                                             
                                         </ImgEditor>
+                            if(element.tag==="a"){
+                                return <LinkEditor  key={`${id}`}  index={element.id} link={element}>
+                                        </LinkEditor>
+                            }
                                 
                         })
                         }
@@ -136,13 +199,16 @@ class Container extends Component {
                                  }}
                             >
                                 <div className="col" 
-                                     
+                                     style={{textAlign:"center"}}
                                      onClick={()=>{this.enableInner(id); 
                                         let ele=document.getElementById(index+`:${id}`)
                                         if(ele)
                                            ele.style.backgroundColor=ele.getAttribute("data-pre-color")}}
                                  >
-                                    {`Container ${id}`} 
+                                     {this.props.type==="project" ?
+                                     `Project ${id+1}`
+                                     :`Container ${id}`
+                                     }
                                 </div>
 
                                 <div className="d-flex col justify-content-end" >

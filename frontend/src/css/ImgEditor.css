@@ -1,7 +1,7 @@
 .imgEditorOverlay{ /* */
     border: 1px solid #ccc;
     box-shadow:  rgba(0, 0, 0, 0.2) 0px 2px 5px 0px;
-    width: calc(10vw + 40%);
+    width: calc(12vw + 40%);
     margin-left:calc(-1vw);
 }
 .imgOptOly{
@@ -14,6 +14,8 @@
     padding-top: 3%;
     width: 100%;
     margin: 0 auto;
+    height: calc(5vw+20%);
+
 }
 
 input[type="file"] {
@@ -34,6 +36,8 @@ input[type="file"] {
 
 .imgEdt{
     width: calc(5vw + 40%);
+    height: calc(5vw+ 20%);
+
 
 }
 

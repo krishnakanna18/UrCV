@@ -445,6 +445,7 @@ class TextEditor extends Component {
             isSingleChar=(ancParent===focParent && anchorOffset===focusOffset),
             parentEditor=ancParent.parentNode.parentNode
 
+
         let fontProps=false
         if(attribute==="fontWeight"||attribute==="fontStyle"||attribute==="textDecoration")
             fontProps=true
@@ -461,20 +462,25 @@ class TextEditor extends Component {
         let isSameEditor=(parentEditor.previousSibling===tarAtt.parentNode)
         
         if(isSameEditor){
-
             let ancIndex=[...parentEditor.children[0].children].indexOf(ancParent),
                 focIndex=[...parentEditor.children[0].children].indexOf(focParent)
 
-            if(focIndex<ancIndex)         //Swap all the properties of focus and anchor node
+            if(focIndex<ancIndex)
+            console.log("Yes the change are inverted",anchorOffset, focusOffset)
+
+            if(focIndex<ancIndex || (focIndex===ancIndex && anchorOffset>focusOffset))         //Swap all the properties of focus and anchor node
                 [ancParent,focParent,anchorOffset,focusOffset,ancIndex,focIndex,anchorNode,focusNode]
                =[focParent,ancParent,focusOffset,anchorOffset,focIndex,ancIndex,focusNode, anchorNode]
-               
+
             let textLength=anchorNode.textContent.length,
                 spanText=anchorNode.textContent.slice(focusOffset,textLength),  
                 anchorText=anchorNode.textContent.slice(0,anchorOffset)
+
+            console.log(anchorOffset, focusOffset,focIndex,ancIndex)
         
             if(ancParent.tagName==="SPAN" && focParent.tagName==="SPAN")
             {
+
             if(isSingleChar)    //Splitting the selected anchor parent into two and adding an empty span in between
                 {                           
                     ancParent.innerText=anchorText
@@ -532,7 +538,6 @@ class TextEditor extends Component {
                 }
 
                 else{
-
                     let target=editStyles[attribute]
 
                     if(fontProps===false)
@@ -658,7 +663,7 @@ class TextEditor extends Component {
                                 <div className="d-flex flex-row  flex-wrap" style={{backgroundColor:"white"}} >
                                     {
                                         color.map((c,id)=>{
-                                            return <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); console.log("Im clicked");this.styleEvent(e,"background-color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
+                                            return <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); this.styleEvent(e,"background-color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
                                             data-toggle="tooltip" data-placement="top" title={c}>
                                                    </a>
                                         })
@@ -666,6 +671,41 @@ class TextEditor extends Component {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="lineBreak" ></div>
+
+                        <div className="dropdown">
+                            <button className="btn dropdown-toggle styleAtb" type="button" id="dropdownMenuButtonFs" data-toggle="dropdown" aria-haspopup="true" data-display="static">
+                                <img alt="Alt" data-toggle="tooltip" data-placement="top" style={{width:"22px"}}
+                                      title="Background Color" className="img-responsive styleImg" src="http://localhost:3000/icons/sizeinc.png">
+                                </img>
+                            </button>
+                            <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButtonFs"                            >
+                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","xx-small")}}>
+                                            xx-small
+                                    </a>
+                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","x-small")}}>
+                                            x-small
+                                    </a>
+                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","small")}}>
+                                            small
+                                    </a>
+                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","medium")}}>
+                                            medium
+                                    </a>
+                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","large")}}>
+                                            large
+                                    </a>
+                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","x-large")}}>
+                                            x-large
+                                    </a>
+                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","xx-large")}}>
+                                            xx-large
+                                    </a>
+                            </div>
+                        </div>
+                        
+                        
                     </div>                  
 
                     {/*Contains the text being edited*/} 
