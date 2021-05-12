@@ -77,6 +77,13 @@ class Container extends Component {
         return {success:1}
     }
 
+    removeTech=(id,parent)=>{
+        console.log(id,parent)
+        this.props.removeElement(`${parent}:${id}`);
+    }
+
+
+
     displayInner=()=>{
         let {innerPage:{index}}=this.state
         let containerIndex=`${this.props.index}:${index}`
@@ -96,6 +103,7 @@ class Container extends Component {
                     </div>
                     {this.props.type!==undefined && this.props.type==="project"?
                     <div className="mt-5 mb-1  projectStackContainer">
+                        <p className="mb-n2" style={{textAlign:"center", color:"rgb(74, 150, 154)",fontWeight:"bold"}}>Project Tech Stack</p>
                         <div className="mb-2 projectStackHeader" >
                         <Autocomplete  key={`${this.props.index}:autocomplete`}
                             options={this.state.global_skills.map((skill)=>skill["tool"])}
@@ -109,7 +117,9 @@ class Container extends Component {
                         </div>
                         <div className={`mb-3 d-flex d-inline-flex flex-row flex-wrap projectTechContainer:${this.props.index}`}>
                         {projectStack["techs"].map((tech,id)=>{
-                            return <div className="btn col-auto projectTech" key={id}>
+                            return <div className="btn col-auto projectTech" key={id}  data-toggle="tooltip" data-placement="top" title={"Remove Tool"}
+                                    onClick={()=>{this.removeTech(id,projectStack["parent"])}}
+                                    >
                                         {tech.contents["text"]}
                                     </div>
                         })}

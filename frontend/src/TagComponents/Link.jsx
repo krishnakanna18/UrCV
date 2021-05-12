@@ -19,7 +19,7 @@ class Link extends Component{
         if(this.props.contents.role!==undefined)
             role=this.props.contents.role
         return(
-            <a className={`${classes}`} style={style} id={`${this.props.index}`} href={`${href}`} target={`${target}`} role={`${role}`}>
+            <a className={`${classes}`} style={style} id={`${this.props.index}`} target={`${target}`} role={`${role}`}>
                 {`${text}`}
                 {this.props.children}
             </a>
