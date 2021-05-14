@@ -29,7 +29,7 @@ class Profile extends Component {
             state=this.props.location.state
         }
         catch(e){
-            window.location.href='http://localhost:300'
+            window.location.href='http://localhost:3000'
 
         }
 

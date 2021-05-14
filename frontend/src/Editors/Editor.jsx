@@ -154,14 +154,14 @@ class Editor extends Component {
                         <div className="d-flex col justify-content-end" >
                             <div className="dropdown">
                                 <button className="btn " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/more.png"/>
+                                    <img className="img-fluid" alt="Alt" src="/icons/more.png"/>
                                 </button>
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
                                     {/* Remove the component */}
                                     <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.removeElement(`${index}`)}>
                                             <span className="pl-3">
-                                                <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/multiply.png"/>
+                                                <img className="img-fluid" alt="Alt" src="/icons/multiply.png"/>
                                                     Remove 
                                             </span> 
                                     </button>
@@ -169,7 +169,7 @@ class Editor extends Component {
                                     onClick={()=>{this.addContainer(0)}}
                                      >
                                         <span className="pl-3">
-                                            <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
+                                            <img alt="Alt" src="/icons/plus-math.png"/>
                                             Add a container Above
                                         </span>
                                     </button>
@@ -178,7 +178,7 @@ class Editor extends Component {
                                     onClick={()=>{this.addContainer(1)}}
                                     >
                                         <span className="pl-3">
-                                            <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
+                                            <img alt="Alt" src="/icons/plus-math.png"/>
                                             Add a container Below
                                         </span>
                                     </button>
@@ -186,14 +186,14 @@ class Editor extends Component {
 
                                     <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}} onClick={()=>this.moveElement(`${index}`,-1)} >
                                         <span className="pl-3">
-                                            <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/up.png"/>
+                                            <img className="img-fluid" alt="Alt" src="/icons/up.png"/>
                                             Move Up
                                         </span>
                                     </button>
 
                                     <button  className="btn dropdown-item " type="btn"  style={{  padding:0,border:"none"}} onClick={()=>this.moveElement(`${index}`,+1)}>
                                         <span className="pl-3">
-                                            <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/down.png"/>
+                                            <img className="img-fluid" alt="Alt" src="/icons/down.png"/>
                                             Move down
                                         </span>
                                     </button>

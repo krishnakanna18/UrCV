@@ -599,19 +599,19 @@ class TextEditor extends Component {
                         <button  className="btn styleAtb" type="btn"  style={{  padding: 0,border:"none"}}  data-toggle="tooltip" data-placement="top" title="Bold"
                                  onClick={(e)=>{this.styleEvent(e,"fontWeight")}} 
                         >
-                                <img alt="Alt" className="img-responsive styleImg" src="http://localhost:3000/icons/bold.png"/>
+                                <img alt="Alt" className="img-responsive styleImg" src="/icons/bold.png"/>
                         </button>
 
                         <button  className="btn styleAtb" type="btn"  style={{  padding: 0,border:"none"}}  data-toggle="tooltip" data-placement="top" title="Italic"
                                  onClick={(e)=>{this.styleEvent(e,"fontStyle")}} 
                         >
-                                <img alt="Alt" className="img-responsive styleImg" src="http://localhost:3000/icons/italic.png"/>
+                                <img alt="Alt" className="img-responsive styleImg" src="/icons/italic.png"/>
                         </button>
 
                         <button  className="btn styleAtb" type="btn"  style={{  padding: 0,border:"none"}}  data-toggle="tooltip" data-placement="top" title="Underline"
                                 onClick={(e)=>{this.styleEvent(e,"textDecoration")}} 
                         >
-                                <img alt="Alt" className="img-responsive styleImg" src="http://localhost:3000/icons/underline.png"/>
+                                <img alt="Alt" className="img-responsive styleImg" src="/icons/underline.png"/>
                         </button>
                         <div className="lineBreak"  ></div>
 
@@ -636,7 +636,7 @@ class TextEditor extends Component {
                         <div className="dropdown">
                             <button className="btn dropdown-toggle styleAtb" type="button" id="dropdownMenuButtonFont" data-toggle="dropdown" aria-haspopup="true" data-display="static">
                                 <img alt="Alt" data-toggle="tooltip" data-placement="top" style={{width:"22px"}}
-                                      title="Text color" className="img-responsive styleImg" src="http://localhost:3000/icons/textColor.png">
+                                      title="Text color" className="img-responsive styleImg" src="/icons/textColor.png">
                                 </img>
                             </button>
                             <div className="dropdown-menu dropdown-menu-right colorParent" aria-labelledby="dropdownMenuButtonFont"                            >
@@ -656,7 +656,7 @@ class TextEditor extends Component {
                         <div className="dropdown">
                             <button className="btn dropdown-toggle styleAtb" type="button" id="dropdownMenuButtonBg" data-toggle="dropdown" aria-haspopup="true" data-display="static">
                                 <img alt="Alt" data-toggle="tooltip" data-placement="top" style={{width:"22px"}}
-                                      title="Background Color" className="img-responsive styleImg" src="http://localhost:3000/icons/bgColor.png">
+                                      title="Background Color" className="img-responsive styleImg" src="/icons/bgColor.png">
                                 </img>
                             </button>
                             <div className="dropdown-menu dropdown-menu-right colorParent" aria-labelledby="dropdownMenuButtonBg"                            >
@@ -677,7 +677,7 @@ class TextEditor extends Component {
                         <div className="dropdown">
                             <button className="btn dropdown-toggle styleAtb" type="button" id="dropdownMenuButtonFs" data-toggle="dropdown" aria-haspopup="true" data-display="static">
                                 <img alt="Alt" data-toggle="tooltip" data-placement="top" style={{width:"22px"}}
-                                      title="Background Color" className="img-responsive styleImg" src="http://localhost:3000/icons/sizeinc.png">
+                                      title="Background Color" className="img-responsive styleImg" src="/icons/sizeinc.png">
                                 </img>
                             </button>
                             <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButtonFs"                            >

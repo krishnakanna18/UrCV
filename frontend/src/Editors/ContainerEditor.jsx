@@ -194,7 +194,7 @@ class Container extends Component {
                 <React.Fragment>
                     {this.props.type && this.props.type==="project"?
                     <button className="projectAddContainer btn" onClick={this.addProject}>
-                         <img alt="Alt" src="http://localhost:3000/icons/plus-math.png"/>
+                         <img alt="Alt" src="/icons/plus-math.png"/>
                          <span className="ml-1">Add a project</span>
                     </button>
                     :""}
@@ -233,13 +233,13 @@ class Container extends Component {
                                 <div className="d-flex col justify-content-end" >
                                     <div className="dropdown">
                                         <button className="btn " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/more.png"/>
+                                            <img className="img-fluid" alt="Alt" src="/icons/more.png"/>
                                         </button>
                                         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             {/* Remove the component */}
                                             <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}}  onClick={()=>this.removeElement(`${index}:${id}`)}>
                                                     <span className="pl-3">
-                                                        <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/multiply.png"/>
+                                                        <img className="img-fluid" alt="Alt" src="/icons/multiply.png"/>
                                                             Remove 
                                                     </span> 
                                             </button>
@@ -250,7 +250,7 @@ class Container extends Component {
                                               {id>0?
                                                     <button  className="btn dropdown-item " type="btn"  style={{  padding: 0,border:"none"}} onClick={()=>this.moveElement(`${index}:${id}`,-1)} >
                                                         <span className="pl-3">
-                                                            <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/up.png"/>
+                                                            <img className="img-fluid" alt="Alt" src="/icons/up.png"/>
                                                             Move Up
                                                         </span>
                                                     </button>
@@ -262,7 +262,7 @@ class Container extends Component {
                                                 {id<components.length-1?
                                                 <button  className="btn dropdown-item " type="btn"  style={{  padding:0,border:"none"}} onClick={()=>this.moveElement(`${index}:${id}`,+1)}>
                                                     <span className="pl-3">
-                                                        <img className="img-fluid" alt="Alt" src="http://localhost:3000/icons/down.png"/>
+                                                        <img className="img-fluid" alt="Alt" src="/icons/down.png"/>
                                                         Move down
                                                     </span>
                                                 </button>
