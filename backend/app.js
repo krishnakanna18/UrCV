@@ -17,7 +17,7 @@ const Container = require("./Schemas/containerSchema");
       gitAuth=require("./config");
       crypto=require("crypto")
 
-app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com"]}));
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com","https://objective-rosalind-b7383b.netlify.app"]}));
 
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
