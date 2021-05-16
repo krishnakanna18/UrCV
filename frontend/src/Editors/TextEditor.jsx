@@ -624,8 +624,8 @@ class TextEditor extends Component {
                             <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style={{width:"100%"}}>
                                 {
                                     fonts.map((font,id)=>{
-                                        return <a className="dropdown-item font" key={id} href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white"}} 
-                                                onClick={(e)=>{this.styleEvent(e,"fontFamily",font)}}
+                                        return <a className="dropdown-item font" href="#" key={id} style={{color:"rgb(100,124,140)",backgroundColor:"white"}} 
+                                                onClick={(e)=>{e.preventDefault();this.styleEvent(e,"fontFamily",font)}}
                                                 >{font}</a>
                                     })
                                 }
@@ -643,7 +643,7 @@ class TextEditor extends Component {
                                 <div className="d-flex flex-row  flex-wrap" style={{backgroundColor:"white"}} >
                                     {
                                         color.map((c,id)=>{
-                                            return <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); console.log("Im clicked");this.styleEvent(e,"color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
+                                            return <a className="dropdown-item"  href="#" onClick={(e)=>{e.preventDefault(); console.log("Im clicked");this.styleEvent(e,"color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
                                             data-toggle="tooltip" data-placement="top" title={c}>
                                                    </a>
                                         })
@@ -681,25 +681,25 @@ class TextEditor extends Component {
                                 </img>
                             </button>
                             <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButtonFs"                            >
-                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","xx-small")}}>
+                                    <a className="dropdown-item"  style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","xx-small")}}>
                                             xx-small
                                     </a>
-                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","x-small")}}>
+                                    <a className="dropdown-item"  style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","x-small")}}>
                                             x-small
                                     </a>
-                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","small")}}>
+                                    <a className="dropdown-item"  style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","small")}}>
                                             small
                                     </a>
-                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","medium")}}>
+                                    <a className="dropdown-item"  style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","medium")}}>
                                             medium
                                     </a>
-                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","large")}}>
+                                    <a className="dropdown-item"  style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","large")}}>
                                             large
                                     </a>
-                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","x-large")}}>
+                                    <a className="dropdown-item"  style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","x-large")}}>
                                             x-large
                                     </a>
-                                    <a className="dropdown-item" href="#" style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","xx-large")}}>
+                                    <a className="dropdown-item"  style={{color:"rgb(100,124,140)",backgroundColor:"white",textAlign:"center",width:"0%"}} onClick={(e)=>{this.styleEvent(e,"fontSize","xx-large")}}>
                                             xx-large
                                     </a>
                             </div>

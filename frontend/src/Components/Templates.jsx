@@ -27,11 +27,8 @@ class Templates extends Component {
                                 <p className="mt-n3">Click on a template to edit it.</p>
                             </div>
                         </div>
-
                         <div className="row justify-content-center align-items-center">
-                        
                         </div>
-
                     </div>
                     <div className="header" style={{fontFamily:"Calibri, San-Serif"}}>
                         All website templates

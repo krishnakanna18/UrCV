@@ -4,6 +4,7 @@ import TextEditor from './TextEditor'
 import ImgEditor from './ImgEditor'
 import LinkEditor from './LinkEditor'
 import Autocomplete from '../Components/Autocomplete'
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 class Container extends Component {
     constructor(props){
         super(props);

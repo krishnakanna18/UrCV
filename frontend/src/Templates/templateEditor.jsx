@@ -8,6 +8,8 @@ import P from '../TagComponents/P'
 import Span from '../TagComponents/Span'
 import Link from '../TagComponents/Link'
 import { withRouter } from 'react-router-dom'
+import Button from '@material-ui/core'
+import EditorMenu from '../Components/editorMenu'
 // import * as ImgToBase64 from 'img-to-base64';
 
 //Convert the css style object to react style object
@@ -209,15 +211,6 @@ class Template extends Component {
             user=JSON.parse(localStorage.getItem("user"))
         }
 
-        window.onbeforeunload=()=>{
-            if(!localStorage.getItem("tempid")){
-                console.log("Refreshing and adding to storage")
-            localStorage.setItem("tempId",tempId);
-            localStorage.setItem("user",JSON.stringify(user));
-            localStorage.setItem("loggedin","true");
-            }
-        }
-
         let template=await fetch('http://localhost:9000/website/'+tempId,{
             method:"GET",
             credentials:"include"
@@ -253,53 +246,7 @@ class Template extends Component {
              document.querySelector("body").addEventListener("keydown",(e)=>this.changes_stacks_event(e))
         })
 
-        try{
-
-
-
-            let nav= document.getElementById("navBarSite")
-            let btn=document.getElementById("publishBtn")
-            let btn2=document.getElementById("downloadBtn")
-
-            if(btn || btn2)
-                return
-            btn=document.createElement("button")
-            btn.classList.add("btn","nav-item")
-            btn.style.backgroundColor="var(--wsr-color-10, #3899EC)"
-            btn.style.color="white"
-            btn.style.borderRadius="var(--wsr-button-border-radius, 18px)"
-            btn.style.width="6%"
-            btn.style.fontFamily="HelveticaNeueW01-55Roma,HelveticaNeueW02-55Roma,HelveticaNeueW10-55Roma,sans-serif"
-            btn.setAttribute('data-toggle','tooltip')
-            btn.setAttribute('title','Publish it to your github')
-
-            btn2=btn.cloneNode(true);
-
-
-            btn.innerText="Publish"
-            btn2.innerText="Download"
-            btn2.setAttribute('data-toggle','tooltip')
-            btn2.setAttribute('title','Download as PDF')
-
-            
-            btn.setAttribute("id","publishBtn")
-            btn2.setAttribute("id","downloadBtn")
-            btn2.style.marginRight="2%"
-            btn.onclick=async()=>{
-                await this.getAccessTokenGit()
-                }
-
-            btn2.onclick=async()=>{
-               await this.downloadPdf()
-            }
-
-            nav.appendChild(btn2)
-            nav.appendChild(btn)
-            window.addEventListener('beforeunload', this.removePublishBtn);
-        }
-        catch(e){
-            return
-        }
+   
 
     }
 
@@ -322,10 +269,7 @@ class Template extends Component {
 
         if(btn2!=null)
             btn2.remove()
-
-       localStorage.removeItem("tempId");
-       localStorage.removeItem("user");     
-       localStorage.removeItem("loggedin")
+     
        window.removeEventListener('beforeunload', this.removePublishBtn);
         
     }
@@ -1057,7 +1001,7 @@ class Template extends Component {
 
     render() { 
         let loggedin=this.props.loggedin
-        if(localStorage.getItem("loggedin")==="true") loggedin=true
+        // if(localStorage.getItem("loggedin")==="true") loggedin=true
 
         if(loggedin===0 || loggedin===false){  //Go to home if the user has logged out
             this.removePublishBtn()
@@ -1066,6 +1010,7 @@ class Template extends Component {
             <React.Fragment > 
 
                 {/* Undo changes button */}
+                <EditorMenu loggedin={this.props.loggedin} user={this.props.location.state.user} logoutUser={this.props.logoutUser} download={this.downloadPdf} deploy={this.getAccessTokenGit}></EditorMenu>
                 <div id="undoChanges"  style={{display:"none"}} className="container">
                     <div className="position-fixed d-flex flex-column pt-3 pb-3 pr-3 pl-3" id="undoInner" style={{top:"20%",bottom:"50%",right:"0",backgroundColor:"black",zIndex:3,height:"14%"}}>
                         <p className="" style={{color:"white",fontSize:"medium"}}>
@@ -1090,7 +1035,7 @@ class Template extends Component {
                 </div>
 
                 <div className="d-flex flex-lg-row flex-column">
-                    <div className="ml-n2 container-fluid row " style={{display:"none", width:"20%"}} id="editor">
+                    <div className="ml-n2 container-fluid row " id="editorScroll" style={{display:"none", width:"20%"}} id="editor">
                         <div className="position-fixed col ml-n2 " style={{overflowY:"scroll",bottom: "0%", top: "52px", border:"2px solid white",width:"20%"}}>
                             {this.state.editor.enabled===1?
                                 this.editorDisplay()

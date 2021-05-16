@@ -65,7 +65,13 @@ class Template extends Component{
         user=site.user
         this.props.updateUser(user)
 
+        //Setting to local storage so that page still works on refresh
+        localStorage.setItem("tempId",_id);
+        localStorage.setItem("user",JSON.stringify(user));
+        localStorage.setItem("loggedin","true");
+
         let site_id=site.website_id
+        console.log(this.props,"Template props")
         this.props.history.push({
             pathname:'/template/edit',
             state:{
@@ -86,7 +92,6 @@ class Template extends Component{
                         style={{zoom:0.4}} 
                         >   
                             <div dangerouslySetInnerHTML={{__html:this.state.html}} className="embed-responsive-item itemTemplate">
-                                
                             </div>
                           
                         </div>

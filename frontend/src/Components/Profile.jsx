@@ -34,7 +34,6 @@ class Profile extends Component {
         }
 
         let {user:{websites}}=state
-
         let res=await Promise.all(websites.map((site)=>{
             return fetch('http://localhost:9000/website/info/'+site,{
                 method:"get",
@@ -77,8 +76,6 @@ class Profile extends Component {
         
         let {sites}=this.state,
             {user}=this.props.location.state
-
-            
 
         return(
 

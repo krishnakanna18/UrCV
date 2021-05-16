@@ -1,0 +1,118 @@
+#menuTopBackground{
+    background-image: url('../assests/hero-large.png');
+    background-repeat:no-repeat;
+    background-size:contain;
+    height:25vw;
+    width: 100vw;
+    background-position: top;
+    background-position-x: center;
+    background-position-y: top;
+    background-size: 100%;
+    min-height: 100vh;
+    background-color: #4a154b   ;
+}
+
+.navbar.transparent {
+    border-width: 0px;
+    -webkit-box-shadow: 0px 0px;
+    box-shadow: 0px 0px;
+    background-color: rgba(0,0,0,0.0);
+    background-image: -webkit-gradient(linear, 50.00% 0.00%, 50.00% 100.00%, color-stop( 0% , rgba(0,0,0,0.00)),color-stop( 100% , rgba(0,0,0,0.00)));
+    background-image: -webkit-linear-gradient(270deg,rgba(0,0,0,0.00) 0%,rgba(0,0,0,0.00) 100%);
+    background-image: linear-gradient(180deg,rgba(0,0,0,0.00) 0%,rgba(0,0,0,0.00) 100%);
+}
+
+.headerMenuPage{
+    color: white;
+    font-weight: 700;
+    font-family: Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
+    font-size: 10px;
+    word-wrap:normal;
+
+}
+
+.nav-item:hover{
+    border-bottom: 2px solid white;
+}
+
+.activeItem{
+    border-bottom: 2px solid white;
+
+}
+
+.centerTextLanding{
+    font-size: 3vw;
+    color: #fff;
+    margin-bottom: 2rem!important;
+    font-family: Slack-Larsseit,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -1.5px;
+    margin-top: 0;
+    margin: .67em ;
+    text-align: center!important;
+
+}
+
+.buttonTextMenu{
+    font-family: Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
+    font-weight: 700;
+    line-height: 1.28571429;
+    letter-spacing: .8px;
+    font-size: large;
+    color: #611f69;
+}
+
+.buttonTextMenu:hover{
+    text-transform: none;
+    text-decoration: none;
+    color: #611f69;
+}
+
+/* @keyframes slide-in--down{
+    animation-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: none;
+    animation-play-state: running;
+
+} */
+
+.scrolledMenuBg{
+    color:black;
+    border: 1px solid #fff;
+    border-radius: 50px;
+    position: fixed;
+    width: 70%;
+    left: 18%;
+    top: 2%;
+    background-color: transparent;
+    position: fixed;
+    animation:  420ms cubic-bezier(.165,.84,.44,1);
+    /* animation-duration: 420ms; */
+   
+    /* animation-name: slide-in--down; */
+    font-family: Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
+    max-width: 81.25rem;
+    background-color: #fff;
+    box-shadow: 0 4px 40px rgb(0 0 0 / 8%);
+    z-index: 1000;
+}
+
+
+
+.scrolledMenuBg .headerMenuPage{
+    color:black;
+    font-size: 100px;
+}
+.scrolledMenuBg .headerMenuPage:hover{
+text-decoration: underline;
+}
+
+
+.middleMenuPg{
+    background-color: rgb(246, 239, 232);
+    opacity: 1;
+}
+
