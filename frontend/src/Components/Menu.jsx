@@ -21,25 +21,37 @@ class Menu extends Component {
                 try{
                     let nav=document.getElementById("navTopBg")
                     let top=document.getElementById("logoMenuPg")
-                    top.style.color="white"
-                    nav.classList.remove("scrolledMenuBg")
-                    nav.classList.add("transparent")
+                    if(top!==null || top!==undefined)
+                        top.style.color="white"
+                    if(nav!==null || nav!==undefined){
+                        nav.classList.remove("scrolledMenuBg")
+                        nav.classList.add("transparent")
+                    }
                 }
                 catch(e){}
             }
             else {
-                let nav=document.getElementById("navTopBg")
-                let top=document.getElementById("logoMenuPg")
-                top.style.color="black"
-                top.classList.add("p-2")
-                nav.classList.add("scrolledMenuBg")
-                nav.classList.remove("transparent")
+                try{
+                    let nav=document.getElementById("navTopBg")
+                    let top=document.getElementById("logoMenuPg")
+                    if(top!==null || top!==undefined)
+                        top.style.color="black"
+                    if(nav!==null || nav!==undefined){
+                    nav.classList.add("scrolledMenuBg")
+                    nav.classList.remove("transparent")
+                    }
+                }
+                catch(e){
+
+                }
 
             }
         } 
     }
 
     userMenu(){
+        let btnStyle={}
+        // if()
         if(!this.props.loggedin)
            return <li  className="nav-item" >
                   <Link className="nav-link" to={{
@@ -50,8 +62,8 @@ class Menu extends Component {
                           }
                       }
                   }}>       
-                            <Button style={{color:"white",fontWeight: '700', fontFamily:'Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif',fontSize:"15px",background: 'transparent', border:'1px solid white'}}>
-                                Sign in
+                            <Button className="menuSignInBtn" >
+                               <span className="p-2 menuSignInBtnTxt">Sign in</span> 
                             </Button>
                       </Link> 
                 </li>
@@ -65,8 +77,7 @@ class Menu extends Component {
                                 user:this.props.user
                             }
                         }}>
-                            <span classname="headerMenuPage" style={{fontSize:"15px",color: 'white',fontWeight: '700',
-    fontFamily:'Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif'}}> Your Sites </span>
+                            <span classname="headerMenuPage originalLeftPg leftMenuPg" > Your Sites </span>
                             
                         </Link>
                 </li>
@@ -102,7 +113,7 @@ class Menu extends Component {
                         <nav className="transparent navbar navbar-dark navbar-expand-lg" id="navTopBg">
                             
                             <Link className="navbar-brand bold " to='/' >
-                                <span id="logoMenuPg" style={{color:'white', fontSize:"30px",fontFamily: 'Architects Daughter', fontWeight:"bolder"}}>UrCV</span>
+                                <span id="logoMenuPg" style={{color:'white', fontSize:"30px",fontFamily: 'ANNIHILATOR', fontWeight:"bolder"}}>UrCV</span>
                             </Link>
 
                             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -131,14 +142,30 @@ class Menu extends Component {
 
                         </nav>
 
-                        <h1 className="centerTextLanding mt-5 col-12" >
-                                UrCV makes it easier to <span style={{color: "#ecb22e"}}>build and deploy</span> your portfolio at no cost.
+                        <h1 className="centerTextLanding mt-5 col-12 " >
+                                <span class>UrCV makes it easier to <span style={{color: "#ecb22e"}} >build and deploy</span> your portfolio at no cost.</span>
                         </h1>
                     
-                        <div className="container mt-5" style={{textAlign:"center"}}>
+                        <div className="container " style={{textAlign:"center"}}>
                             <Button style={{backgroundColor:"white", color:"#611f69",textTransform: 'none',boxShadow: 'inset 0 0 0 1px #611f69'}}>
                                 <Link className="p-3 buttonTextMenu" to='/template/view'>Try our templates</Link>
                             </Button>
+                        </div>
+
+                        <div className="container-lg mt-5 templateViewScroll">
+                            <div className="templateViewScrollTop">
+                                <div className="templateViewScrollTopButtons">
+                                    <div className="templateViewScrollTopButton" style={{backgroundColor:"#ff6059"}}>
+                                    </div>
+                                    <div className="templateViewScrollTopButton" style={{backgroundColor:"#ffbe2f"}}>
+                                    </div>
+                                    <div className="templateViewScrollTopButton" style={{backgroundColor:"#2aca41"}}>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="templateViewScrollBottom ">
+                                <video autoPlay={true} muted={true} src="/videos/screen-capture.mp4" className="screenCaptureVid"></video>
+                            </div>
                         </div>
 
                     </div>

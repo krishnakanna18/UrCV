@@ -12,6 +12,13 @@
     background-color: #4a154b   ;
 }
 
+a{
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: none;
+}
+
 .navbar.transparent {
     border-width: 0px;
     -webkit-box-shadow: 0px 0px;
@@ -41,7 +48,7 @@
 }
 
 .centerTextLanding{
-    font-size: 3vw;
+    font-size: calc(2.1em + 1vw);
     color: #fff;
     margin-bottom: 2rem!important;
     font-family: Slack-Larsseit,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
@@ -84,17 +91,13 @@
     border: 1px solid #fff;
     border-radius: 50px;
     position: fixed;
-    width: 70%;
+    width: 63%;
     left: 18%;
     top: 2%;
     background-color: transparent;
     position: fixed;
     animation:  420ms cubic-bezier(.165,.84,.44,1);
-    /* animation-duration: 420ms; */
-   
-    /* animation-name: slide-in--down; */
     font-family: Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
-    max-width: 81.25rem;
     background-color: #fff;
     box-shadow: 0 4px 40px rgb(0 0 0 / 8%);
     z-index: 1000;
@@ -110,9 +113,80 @@
 text-decoration: underline;
 }
 
+.scrolledMenuBg span{
+
+    padding:10%;
+
+}
+
+.scrolledMenuBg p{
+
+    padding:10%;
+
+}
+
+.menuSignInBtn{
+   background:'transparent';border:'1px solid black';
+}
+
+.menuSignInBtnTxt{
+    color:white;font-weight:700;font-family:Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;font-size:15px;
+}
+
+
+.originalLeftPg{
+    font-size:15px;color:white;font-weight: 700;
+    font-family:Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif
+}
+.leftMenuPg{
+    color: black;
+}
 
 .middleMenuPg{
     background-color: rgb(246, 239, 232);
     opacity: 1;
 }
 
+.templateViewScroll{
+    max-width: 1000px;
+}
+
+.templateViewScrollTop{
+    max-width: 100%;
+    height: 40px;
+    background: #2b092b;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+
+
+.templateViewScrollTopButtons{
+    padding-left: 1.5rem;
+}
+.templateViewScrollTopButton{
+border-radius: 50%;
+width: 12px;
+height: 12px;
+margin-right: 8px;
+display: inline-block;
+}
+
+.templateViewScrollBottom{
+    box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    transition: box-shadow 420ms cubic-bezier(.165,.84,.44,1);
+    z-index: 1;
+    display: flex;
+    max-height: 500px; 
+    max-width: 100%;
+
+}
+
+.screenCaptureVid{
+    max-width:100%;
+    max-height: 100%;
+}
