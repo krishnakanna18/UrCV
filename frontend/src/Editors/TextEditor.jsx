@@ -589,9 +589,23 @@ class TextEditor extends Component {
         this.groupTextStyles(Text,displayStrings)
         let {editStyles:{color}}={...this.state}
 
+        let normalClass="mt-2 mb-2 editorTextBoxOuter" 
+        let style={}
+        try{
+            let {classname}=this.props
+            if(classname!==undefined && classname!==null){
+                normalClass+=` ${classname}`
+                style={margin:"auto", width:"100%"}
+                console.log(classname)
+            }
+        }
+        catch(e){
+
+        }
+
         return ( 
             <React.Fragment>
-                <div className="mt-2 mb-2 editorTextBoxOuter" style={{}}>
+                <div className={normalClass} style={style}>
 
                      {/* Contains the editors elements/options */}
                     <div className="editorStyleBox d-flex flex-row justify-content-center" ref={this.state.editorMenuRef}>

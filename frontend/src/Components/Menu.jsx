@@ -8,45 +8,47 @@ import MenuUI from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import TextEditor from '../Editors/TextEditor'
 class Menu extends Component {
 
+    constructor(){
+        super();
+        this.state={templateChoice:0, templateViews:[], editorComponent:"text"}    
+    }
 
-    componentDidMount=()=>{
+    isScrollAbove=()=>{
+        var doc = document.getElementById("menuTopBackground");
+        var bottom =window.pageYOffset;
+        if(bottom <= 1000 || bottom===undefined || bottom===null) {
+            return 0;
+        }
+        else return 1;
+    }
 
-        //Apply properties to when scrolled down
-        window.onscroll = function() {
-            var doc = document.getElementById("menuTopBackground");
-            var bottom =window.pageYOffset;
-            if(bottom <= 1000 || bottom===undefined || bottom===null) {
-                try{
-                    let nav=document.getElementById("navTopBg")
-                    let top=document.getElementById("logoMenuPg")
-                    if(top!==null || top!==undefined)
-                        top.style.color="white"
-                    if(nav!==null || nav!==undefined){
-                        nav.classList.remove("scrolledMenuBg")
-                        nav.classList.add("transparent")
-                    }
-                }
-                catch(e){}
-            }
-            else {
-                try{
-                    let nav=document.getElementById("navTopBg")
-                    let top=document.getElementById("logoMenuPg")
-                    if(top!==null || top!==undefined)
-                        top.style.color="black"
-                    if(nav!==null || nav!==undefined){
-                    nav.classList.add("scrolledMenuBg")
-                    nav.classList.remove("transparent")
-                    }
-                }
-                catch(e){
+    componentDidMount=async()=>{
 
-                }
+        let {templates}=this.props
+        let templateViews=[]
+        await Promise.all(templates.map(async (template)=>{
+            let res=await fetch('http://localhost:9000/template/html/'+template.id+'.html',{
+                method:"get",
+                credentials:"include"
+            })
+            let {status}=res
+            res=await res.json()
+            if(status===200)
+                templateViews.push({html:res.html,name:template.name})
+        }))
+        this.setState({templateViews})
+    }
 
-            }
-        } 
+    chooseView=(id)=>{
+        this.setState({templateChoice:id})
+        document.getElementById("codeDisplayInnerHtml").scrollTop=0
+    }
+
+    setEditorType=(type)=>{
+        this.setState({editorComponent:type})
     }
 
     userMenu(){
@@ -96,7 +98,7 @@ class Menu extends Component {
                             <svg viewBox="0 0 24 24" width="1em" height="1em" className="mr-3"><path fillRule="evenodd" d="M17 3c1.1 0 2 .9 2 2v16l-7-3-7 3 .01-16c0-1.1.89-2 1.99-2h10zm-5 10.43L14.472 15l-.656-2.96L16 10.048l-2.876-.256L12 7l-1.124 2.792L8 10.048l2.184 1.992L9.528 15 12 13.43z"></path>
                             </svg>
                         {this.props.user.username}
-                        </Link>
+                        </Link>className="col-lg-6 col-12 
                         <a className="dropdown-item col" onClick={async()=>await this.props.logoutUser()}  >
                         <svg viewBox="0 0 24 24" width="1em" height="1em" className="mr-3"><path fillRule="evenodd" d="M21 3.01a2 2 0 0 1 2 2v14c0 1.1-.9 1.98-2 1.98H10c-1.1 0-2-.88-2-1.98V15h2v4.02h11V4.99H10V9H8V5.01c0-1.1.9-2 2-2h11zM5 16l-4-4 4-4v3h10v2H5v3z"></path></svg>
                         Sign out</a> 
@@ -106,9 +108,21 @@ class Menu extends Component {
                 </React.Fragment>  
     }
     render() { 
+        let {templateViews}=this.state
+        let blueImage="/icons/templateBlue.png"
+        let normal="/icons/template.png"
+        let innerhtml
+        try{
+        innerhtml=this.state.templateViews[this.state.templateChoice].html
+        }
+        catch(e){
+            innerhtml="<p></p>"
+        }
+        let editorComponent=this.state.editorComponent
+        let changedClass="editorLookBoxInnerBlue"
         return (    
             <React.Fragment>
-                <div id="menuTopBackground" >
+                <div id="menuTopBackground"className="mb-5" >
                     <div className="container-lg">
                         <nav className="transparent navbar navbar-dark navbar-expand-lg" id="navTopBg">
                             
@@ -152,7 +166,7 @@ class Menu extends Component {
                             </Button>
                         </div>
 
-                        <div className="container-lg mt-5 templateViewScroll">
+                        <div className="container-lg mt-5 mb-5 templateViewScroll dynamicInnerContent" style={{ position: "-webkit-sticky",position: "sticky"}}>
                             <div className="templateViewScrollTop">
                                 <div className="templateViewScrollTopButtons">
                                     <div className="templateViewScrollTopButton" style={{backgroundColor:"#ff6059"}}>
@@ -163,15 +177,146 @@ class Menu extends Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="templateViewScrollBottom ">
+                            <div className="templateViewScrollBottom " >
                                 <video autoPlay={true} muted={true} src="/videos/screen-capture.mp4" className="screenCaptureVid"></video>
                             </div>
                         </div>
 
                     </div>
                 </div>
-                <div style={{height:"2000px"}} className="middleMenuPg">
-                    
+
+                <div style={{height:"2000px"}} className="middleMenuPg mt-5">
+                    {/* <nav className="transparent navbar navbar-dark navbar-expand-lg sticky-top">
+                            <Link className="navbar-brand bold " to='/' >
+                                <span id="logoMenuPg" style={{color:'white', fontSize:"30px",fontFamily: 'ANNIHILATOR', fontWeight:"bolder"}}>UrCV</span>
+                            </Link>
+                    </nav> */}
+                    <div className=" mt-5 dynamicInnerContent">
+                        <div className="parentCenterTarget" >
+                            <div className="d-flex flex-lg-row flex-column  justify-content-center">
+                                <div className="mt-5 col-lg-4 col-12 templateViewDivCenter d-flex flex-column  mb-5" >
+                                    <h1 className="mainPageHeaderBig row">Choose any template to start with.</h1>
+                                    <h3 className="mt-lg-3 mt-2 row float-left normalLandingText" >See what the templates look like:</h3>
+                                    <div className="mt-lg-1 row">
+                                        <div className="d-flex flex-row flex-wrap  pcTargetTemplateViewOuter">
+                                            {templateViews.map((template,id)=>{
+                                                let imgSrc=id==this.state.templateChoice?blueImage:normal;
+                                                let classImg=id==this.state.templateChoice?"pcTargetTemplateViewInnerBlue":"pcTargetTemplateViewInner"
+                                                return  <div key={id} className={`col-3 ${classImg} pcTargetTemplateViewInnerResponsive`} onClick={(e)=>{this.chooseView(id)}} style={{border:"1px solid #611f69"}}>
+                                                            <div className="d-flex flex-column pcTargetTemplateViewInnerPadded"  style={{textAlign:"center"}}>
+                                                                <div className="col">
+                                                                    <img className="pcTargetTemplateViewInnerImg" src={imgSrc}>
+                                                                    </img>
+                                                                </div>
+                                                                <div className="col mt-2 mr-4" style={{fontSize:"80%",whiteSpace: "nowrap"}}>
+                                                                    {template.name}
+                                                                </div>
+                                                            </div>                                                            
+                                                        </div>
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mt-lg -5 col-lg-8 col-12 mt-5 mb-5" >
+                                    <div className="templateViewScrollTop" >
+                                        <div className="templateViewScrollTopButtons">
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ff6059"}}>
+                                            </div>
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ffbe2f"}}>
+                                            </div>
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#2aca41"}}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="templateViewScrollBottom codeDisplayTemplate" >
+                                        <div className="templateActualView" >
+                                                <div dangerouslySetInnerHTML={{__html:innerhtml}} id="codeDisplayInnerHtml">
+                                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-5 parentCenterTarget">
+                            <div className="d-flex flex-lg-row flex-column  justify-content-center">
+                                <div className="mt-5 col-lg-6 col-12 templateViewDivCenter d-flex flex-column  mb-5" >
+                                    <h1 className="mainPageHeaderBig row">Explore our rich editing features.</h1>
+                                    <h3 className="row float-left normalLandingText" >Multiple individual editors combined to give rich editing experience.</h3>
+                                    <h5 className="row float-left normalLandingText mt-3" style={{fontWeight:"bold"}}>See what each editor looks like:</h5>
+                                    <div className="mt-3 row d-flex flex-column align-items-center justify-content-center editorLookBoxOuter" >
+                                        {this.state.editorComponent==="text"?
+                                            <div className={`col p-2 editorLookBoxInner ${changedClass}`} style={{  borderBottom: "2px solid #611f69"}} onClick={(e)=>{this.setEditorType("text")}}>
+                                                <div className="d-flex flex-row justify-content-between">
+                                                Text Editor
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-288 379 35 35" width="20" height="20"  className="v--homepage__customer-story-option__arrow svg-replaced " shapeRendering="geometricPrecision"><path d="M-256.5 395.5l-9.9-10.1c-.6-.6-1.5-.6-2 0-.6.6-.6 1.5 0 2.1l7.5 7.6h-22.4c-.8 0-1.4.7-1.4 1.5s.6 1.5 1.4 1.5h22.4l-7.5 7.6c-.6.6-.6 1.5 0 2.1.6.6 1.5.6 2 0l9.9-10.1c.5-.7.5-1.7 0-2.2z" style={{fill: "#fff"}}></path></svg>
+                                                </div>
+                                            </div>
+                                            
+                                            :
+                                            <div className="col p-2 editorLookBoxInner" style={{  borderBottom: "2px solid #611f69"}}  onClick={(e)=>{this.setEditorType("text")}}>
+                                                <div className="d-flex flex-row justify-content-between">
+                                                    Text Editor
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-288 379 35 35" width="20" height="20"  className="v--homepage__customer-story-option__arrow svg-replaced " shapeRendering="geometricPrecision"><path d="M-256.5 395.5l-9.9-10.1c-.6-.6-1.5-.6-2 0-.6.6-.6 1.5 0 2.1l7.5 7.6h-22.4c-.8 0-1.4.7-1.4 1.5s.6 1.5 1.4 1.5h22.4l-7.5 7.6c-.6.6-.6 1.5 0 2.1.6.6 1.5.6 2 0l9.9-10.1c.5-.7.5-1.7 0-2.2z" style={{fill: "#611f69"}}></path></svg>
+                                                </div>
+                                            </div>
+                                        }
+                                        {this.state.editorComponent==="image"?
+                                            <div className={`col p-2 editorLookBoxInner ${changedClass}`} style={{  borderBottom: "2px solid #611f69"}}  onClick={(e)=>{this.setEditorType("image")}}>
+                                                     <div className="d-flex flex-row justify-content-between">
+                                                        Image Editor
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-288 379 35 35" width="20" height="20"  className="v--homepage__customer-story-option__arrow svg-replaced " shapeRendering="geometricPrecision"><path d="M-256.5 395.5l-9.9-10.1c-.6-.6-1.5-.6-2 0-.6.6-.6 1.5 0 2.1l7.5 7.6h-22.4c-.8 0-1.4.7-1.4 1.5s.6 1.5 1.4 1.5h22.4l-7.5 7.6c-.6.6-.6 1.5 0 2.1.6.6 1.5.6 2 0l9.9-10.1c.5-.7.5-1.7 0-2.2z" style={{fill: "#fff"}}></path></svg>
+                                                    </div>
+                                            </div>
+                                            :
+                                            <div className="col p-2 editorLookBoxInner" style={{  borderBottom: "2px solid #611f69"}} onClick={(e)=>{this.setEditorType("image")}}>
+                                                    <div className="d-flex flex-row justify-content-between">
+                                                        Image Editor
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-288 379 35 35" width="20" height="20"  className="v--homepage__customer-story-option__arrow svg-replaced " shapeRendering="geometricPrecision"><path d="M-256.5 395.5l-9.9-10.1c-.6-.6-1.5-.6-2 0-.6.6-.6 1.5 0 2.1l7.5 7.6h-22.4c-.8 0-1.4.7-1.4 1.5s.6 1.5 1.4 1.5h22.4l-7.5 7.6c-.6.6-.6 1.5 0 2.1.6.6 1.5.6 2 0l9.9-10.1c.5-.7.5-1.7 0-2.2z" style={{fill: "#611f69"}}></path></svg>
+                                                    </div>
+                                            </div>
+                                        }
+                                        {this.state.editorComponent==="project"?
+                                            <div className={`col p-2 editorLookBoxInner ${changedClass}`} onClick={(e)=>{this.setEditorType("project")}}>
+                                                     <div className="d-flex flex-row justify-content-between">
+                                                        Project Editor
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-288 379 35 35" width="20" height="20"  className="v--homepage__customer-story-option__arrow svg-replaced " shapeRendering="geometricPrecision"><path d="M-256.5 395.5l-9.9-10.1c-.6-.6-1.5-.6-2 0-.6.6-.6 1.5 0 2.1l7.5 7.6h-22.4c-.8 0-1.4.7-1.4 1.5s.6 1.5 1.4 1.5h22.4l-7.5 7.6c-.6.6-.6 1.5 0 2.1.6.6 1.5.6 2 0l9.9-10.1c.5-.7.5-1.7 0-2.2z" style={{fill: "#fff"}}></path></svg>
+                                                    </div>
+                                            </div>
+                                            :
+                                            <div className="col p-2 editorLookBoxInner" >
+                                                     <div className="d-flex flex-row justify-content-between" onClick={(e)=>{this.setEditorType("project")}}>
+                                                        Project Editor
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-288 379 35 35" width="20" height="20"  className="v--homepage__customer-story-option__arrow svg-replaced " shapeRendering="geometricPrecision"><path d="M-256.5 395.5l-9.9-10.1c-.6-.6-1.5-.6-2 0-.6.6-.6 1.5 0 2.1l7.5 7.6h-22.4c-.8 0-1.4.7-1.4 1.5s.6 1.5 1.4 1.5h22.4l-7.5 7.6c-.6.6-.6 1.5 0 2.1.6.6 1.5.6 2 0l9.9-10.1c.5-.7.5-1.7 0-2.2z" style={{fill: "#611f69"}}></path></svg>
+                                                    </div>
+                                            </div>
+                                        }
+
+                                    </div>
+                                </div>
+                                <div className="mt-lg -5 col-lg-6 col-12 mt-5 mb-5 " >
+                                    <div className="templateViewScrollTop mb-n2" >
+                                        <div className="templateViewScrollTopButtons">
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ff6059"}}>
+                                            </div>
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ffbe2f"}}>
+                                            </div>
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#2aca41"}}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style={{backgroundColor:"white"}} className="">
+                                        <TextEditor domId="landingPageView"  classname="landingPageViewText" text={{tag:"p", contents:{'text':"Modify text to your needs. Supports rich text decoratin features. Over 100 google fonts supported. Choose the background color that goes well with your text. Lightning fast update to your page."}}} modifyText={(e)=>{console.log(e)}}>
+                                        </TextEditor>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+
                 </div>
             </React.Fragment>
         );

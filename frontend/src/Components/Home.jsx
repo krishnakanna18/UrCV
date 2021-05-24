@@ -25,7 +25,7 @@ class Home extends Component {
     render() { 
         return ( 
             <React.Fragment>
-                    <Menu loggedin={this.props.loggedin} user={this.props.user} logoutUser={this.props.logoutUser}></Menu>
+                    <Menu loggedin={this.props.loggedin} user={this.props.user} logoutUser={this.props.logoutUser} templates={this.props.templates}></Menu>
             </React.Fragment>
          );
     }
