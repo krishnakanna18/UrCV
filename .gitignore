@@ -4,4 +4,4 @@ dbHelper
 backend/config.js
 bfg-1.14.0.jar
 backend/public/htmlTemplates
-test
+tests
