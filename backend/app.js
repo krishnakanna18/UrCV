@@ -62,7 +62,6 @@ const savePrev=(req,res,next)=>{
       next();
 }
 
-
 //Store the user details in each of the request for the logged in user ---FINAL
 let loggedinUserDetails=(req,res,next)=>{
       let loggedin=0;
