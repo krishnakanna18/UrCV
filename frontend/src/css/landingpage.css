@@ -55,7 +55,7 @@ a:hover{
 }
 
 .centerTextLanding{
-    font-size: calc(2.1em + 1vw);
+    font-size: 55px;
     
     color: #fff;
     margin-bottom: 2rem!important;
@@ -69,13 +69,14 @@ a:hover{
 
 }
 
-@media (max-width: 479px){
+@media (max-width: 500px){
 
     .centerTextLanding{
         font-size:20px;
     }
 
 }
+
 
 .buttonTextMenu{
     font-family: Slack-Circular-Pro,"Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
@@ -241,6 +242,10 @@ display: inline-block;
     
 }
 
+.templateViewDivCenter{
+    margin-right: 5%;
+}
+
 @media (max-width: 1100px) {
     .parentCenterTarget{
     width:100%;
@@ -250,6 +255,7 @@ display: inline-block;
 
     .templateViewDivCenter{
         align-items: center;
+        margin-right: 0%;
     }
 }
 
@@ -297,7 +303,7 @@ display: inline-block;
 
 
 .pcTargetTemplateViewInnerImg{
-    width: 50%;
+    width: 30px;
 }
 
 .editorLookBoxOuter{
@@ -307,17 +313,29 @@ display: inline-block;
     max-width: 50%;
 }
 
+.pcTargetTemplateViewInnerNames{
+    font-size: 15px;
+}
+
 @media (max-width: 973px){
     .pcTargetTemplateViewInnerImg{
-        width: 30%;
+        width: 20px;
     }
     .editorLookBoxOuter{
         width: 100%;
     }
-
+    .pcTargetTemplateViewInnerNames{
+        font-size: 10px;
+    }
+  
 }
 
+@media (max-width: 973px) and (min-width:500px){
+    .centerTextLanding{
+        font-size:30px;
+    }
 
+}
 
 
 .editorLookBoxInner{

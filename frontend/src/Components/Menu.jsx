@@ -9,6 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import TextEditor from '../Editors/TextEditor'
+import ImgEditor from '../Editors/ImgEditor'
 class Menu extends Component {
 
     constructor(){
@@ -107,6 +108,19 @@ class Menu extends Component {
                 </li>
                 </React.Fragment>  
     }
+
+    editorComponentLanding=(comp)=>{
+        if(comp==="text"){
+           return <TextEditor domId="landingPageView"  classname="landingPageViewText" text={{tag:"p", contents:{'text':"Modify text to your needs. Supports rich text decoratin features. Over 100 google fonts supported. Choose the background color that goes well with your text. Lightning fast update to your page."}}} modifyText={(e)=>{console.log(e)}}>
+            </TextEditor>
+        }
+        else if(comp==="image"){
+            
+            return <ImgEditor index="landingPageImage:1" img={{'tag':'img', contents:{'src':'/images/imgBg.png'}}}  modifyImage={(d1,d2)=>{return;}} landingPage="true">
+            </ImgEditor>
+        }
+    }
+
     render() { 
         let {templateViews}=this.state
         let blueImage="/icons/templateBlue.png"
@@ -120,6 +134,8 @@ class Menu extends Component {
         }
         let editorComponent=this.state.editorComponent
         let changedClass="editorLookBoxInnerBlue"
+        let editorViewTemp={backgroundColor:"white"}
+      
         return (    
             <React.Fragment>
                 <div id="menuTopBackground"className="mb-5" >
@@ -167,16 +183,6 @@ class Menu extends Component {
                         </div>
 
                         <div className="container-lg mt-5 mb-5 templateViewScroll dynamicInnerContent" style={{ position: "-webkit-sticky",position: "sticky"}}>
-                            <div className="templateViewScrollTop">
-                                <div className="templateViewScrollTopButtons">
-                                    <div className="templateViewScrollTopButton" style={{backgroundColor:"#ff6059"}}>
-                                    </div>
-                                    <div className="templateViewScrollTopButton" style={{backgroundColor:"#ffbe2f"}}>
-                                    </div>
-                                    <div className="templateViewScrollTopButton" style={{backgroundColor:"#2aca41"}}>
-                                    </div>
-                                </div>
-                            </div>
                             <div className="templateViewScrollBottom " >
                                 <video autoPlay={true} muted={true} src="/videos/screen-capture.mp4" className="screenCaptureVid"></video>
                             </div>
@@ -208,7 +214,7 @@ class Menu extends Component {
                                                                     <img className="pcTargetTemplateViewInnerImg" src={imgSrc}>
                                                                     </img>
                                                                 </div>
-                                                                <div className="col mt-2 mr-4" style={{fontSize:"80%",whiteSpace: "nowrap"}}>
+                                                                <div className="col mt-2 mr-4"  className="pcTargetTemplateViewInnerNames"  style={{}}>
                                                                     {template.name}
                                                                 </div>
                                                             </div>                                                            
@@ -228,7 +234,7 @@ class Menu extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="templateViewScrollBottom codeDisplayTemplate" >
+                                    <div className="templateViewScrollBottom codeDisplayTemplate" style={{border:"1px solid white"}}>
                                         <div className="templateActualView" >
                                                 <div dangerouslySetInnerHTML={{__html:innerhtml}} id="codeDisplayInnerHtml">
                                                 </div>
@@ -305,9 +311,8 @@ class Menu extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                    <div style={{backgroundColor:"white"}} className="">
-                                        <TextEditor domId="landingPageView"  classname="landingPageViewText" text={{tag:"p", contents:{'text':"Modify text to your needs. Supports rich text decoratin features. Over 100 google fonts supported. Choose the background color that goes well with your text. Lightning fast update to your page."}}} modifyText={(e)=>{console.log(e)}}>
-                                        </TextEditor>
+                                    <div style={editorViewTemp} className="">
+                                        {this.editorComponentLanding(this.state.editorComponent)}
                                     </div>
                                     
                                 </div>

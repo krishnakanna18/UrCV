@@ -101,9 +101,16 @@ class ImgEditor extends Component {
 
     render() { 
         let {img,index}=this.props
-
+        let style={}
+        try{
+            if(this.props.landingPage!==undefined && this.props.landingPage!==null)
+                style={margin:"auto", width:"100%"}
+        }
+        catch(e){
+            
+        }
         // console.log(img)
-        return  <div  className="mt-2 mb-2 imgEditorOverlay" style={{}}
+        return  <div  className="mt-2 mb-2 imgEditorOverlay" style={style}
         >           
                     <div className="imgOptOly d-flex flex-row " style={{display:"none"}}>
                         <label htmlFor="img-upload" className="imgEdtOpt col">Replace</label>
