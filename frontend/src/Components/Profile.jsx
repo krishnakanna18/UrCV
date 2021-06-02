@@ -4,6 +4,7 @@ import '../css/userProfile.css';
 import {
     Link,BrowserRouter as Router,Route
   } from "react-router-dom";
+import {serverEndPoint, clientEndPoint} from '../config'
 class Profile extends Component {
 
     constructor(){
@@ -29,13 +30,13 @@ class Profile extends Component {
             state=this.props.location.state
         }
         catch(e){
-            window.location.href='http://localhost:3000'
+            window.location.href=`${clientEndPoint}`
 
         }
 
         let {user:{websites}}=state
         let res=await Promise.all(websites.map((site)=>{
-            return fetch('http://localhost:9000/website/info/'+site,{
+            return fetch(`${serverEndPoint}/website/info/`+site,{
                 method:"get",
                 credentials:"include"
             })
@@ -57,7 +58,7 @@ class Profile extends Component {
         let index=this.state.sites[id]._id
         let user=JSON.parse(JSON.stringify(this.props.location.state.user))
 
-        let res=await fetch('http://localhost:9000/website/delete',{
+        let res=await fetch(`${serverEndPoint}/website/delete`,{
             method:"delete",
             credentials:"include",
             headers:{'Content-Type':'application/json'},
@@ -175,7 +176,7 @@ class Profile extends Component {
         let {user}=this.props.location.state
         }
         catch(e){
-            window.location.href='http://localhost:3000'
+            window.location.href=`${clientEndPoint}`
         }
         return ( 
 

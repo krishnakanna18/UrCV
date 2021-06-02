@@ -4,6 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import 'jquery/dist/jquery.min.js';
 import '../css/ImgEditor.css'
+import {serverEndPoint} from '../config'
+
 class ImgEditor extends Component {
     constructor(props){
         super(props);
@@ -67,7 +69,7 @@ class ImgEditor extends Component {
         }};
         let editor = new Pixo.Bridge(constructor_options);
         let image=document.getElementById(`${this.props.index}:imageEditor`)
-        if(image.getAttribute('src').match('http://localhost:9000/'))  
+        if(image.getAttribute('src').match(`${serverEndPoint}/`))  
         {   
             (async()=>{
                 let data=await fetch(image.getAttribute('src'),{

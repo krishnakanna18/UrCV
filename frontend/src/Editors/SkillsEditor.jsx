@@ -7,6 +7,8 @@ import Autocomplete from '../Components/Autocomplete'
 //     Switch
 //   } from "react-router-dom";
 import '../css/SkillEditor.css'
+import {serverEndPoint} from '../config'
+
 
 class Skillset extends Component {
     constructor(props){
@@ -60,7 +62,7 @@ class Skillset extends Component {
 
     //Extract the skills and classify; Get the tool list from the server
     componentDidMount=async()=>{
-        let tools=await fetch ('http://localhost:9000/tools')
+        let tools=await fetch (`${serverEndPoint}/tools`)
         let skills=await tools.json()
         let {basic_skills,intermediate_skills,advanced_skills}=this.classifySkills()
         // console.log(basic_skills,intermediate_skills,"COMPONENT DID MOUNT")

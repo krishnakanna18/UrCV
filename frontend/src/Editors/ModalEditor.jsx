@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { renderToStaticMarkup } from "react-dom/server"
 import '../css/modal.css'
+import {serverEndPoint} from '../config'
 class Modal extends Component {
     constructor(){
         super()
@@ -13,7 +14,7 @@ class Modal extends Component {
         document.getElementById('root').style.opacity="0.2"
         document.getElementById('root').style.pointerEvents="none"
 
-        let res=await fetch('http://localhost:9000/template/containers/'+this.props.templateId,{
+        let res=await fetch(`${serverEndPoint}/template/containers/`+this.props.templateId,{
             method:"get",
             credentials:"include"
         })

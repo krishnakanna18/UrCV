@@ -10,6 +10,7 @@ import Link from '../TagComponents/Link'
 import { withRouter } from 'react-router-dom'
 import Button from '@material-ui/core'
 import EditorMenu from '../Components/editorMenu'
+import {serverEndPoint} from '../config'
 // import * as ImgToBase64 from 'img-to-base64';
 
 //Convert the css style object to react style object
@@ -211,7 +212,7 @@ class Template extends Component {
             user=JSON.parse(localStorage.getItem("user"))
         }
 
-        let template=await fetch('http://localhost:9000/website/'+tempId,{
+        let template=await fetch(`${serverEndPoint}/website/`+tempId,{
             method:"GET",
             credentials:"include"
         })
@@ -253,8 +254,8 @@ class Template extends Component {
 
     getAccessTokenGit=async()=>{
         console.log("Getting Access Token from git....");
-        window.open('http://localhost:9000/publish/code?siteID='+this.state.siteId,'_blank');
-        // window.location.href='http://localhost:9000/publish/code?siteID='+this.state.siteId
+        window.open(`${serverEndPoint}/publish/code?siteID=`+this.state.siteId,'_blank');
+        // window.location.href=`${serverEndPoint}/publish/code?siteID=`+this.state.siteId
     }
 
 
@@ -500,7 +501,7 @@ class Template extends Component {
         let old_value=[],dbid={p_id:""}
         if(p_id===-1)   
         {   
-            fetch('http://localhost:9000/website/container/insert',{
+            fetch(`${serverEndPoint}/website/container/insert`,{
                 method:"post",
                 credentials:"include",
                 headers:{'Content-Type':'application/json'},
@@ -514,7 +515,7 @@ class Template extends Component {
             })
             .then(res=>res.json())
             .then(async(res)=>{
-                let comp=await fetch('http://localhost:9000/website/container/retrieve/'+res.id,{
+                let comp=await fetch(`${serverEndPoint}/website/container/retrieve/`+res.id,{
                     method:"get",
                     credentials:"include",
                 })
@@ -548,7 +549,7 @@ class Template extends Component {
         }
         this.search(p_id,undefined,dbid)
         let i=p_id.split(":")[0];   //i- index of parent
-        fetch('http://localhost:9000/website/container/insert',{
+        fetch(`${serverEndPoint}/website/container/insert`,{
             method:"post",
             credentials:"include",
             headers:{'Content-Type':'application/json'},
@@ -562,7 +563,7 @@ class Template extends Component {
         })
         .then(res=>res.json())
         .then(async(res)=>{
-            let comp=await fetch('http://localhost:9000/website/container/retrieve/'+res.id,{
+            let comp=await fetch(`${serverEndPoint}/website/container/retrieve/`+res.id,{
                 method:"get",
                 credentials:"include",
             })
@@ -664,7 +665,7 @@ class Template extends Component {
                         },4000)
                     },500);
 
-                   fetch('http://localhost:9000/website/container/delete',{
+                   fetch(`${serverEndPoint}/website/container/delete`,{
                        method:"delete",
                        credentials:"include",
                        headers:{'Content-Type':'application/json'},
@@ -711,7 +712,7 @@ class Template extends Component {
                             undo.style.display="none"
                         },4000)
                 })
-                fetch('http://localhost:9000/website/container/delete',{
+                fetch(`${serverEndPoint}/website/container/delete`,{
                     method:"delete",
                     credentials:"include",
                     headers:{'Content-Type':'application/json'},
@@ -820,7 +821,7 @@ class Template extends Component {
                 undo_stack.push(change_obj)
             }
             this.setState({template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
-            fetch('http://localhost:9000/website/container/move',{
+            fetch(`${serverEndPoint}/website/container/move`,{
                 method:"put",
                 credentials:"include",
                 headers:{'Content-Type':'application/json'},
@@ -866,7 +867,7 @@ class Template extends Component {
                 undo_stack.push(change_obj)
             }
             this.setState({template:template,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
-            fetch('http://localhost:9000/website/container/move',{
+            fetch(`${serverEndPoint}/website/container/move`,{
                 method:"put",
                 credentials:"include",
                 headers:{'Content-Type':'application/json'},
@@ -913,7 +914,7 @@ class Template extends Component {
         }
         this.setState({template:modifiedTemp,changes_stacks:{undo_stack:undo_stack,redo_stack:this.state.changes_stacks.redo_stack}},()=>{return 1})
 
-        fetch('http://localhost:9000/website/container/modify',{
+        fetch(`${serverEndPoint}/website/container/modify`,{
             method:"put",
             credentials:"include",
             headers:{'Content-Type':'application/json'},

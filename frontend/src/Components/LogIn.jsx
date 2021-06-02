@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
+import {serverEndPoint} from '../config'
 class LogIn extends Component {
 
     // componentDidMount(){
@@ -11,7 +12,7 @@ class LogIn extends Component {
     async signin(){
         let res,state,status,loginUser,redirect
 
-        res=await fetch('http://localhost:9000/user/login',{
+        res=await fetch(`${serverEndPoint}/user/login`,{
             method:"post",
             credentials:"include",
             headers:{

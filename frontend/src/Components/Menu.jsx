@@ -10,6 +10,11 @@ import Button from '@material-ui/core/Button'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import TextEditor from '../Editors/TextEditor'
 import ImgEditor from '../Editors/ImgEditor'
+import { ButtonGroup } from '@material-ui/core';
+import SaveIcon from '@material-ui/icons/Save'
+import PublishIcon from '@material-ui/icons/CloudUploadOutlined'
+import {serverEndPoint} from '../config'
+
 class Menu extends Component {
 
     constructor(){
@@ -31,7 +36,7 @@ class Menu extends Component {
         let {templates}=this.props
         let templateViews=[]
         await Promise.all(templates.map(async (template)=>{
-            let res=await fetch('http://localhost:9000/template/html/'+template.id+'.html',{
+            let res=await fetch(`${serverEndPoint}/template/html/`+template.id+'.html',{
                 method:"get",
                 credentials:"include"
             })
@@ -39,6 +44,7 @@ class Menu extends Component {
             res=await res.json()
             if(status===200)
                 templateViews.push({html:res.html,name:template.name})
+            console.log(template._id)
         }))
         this.setState({templateViews})
     }
@@ -99,7 +105,7 @@ class Menu extends Component {
                             <svg viewBox="0 0 24 24" width="1em" height="1em" className="mr-3"><path fillRule="evenodd" d="M17 3c1.1 0 2 .9 2 2v16l-7-3-7 3 .01-16c0-1.1.89-2 1.99-2h10zm-5 10.43L14.472 15l-.656-2.96L16 10.048l-2.876-.256L12 7l-1.124 2.792L8 10.048l2.184 1.992L9.528 15 12 13.43z"></path>
                             </svg>
                         {this.props.user.username}
-                        </Link>className="col-lg-6 col-12 
+                        </Link>
                         <a className="dropdown-item col" onClick={async()=>await this.props.logoutUser()}  >
                         <svg viewBox="0 0 24 24" width="1em" height="1em" className="mr-3"><path fillRule="evenodd" d="M21 3.01a2 2 0 0 1 2 2v14c0 1.1-.9 1.98-2 1.98H10c-1.1 0-2-.88-2-1.98V15h2v4.02h11V4.99H10V9H8V5.01c0-1.1.9-2 2-2h11zM5 16l-4-4 4-4v3h10v2H5v3z"></path></svg>
                         Sign out</a> 
@@ -121,13 +127,47 @@ class Menu extends Component {
         }
     }
 
+    miniMenuSecondary=()=>{
+        return (
+            <div className="container-lg">
+                <nav className="transparent navbar navbar-dark navbar-expand-lg sticky-top" id="navTopBg">
+                        <Link className="navbar-brand bold " to='/' >
+                            <span id="logoMenuPg" style={{color:'black', fontSize:"30px",fontFamily: 'ANNIHILATOR', fontWeight:"bolder"}}>UrCV</span>
+                        </Link>
+                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon" style={{color:'black'}}></span>
+                        </button>
+                        <div className="collapse navbar-collapse  " id="navbarSupportedContent">
+                            <ul className="navbar-nav mr-auto align-items-center">
+                                <li className="nav-item mr-3 ml-3 activeItem" >
+                                    <Link to='/' className="nav-link"><span className="headerMenuPage" style={{fontSize:"15px",color:'black'}}>Home</span></Link>
+                                </li>
+                                <li className="nav-item mr-3 ml-3" >
+                                    <Link to='/template/view' className="nav-link"><span className="headerMenuPage" style={{fontSize:"15px",color:'black'}}>Design</span></Link>
+                                </li>
+                                <li className="nav-item mr-3 ml-3" >
+                                    <Link to='/template/view' className="nav-link"><span className="headerMenuPage" style={{fontSize:"15px",color:'black'}}>About</span></Link>
+                                </li>
+
+                            </ul>
+                            <ul className="navbar-nav ml-auto align-items-center">
+                                {this.userMenu()}
+                            </ul>
+                        </div>
+                </nav>
+            </div>
+        )
+    }
+
     render() { 
         let {templateViews}=this.state
         let blueImage="/icons/templateBlue.png"
         let normal="/icons/template.png"
-        let innerhtml
+        let innerhtml, deployDisplayHtml
         try{
         innerhtml=this.state.templateViews[this.state.templateChoice].html
+        deployDisplayHtml=this.state.templateViews[0].html
+
         }
         catch(e){
             innerhtml="<p></p>"
@@ -140,14 +180,14 @@ class Menu extends Component {
             <React.Fragment>
                 <div id="menuTopBackground"className="mb-5" >
                     <div className="container-lg">
-                        <nav className="transparent navbar navbar-dark navbar-expand-lg" id="navTopBg">
+                        <nav className="transparent navbar navbar-dark navbar-expand-lg" id="navTopBg" >
                             
                             <Link className="navbar-brand bold " to='/' >
                                 <span id="logoMenuPg" style={{color:'white', fontSize:"30px",fontFamily: 'ANNIHILATOR', fontWeight:"bolder"}}>UrCV</span>
                             </Link>
 
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon" style={{color:'white'}}></span>
+                            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <span className="navbar-toggler-icon" style={{color:'white'}}></span>
                             </button>
 
                             <div className="collapse navbar-collapse  " id="navbarSupportedContent">
@@ -173,7 +213,7 @@ class Menu extends Component {
                         </nav>
 
                         <h1 className="centerTextLanding mt-5 col-12 " >
-                                <span class>UrCV makes it easier to <span style={{color: "#ecb22e"}} >build and deploy</span> your portfolio at no cost.</span>
+                                <span className>UrCV makes it easier to <span style={{color: "#ecb22e"}} >build and deploy</span> your portfolio at no cost.</span>
                         </h1>
                     
                         <div className="container " style={{textAlign:"center"}}>
@@ -190,18 +230,12 @@ class Menu extends Component {
 
                     </div>
                 </div>
-
                 <div style={{height:"2000px"}} className="middleMenuPg mt-5">
-                    {/* <nav className="transparent navbar navbar-dark navbar-expand-lg sticky-top">
-                            <Link className="navbar-brand bold " to='/' >
-                                <span id="logoMenuPg" style={{color:'white', fontSize:"30px",fontFamily: 'ANNIHILATOR', fontWeight:"bolder"}}>UrCV</span>
-                            </Link>
-                    </nav> */}
                     <div className=" mt-5 dynamicInnerContent">
-                        <div className="parentCenterTarget" >
+                        <div className="parentCenterTarget " style={{height:"100vh"}}>
                             <div className="d-flex flex-lg-row flex-column  justify-content-center">
                                 <div className="mt-5 col-lg-4 col-12 templateViewDivCenter d-flex flex-column  mb-5" >
-                                    <h1 className="mainPageHeaderBig row">Choose any template to start with.</h1>
+                                    <h1 className="mainPageHeaderBig row centerAlignOnReduce">Choose any template to start with.</h1>
                                     <h3 className="mt-lg-3 mt-2 row float-left normalLandingText" >See what the templates look like:</h3>
                                     <div className="mt-lg-1 row">
                                         <div className="d-flex flex-row flex-wrap  pcTargetTemplateViewOuter">
@@ -243,11 +277,53 @@ class Menu extends Component {
                                 </div>
                             </div>
                         </div>
+                        
+                        <div className="blueBgCenterTarget" style={{padding:"20px",height:"100vh"}}>
+                            <div className="mt-5 parentCenterTarget ">
+                                <div className="d-flex flex-lg-row flex-column  justify-content-center">
+                                <div className="mt-5 col-lg-5 col-12 templateViewDivCenter d-flex flex-column  mb-5" >
+                                    <h1 className="mainPageHeaderBig row mainPageResponsiveHeader" style={{color:"white"}}>Publish your site to github in one click.</h1>
+                                    <h3 className="row float-left normalLandingText" style={{color:"white"}}>HTML, CSS and JS file of your site will be pushed to your github pages.</h3>
+                                    <h5 className="row float-left normalLandingText mt-3" style={{fontWeight:"bold", color:"white"}}>Try deploying this sample site to your git.</h5>
+                                    <div className="col-12 mt-5">
+                                        <ButtonGroup variant="contained" color="primary" className="d-flex flex-column">
+                                            <Button  color="secondary" className="mb-4" startIcon={<PublishIcon />}
+                                                     onClick={async()=>{ 
+                                                        window.open(`${serverEndPoint}/publish/code?siteID=60b774d3a4333149bcdff619`,'_blank');
+                                                      }}
+                                            >Publish to Github</Button>
+                                            <Button  color="secondary" startIcon={<SaveIcon />}>Download as PDF</Button>
+                                        </ButtonGroup>
+                                    </div>
 
-                        <div className="mt-5 parentCenterTarget">
+                                </div>
+                                <div className="mt-lg -5 col-lg-7 col-12 mt-lg-5 mb-5 " style={{height:"100%"}}>
+                                    <div className="templateViewScrollTop mb-n2" >
+                                        <div className="templateViewScrollTopButtons">
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ff6059"}}>
+                                            </div>
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ffbe2f"}}>
+                                            </div>
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#2aca41"}}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="templateViewScrollBottom codeDisplayTemplate" style={{border:"1px solid white", backgroundColor:"white"}}>
+                                        <div className="templateActualView" >
+                                                <div dangerouslySetInnerHTML={{__html:deployDisplayHtml}} id="codeDisplayInnerHtml">
+                                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="parentCenterTarget" style={{height:"100vh"}}>
                             <div className="d-flex flex-lg-row flex-column  justify-content-center">
                                 <div className="mt-5 col-lg-6 col-12 templateViewDivCenter d-flex flex-column  mb-5" >
-                                    <h1 className="mainPageHeaderBig row">Explore our rich editing features.</h1>
+                                    <h1 className="mainPageHeaderBig row centerAlignOnReduce">Explore our rich editing features.</h1>
                                     <h3 className="row float-left normalLandingText" >Multiple individual editors combined to give rich editing experience.</h3>
                                     <h5 className="row float-left normalLandingText mt-3" style={{fontWeight:"bold"}}>See what each editor looks like:</h5>
                                     <div className="mt-3 row d-flex flex-column align-items-center justify-content-center editorLookBoxOuter" >
@@ -318,6 +394,51 @@ class Menu extends Component {
                                 </div>
                             </div>
                         </div>
+
+                        {/* To be edited */}
+                        <div className="blueBgCenterTarget" style={{padding:"20px",height:"100vh"}}>
+                            <div className="mt-5 parentCenterTarget ">
+                                <div className="d-flex flex-lg-row flex-column  justify-content-center">
+                                <div className="mt-5 col-lg-5 col-12 templateViewDivCenter d-flex flex-column  mb-5" >
+                                    <h1 className="mainPageHeaderBig row mainPageResponsiveHeader" style={{color:"white"}}>Publish your site to github in one click.</h1>
+                                    <h3 className="row float-left normalLandingText" style={{color:"white"}}>HTML, CSS and JS file of your site will be pushed to your github pages.</h3>
+                                    <h5 className="row float-left normalLandingText mt-3" style={{fontWeight:"bold", color:"white"}}>Try deploying this sample site to your git.</h5>
+                                    <div className="col-12 mt-5">
+                                        <ButtonGroup variant="contained" color="primary" className="d-flex flex-column">
+                                            <Button  color="secondary" className="mb-4" startIcon={<PublishIcon />}
+                                                     onClick={async()=>{ 
+                                                        window.open(`${serverEndPoint}/publish/code?siteID=60b774d3a4333149bcdff619`,'_blank');
+                                                      }}
+                                            >Publish to Github</Button>
+                                            <Button  color="secondary" startIcon={<SaveIcon />}>Download as PDF</Button>
+                                        </ButtonGroup>
+                                    </div>
+
+                                </div>
+                                <div className="mt-lg -5 col-lg-7 col-12 mt-lg-5 mb-5 " style={{height:"100%"}}>
+                                    <div className="templateViewScrollTop mb-n2" >
+                                        <div className="templateViewScrollTopButtons">
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ff6059"}}>
+                                            </div>
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ffbe2f"}}>
+                                            </div>
+                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#2aca41"}}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="templateViewScrollBottom codeDisplayTemplate" style={{border:"1px solid white", backgroundColor:"white"}}>
+                                        <div className="templateActualView" >
+                                                <div dangerouslySetInnerHTML={{__html:deployDisplayHtml}} id="codeDisplayInnerHtml">
+                                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
                 <div>

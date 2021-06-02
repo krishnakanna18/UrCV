@@ -6,14 +6,17 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import {serverEndPoint} from './config'
 
 class App extends Component {
   constructor(){
     super();
     this.state={user:""};
   }
+
   componentDidMount(){
-    fetch('http://localhost:9000',{
+    console.log(`${serverEndPoint}`)
+    fetch(`${serverEndPoint}`,{
       method:"get",
       credentials:"include"
     })

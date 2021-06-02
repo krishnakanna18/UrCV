@@ -17,6 +17,7 @@ import {
 import { Redirect } from "react-router-dom";
 import addContainer from '../Editors/addingContainer';
 import Menu from './Menu';
+import {serverEndPoint} from '../config'
 
 class Navbar extends Component {
     constructor(){
@@ -32,7 +33,7 @@ class Navbar extends Component {
         if(btn)
             btn.remove()
 
-        let res=await fetch('http://localhost:9000/',{
+        let res=await fetch(`${serverEndPoint}`,{
             method:"GET",
             credentials:"include"
         })
@@ -59,7 +60,7 @@ class Navbar extends Component {
 
     //To logout a user
     async logoutUser(){
-        let res=await fetch('http://localhost:9000/user/logout',{
+        let res=await fetch(`${serverEndPoint}/user/logout`,{
             method:"post",
             credentials:"include"
         })

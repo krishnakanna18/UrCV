@@ -1,6 +1,8 @@
 import { toPairs } from 'lodash-es';
 import { withRouter} from 'react-router-dom'
 import React, { Component } from 'react';
+import {serverEndPoint} from '../config'
+
 class Template extends Component{
     constructor(){
         super();
@@ -9,7 +11,7 @@ class Template extends Component{
     async componentDidMount(){
         console.log("Mounted Template")
 
-        let res=await fetch('http://localhost:9000/template/html/'+this.props.template.id+'.html',{
+        let res=await fetch(`${serverEndPoint}/template/html/`+this.props.template.id+'.html',{
             method:"get",
             credentials:"include"
         })
@@ -50,7 +52,7 @@ class Template extends Component{
                 return
             }
         
-        let site=await fetch('http://localhost:9000/website/create',{
+        let site=await fetch(`${serverEndPoint}/website/create`,{
             method:"POST",
             credentials:"include",
             headers:{

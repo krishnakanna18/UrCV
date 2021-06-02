@@ -5,6 +5,8 @@ import ImgEditor from './ImgEditor'
 import LinkEditor from './LinkEditor'
 import Autocomplete from '../Components/Autocomplete'
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import {serverEndPoint} from '../config'
+
 class Container extends Component {
     constructor(props){
         super(props);
@@ -17,7 +19,7 @@ class Container extends Component {
 
     componentDidMount=async()=>{
         if(this.props.type && this.props.type==="project"){
-            let tools=await fetch ('http://localhost:9000/tools')
+            let tools=await fetch (`${serverEndPoint}/tools`)
             let skills=await tools.json()
             this.setState({global_skills:skills})
 

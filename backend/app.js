@@ -15,7 +15,8 @@ const Container = require("./Schemas/containerSchema");
       Tool = require("./Schemas/toolSchema");           //Tool model and functions associated with it
       session=require("express-session");
       gitAuth=require("./config");
-      crypto=require("crypto")
+      crypto=require("crypto");
+const {serverEndPoint, clientEndPoint}=require("./config")
 
 app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com","https://objective-rosalind-b7383b.netlify.app"]}));
 
@@ -418,7 +419,7 @@ app.get('/template/containers/:id',isLoggedin,async(req,res)=>{
 app.get('/publish/code',async(req,res)=>{
 
       if(req.session===undefined || req.session===null || req.session.loggedin===false )
-           return res.redirect('http://localhost:3000')
+           return res.redirect(`${clientEndPoint}`)
 
       req.session.toDeploy=req.query.siteID
     return  res.redirect('https://github.com/login/oauth/authorize?client_id='+gitAuth.client_id+'&scope=public_repo&redirect_uri=http://localhost:9000/publish/access_token/getToken')
