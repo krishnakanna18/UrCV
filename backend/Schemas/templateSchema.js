@@ -1,8 +1,9 @@
 const  mongoose=require("mongoose");
        fs=require("fs");
        Container = require("./containerSchema");
+       const {connectionUri} =require("../config")
 
-mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
+mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } );
 
 let templateSchema=new mongoose.Schema({
     name:String,

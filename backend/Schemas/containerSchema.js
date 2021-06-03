@@ -1,6 +1,7 @@
 const mongoose=require("mongoose");
       fs=require("fs");
-mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
+const {connectionUri} =require("../config")
+mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } );
 
 let containerSchema=new mongoose.Schema({
     id:{type:String,default:""},

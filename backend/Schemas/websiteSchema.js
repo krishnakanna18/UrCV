@@ -4,7 +4,9 @@ const Container = require("./containerSchema");
       Template=require("./templateSchema");
       crypto=require("crypto");
 
-mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } )
+      const {connectionUri} =require("../config")
+
+mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true })
 
 let webisteSchema=new mongoose.Schema({
     name:{type:String, default:"Site"},

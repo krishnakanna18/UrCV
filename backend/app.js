@@ -16,7 +16,7 @@ const Container = require("./Schemas/containerSchema");
       session=require("express-session");
       gitAuth=require("./config");
       crypto=require("crypto");
-const {serverEndPoint, clientEndPoint}=require("./config")
+const {serverEndPoint, clientEndPoint, connectionUri}=require("./config")
 
 app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com","https://objective-rosalind-b7383b.netlify.app"]}));
 
@@ -31,9 +31,12 @@ app.get(new RegExp('.svg$'),(req,res)=>{
 
 
 app.use(express.static(path.join(__dirname,'/public')));
-
-mongoose.connect("mongodb://localhost:27017/UrCV", {useNewUrlParser: true , useUnifiedTopology: true } );
-
+try{
+mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } ,()=>{
+      console.log("Connected to db.")
+  } );
+}
+catch(e){console.log(e)}
 app.use(session({
       resave:true,
       secret:"Failures are the stepping stones of success",
