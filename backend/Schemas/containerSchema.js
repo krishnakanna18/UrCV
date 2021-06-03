@@ -1,7 +1,7 @@
-const mongoose=require("mongoose");
+const mongoose=require("../dbConnection");
       fs=require("fs");
-const {connectionUri} =require("../config")
-mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } );
+// const {connectionUri} =require("../config")
+// mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } );
 
 let containerSchema=new mongoose.Schema({
     id:{type:String,default:""},

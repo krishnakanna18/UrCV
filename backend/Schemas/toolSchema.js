@@ -1,8 +1,8 @@
-const  mongoose=require("mongoose");
+const  mongoose=require("../dbConnection");
        fs=require("fs");
-       const {connectionUri} =require("../config")
+//        const {connectionUri} =require("../config")
 
-mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } );
+// mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } );
 let toolSchema=new mongoose.Schema({
     tool:String,
     logo:String

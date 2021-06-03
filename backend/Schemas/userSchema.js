@@ -1,7 +1,7 @@
-const mongoose=require("mongoose")
+const mongoose=require("../dbConnection")
 const Website = require("./websiteSchema")
-const {connectionUri} =require("../config")
-mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } )
+// const {connectionUri} =require("../config")
+// mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } )
 let userSchema=new mongoose.Schema({
     name:{type:String,required:true},
     username:{type:String, unique:true, required:true},

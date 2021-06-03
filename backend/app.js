@@ -1,11 +1,11 @@
 const { response } = require("express");
 const express=require("express");
+const mongoose=require("./dbConnection");
 const Container = require("./Schemas/containerSchema");
       app=express();
       bodyParser=require("body-parser");
       fetch=require("node-fetch");
       cors=require("cors");
-      mongoose=require("mongoose");
       fs=require("fs");
       path=require("path");
       bcrypt=require("bcryptjs");
@@ -18,6 +18,7 @@ const Container = require("./Schemas/containerSchema");
       crypto=require("crypto");
 const {serverEndPoint, clientEndPoint, connectionUri}=require("./config")
 
+app.set('trust proxy',1);
 app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com","https://objective-rosalind-b7383b.netlify.app"]}));
 
 app.options('*', cors());
@@ -31,12 +32,7 @@ app.get(new RegExp('.svg$'),(req,res)=>{
 
 
 app.use(express.static(path.join(__dirname,'/public')));
-try{
-mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true } ,()=>{
-      console.log("Connected to db.")
-  } );
-}
-catch(e){console.log(e)}
+
 app.use(session({
       resave:true,
       secret:"Failures are the stepping stones of success",

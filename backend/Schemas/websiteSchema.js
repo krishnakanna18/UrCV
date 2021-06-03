@@ -1,12 +1,12 @@
-const mongoose=require("mongoose");
+const mongoose=require("../dbConnection");
 const Container = require("./containerSchema");
       fs=require("fs");
       Template=require("./templateSchema");
       crypto=require("crypto");
 
-      const {connectionUri} =require("../config")
+//       const {connectionUri} =require("../config")
 
-mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true })
+// mongoose.connect(connectionUri, {useNewUrlParser: true , useUnifiedTopology: true })
 
 let webisteSchema=new mongoose.Schema({
     name:{type:String, default:"Site"},
