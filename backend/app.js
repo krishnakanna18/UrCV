@@ -38,9 +38,11 @@ app.use(session({
       secret:"Failures are the stepping stones of success",
       saveUninitialized:true,
       name:"UrCvcookie",
+      proxy:true,
       cookie : {
             maxAge: 1000* 60 * 60 *24 * 365,
-            secure:false,
+            sameSite:'none',
+            secure:true
         }
 
 }))
@@ -421,7 +423,7 @@ app.get('/publish/code',async(req,res)=>{
            return res.redirect(`${clientEndPoint}`)
 
       req.session.toDeploy=req.query.siteID
-    return  res.redirect('https://github.com/login/oauth/authorize?client_id='+gitAuth.client_id+'&scope=public_repo&redirect_uri=http://localhost:9000/publish/access_token/getToken')
+    return  res.redirect('https://github.com/login/oauth/authorize?client_id='+gitAuth.client_id+`&scope=public_repo&redirect_uri=${serverEndPoint}/publish/access_token/getToken`)
 })
 
 
@@ -468,6 +470,7 @@ app.get('/publish/access_token',async(req,res)=>{
             site=await Website.retrieve(req.session.toDeploy,true)
 
             html=fs.readFileSync(path.join(__dirname,"/deploySite/index.html"))
+            console.log(html.substr(0,50));
             let gen=crypto.randomBytes(20).toString('hex');
             html+=`<!-- ${gen} -->`
             js=fs.readFileSync(path.join(__dirname,"/deploySite/creator.js"))
