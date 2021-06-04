@@ -253,7 +253,7 @@ class Template extends Component {
 
 
     getAccessTokenGit=async()=>{
-        console.log("Getting Access Token from git....");
+        //("Getting Access Token from git....");
         window.open(`${serverEndPoint}/publish/code?siteID=`+this.state.siteId,'_blank');
         // window.location.href=`${serverEndPoint}/publish/code?siteID=`+this.state.siteId
     }
@@ -281,7 +281,7 @@ class Template extends Component {
         let {redo_top}=this.state.changes_stacks
         // console.log(`${undo_stack.length}`);
         if(undo_stack.length===0){
-            console.log("Empty stack")
+            //("Empty stack")
             // this.setState({changes_stacks:{undo_stack,redo_stack,undo_top:"",redo_top}})
             return;
         }
@@ -298,7 +298,7 @@ class Template extends Component {
               //Move to the changed element's location
         }
         else{
-            console.log("Operation failed");
+            //("Operation failed");
         }
 
 
@@ -314,7 +314,7 @@ class Template extends Component {
         let redo_stack=[...this.state.changes_stacks.redo_stack]
         let {undo_top}=this.state.changes_stacks
         if(redo_stack.length===0){
-            console.log("Empty stack")
+            //("Empty stack")
             // this.setState({changes_stacks:{undo_stack,redo_stack,undo_top,redo_top:""}})
             return;
         }
@@ -330,7 +330,7 @@ class Template extends Component {
                 //Move to the changed element's location
         }
         else{
-            console.log("Operation failed");
+            //("Operation failed");
         }
 
 
@@ -495,7 +495,7 @@ class Template extends Component {
     insert=(p_id=-1,element,position=-1,stackCall=-1)=>{       //position  -- position to insert in the parent's children array
                                                                //StackCall -- if -1 adds operation to change stack 
                                                                //          -- else(called from undo,redo operations) don't add operation
-        console.log("parent",p_id)
+        //("parent",p_id)
 
         let template=JSON.parse(JSON.stringify(this.state.template)),undo_stack=[...this.state.changes_stacks.undo_stack]
         let old_value=[],dbid={p_id:""}
@@ -610,7 +610,7 @@ class Template extends Component {
                 return 1
             }
             catch(err){
-                console.log(err)
+                //(err)
                 return 0;
             }
         }
@@ -677,7 +677,7 @@ class Template extends Component {
                    .then((res)=>{
                    })
                    .catch(e=>{
-                       console.log(e)
+                       //(e)
                    })
 
                     return 1;
@@ -724,7 +724,7 @@ class Template extends Component {
                 .then((res)=>{
                 })
                 .catch(e=>{
-                    console.log(e)
+                    //(e)
                 })
 
 
@@ -838,7 +838,7 @@ class Template extends Component {
             .then(res=>{
             })
             .catch(e=>{
-                console.log(e)
+                //(e)
             })
 
             return 1;
@@ -884,7 +884,7 @@ class Template extends Component {
             .then(res=>{
             })
             .catch(e=>{
-                console.log(e)
+                //(e)
             })
             return 1 
         }
@@ -926,7 +926,7 @@ class Template extends Component {
         .then((res)=>{
         })
         .catch(e=>{
-            console.log(e)
+            //(e)
         })
         return 1;
     }

@@ -35,7 +35,7 @@ class LogIn extends Component {
             state={redirect:'/'}
         }
         redirect=state.redirect
-        console.log(this.props.location,"Location")
+        // console.log(this.props.location,"Location")
         if(status===200){
             loginUser(res.user,res.loggedin)
                 this.props.history.push({

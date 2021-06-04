@@ -8,11 +8,13 @@ import '../css/viewTemplates.css'
 
 class Templates extends Component {
     componentDidMount(){
-        console.log("Mounted Templates")
+        // console.log("Mounted Templates")
+        return
 
     }
     componentWillUnmount(){
-        console.log("Unmounted Templates")
+        // console.log("Unmounted Templates")
+        return
     }
     render() { 
         let {templates}=this.props

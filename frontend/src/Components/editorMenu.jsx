@@ -11,7 +11,7 @@ import {
 import { ButtonGroup } from '@material-ui/core';
 class EditorMenu extends Component {
     userMenu(){
-        console.log(this.props)
+        // console.log(this.props)
         if(!this.props.loggedin)
            return <li  className="nav-item ml-auto" >
                   <Link className="nav-link" to={{

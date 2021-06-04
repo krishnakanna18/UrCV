@@ -417,11 +417,11 @@ class TextEditor extends Component {
                 e.preventDefault()
                 if(anchor.parentNode===focus.parentNode)
                 {
-                    console.log("Equal")
-                    console.log(Selection.anchorOffset,Selection.focusOffset, Selection.textContent)
+                    //("Equal")
+                    //(Selection.anchorOffset,Selection.focusOffset, Selection.textContent)
 
                 }
-                console.log(anchor,focus)
+                //(anchor,focus)
             }
 
         }
@@ -466,7 +466,7 @@ class TextEditor extends Component {
                 focIndex=[...parentEditor.children[0].children].indexOf(focParent)
 
             if(focIndex<ancIndex)
-            console.log("Yes the change are inverted",anchorOffset, focusOffset)
+            //("Yes the change are inverted",anchorOffset, focusOffset)
 
             if(focIndex<ancIndex || (focIndex===ancIndex && anchorOffset>focusOffset))         //Swap all the properties of focus and anchor node
                 [ancParent,focParent,anchorOffset,focusOffset,ancIndex,focIndex,anchorNode,focusNode]
@@ -476,7 +476,7 @@ class TextEditor extends Component {
                 spanText=anchorNode.textContent.slice(focusOffset,textLength),  
                 anchorText=anchorNode.textContent.slice(0,anchorOffset)
 
-            console.log(anchorOffset, focusOffset,focIndex,ancIndex)
+            //(anchorOffset, focusOffset,focIndex,ancIndex)
         
             if(ancParent.tagName==="SPAN" && focParent.tagName==="SPAN")
             {
@@ -596,7 +596,7 @@ class TextEditor extends Component {
             if(classname!==undefined && classname!==null){
                 normalClass+=` ${classname}`
                 style={margin:"auto", width:"100%"}
-                console.log(classname)
+                //(classname)
             }
         }
         catch(e){
@@ -657,7 +657,7 @@ class TextEditor extends Component {
                                 <div className="d-flex flex-row  flex-wrap" style={{backgroundColor:"white"}} >
                                     {
                                         color.map((c,id)=>{
-                                            return <a className="dropdown-item"  href="#" onClick={(e)=>{e.preventDefault(); console.log("Im clicked");this.styleEvent(e,"color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
+                                            return <a className="dropdown-item"  href="#" onClick={(e)=>{e.preventDefault();this.styleEvent(e,"color",c)}} style={{backgroundColor:c, width:"15px",height:"15px"}} className="column m-1 color" key={id}
                                             data-toggle="tooltip" data-placement="top" title={c}>
                                                    </a>
                                         })

@@ -207,7 +207,6 @@ class Skillset extends Component {
                                             addOption={this.createSkill}
                                             addPosition={index}         //Specify the add position
                                             >
-                                
                                             </Autocomplete>
 
                                     </div>
@@ -338,7 +337,7 @@ class Skillset extends Component {
                     <div className="d-flex flex-column justify-content-start text-left align-contents-center">
 
                         <div  className="row justify-content-between" >
-                            <div className=""  onInput={(e)=>{console.log(e)}}>
+                            <div className=""  onInput={(e)=>{}}>
                                 Basic
                             </div>
                             <div>
@@ -349,7 +348,7 @@ class Skillset extends Component {
                         <hr className="hr"></hr>
 
                         <div className="row justify-content-between"  >
-                            <div className=""  onInput={(e)=>{console.log(e)}}>
+                            <div className=""  onInput={(e)=>{}}>
                                 Intermediate 
                             </div>
                             <div>
@@ -360,7 +359,7 @@ class Skillset extends Component {
                         <hr className="hr"></hr>
 
                         <div className="row justify-content-between"  >
-                            <div className=""  onInput={(e)=>{console.log(e)}}>
+                            <div className=""  onInput={(e)=>{}}>
                                 Advanced
                             </div>
                             <div>

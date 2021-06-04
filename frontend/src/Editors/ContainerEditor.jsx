@@ -22,7 +22,6 @@ class Container extends Component {
             let tools=await fetch (`${serverEndPoint}/tools`)
             let skills=await tools.json()
             this.setState({global_skills:skills})
-
         }
     }
 
@@ -81,7 +80,7 @@ class Container extends Component {
     }
 
     removeTech=(id,parent)=>{
-        console.log(id,parent)
+        //(id,parent)
         this.props.removeElement(`${parent}:${id}`);
     }
 
@@ -95,7 +94,6 @@ class Container extends Component {
 
         if(this.props.type!==undefined && this.props.type==="project")
             projectStack={"techs":[],"techType":{},"parent":""}
-
         let disp=this.innerTree(innerComponent,containerIndex,projectStack)
         return(
                 <React.Fragment>
@@ -163,7 +161,7 @@ class Container extends Component {
         let res=this.props.removeElement(index)
         if(res===0)
         {   
-            console.log(index)
+            //(index)
         }
         
     }
@@ -176,9 +174,9 @@ class Container extends Component {
 
     //Adding a project 
     addProject=()=>{
-        console.log("Inside the function")
+        //("Inside the function")
         let project=this.props.projectTemplate
-        console.log(project,this.props.index)
+        //(project,this.props.index)
         this.props.addElement(this.props.index,project)
     }
 

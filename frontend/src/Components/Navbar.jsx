@@ -70,9 +70,9 @@ class Navbar extends Component {
     }
 
     updateUser=(user)=>{
-        console.log("HI Im being Printed",user)
+        // console.log("HI Im being Printed",user)
         this.setState({user:user},()=>{
-            console.log("Called")
+            // console.log("Called")
 
         })
     }

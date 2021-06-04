@@ -9,7 +9,6 @@ class Template extends Component{
         this.state={html:""}
     }
     async componentDidMount(){
-        console.log("Mounted Template")
 
         let res=await fetch(`${serverEndPoint}/template/html/`+this.props.template.id+'.html',{
             method:"get",
@@ -20,11 +19,12 @@ class Template extends Component{
         if(status===200)
             this.setState({html:res.html},()=>{
             })
-        else
-            console.log(res.log_data)
+        else{
+            // console.log(res.log_data)
+        }
     }
     componentWillUnmount(){
-        console.log("Unmounted Template")
+        // console.log("Unmounted Template")
     }
     loadingPage(){
         let element=document.getElementById("loadingPage")
@@ -73,7 +73,6 @@ class Template extends Component{
         localStorage.setItem("loggedin","true");
 
         let site_id=site.website_id
-        console.log(this.props,"Template props")
         this.props.history.push({
             pathname:'/template/edit',
             state:{

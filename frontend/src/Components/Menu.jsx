@@ -44,7 +44,7 @@ class Menu extends Component {
             res=await res.json()
             if(status===200)
                 templateViews.push({html:res.html,name:template.name})
-            console.log(template._id)
+            //(template._id)
         }))
         this.setState({templateViews})
     }
@@ -117,7 +117,7 @@ class Menu extends Component {
 
     editorComponentLanding=(comp)=>{
         if(comp==="text"){
-           return <TextEditor domId="landingPageView"  classname="landingPageViewText" text={{tag:"p", contents:{'text':"Modify text to your needs. Supports rich text decoratin features. Over 100 google fonts supported. Choose the background color that goes well with your text. Lightning fast update to your page."}}} modifyText={(e)=>{console.log(e)}}>
+           return <TextEditor domId="landingPageView"  classname="landingPageViewText" text={{tag:"p", contents:{'text':"Modify text to your needs. Supports rich text decoratin features. Over 100 google fonts supported. Choose the background color that goes well with your text. Lightning fast update to your page."}}} modifyText={(e)=>{}}>
             </TextEditor>
         }
         else if(comp==="image"){
