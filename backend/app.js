@@ -19,7 +19,7 @@ const Container = require("./Schemas/containerSchema");
 const {serverEndPoint, clientEndPoint, connectionUri}=require("./config")
 
 app.set('trust proxy',1);
-app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com","https://objective-rosalind-b7383b.netlify.app"]}));
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://api.github.com",`${clientEndPoint}`]}));
 
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
