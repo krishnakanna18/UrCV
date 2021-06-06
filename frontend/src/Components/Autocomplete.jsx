@@ -119,7 +119,6 @@ class Trie{
 
     }
 
-
 }
 
 
@@ -133,11 +132,16 @@ class Autocomplete extends Component {
                     input_length:0,                          //length of keyboard input
                     trie:new Trie(this.props.options),       //trie of options
                     errMessage:""                            //Display err messages
-                   }      
+                   }  
+
     }
 
+    componentDidMount(){
+        console.log("Component mounted")
+    }
 
     changeInput(e){
+
         // console.log(e.target.value)
         let filtered_list=this.state.trie.retrieve(e.target.value)
         filtered_list=filtered_list.slice(0,Math.min(filtered_list.length,7))
@@ -280,9 +284,7 @@ class Autocomplete extends Component {
                 </React.Fragment>
             )
         }
-        
     }
-
     
     render(){
         let {errMessage}=this.state;

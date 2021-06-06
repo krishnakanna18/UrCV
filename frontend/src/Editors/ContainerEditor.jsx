@@ -106,6 +106,7 @@ class Container extends Component {
                     <div className="mt-5 mb-1  projectStackContainer">
                         <p className="mb-n2" style={{textAlign:"center", color:"rgb(74, 150, 154)",fontWeight:"bold"}}>Project Tech Stack</p>
                         <div className="mb-2 projectStackHeader" >
+                            {this.state.global_skills!==undefined && this.state.global_skills!==null?
                         <Autocomplete  key={`${this.props.index}:autocomplete`}
                             options={this.state.global_skills.map((skill)=>skill["tool"])}
                             addOption={this.createTech}
@@ -115,6 +116,7 @@ class Container extends Component {
                             // addPosition={index}         //Specify the add position
                         >
                         </Autocomplete>
+                        :""}
                         </div>
                         <div className={`mb-3 d-flex d-inline-flex flex-row flex-wrap projectTechContainer:${this.props.index}`}>
                         {projectStack["techs"].map((tech,id)=>{

@@ -396,7 +396,6 @@ class TextEditor extends Component {
                         selectionParent.remove()
                     }
 
-
                     else if(((targetChild.children.length===1 || selectionParent.previousSibling===null) && selectionParent.innerText.length===1) || 
                         ( selectionParent.innerHTML.length===1 && targetChild.children.length>1))
                         {   
@@ -467,11 +466,17 @@ class TextEditor extends Component {
 
             if(focIndex<ancIndex)
             //("Yes the change are inverted",anchorOffset, focusOffset)
+            console.log(ancIndex, focIndex, anchorOffset, focusOffset,"Before")
 
             if(focIndex<ancIndex || (focIndex===ancIndex && anchorOffset>focusOffset))         //Swap all the properties of focus and anchor node
+            {
                 [ancParent,focParent,anchorOffset,focusOffset,ancIndex,focIndex,anchorNode,focusNode]
                =[focParent,ancParent,focusOffset,anchorOffset,focIndex,ancIndex,focusNode, anchorNode]
+            }
 
+            console.log(ancIndex, focIndex, anchorOffset, focusOffset,"After")
+            
+            
             let textLength=anchorNode.textContent.length,
                 spanText=anchorNode.textContent.slice(focusOffset,textLength),  
                 anchorText=anchorNode.textContent.slice(0,anchorOffset)
