@@ -58,6 +58,38 @@ class Menu extends Component {
         this.setState({editorComponent:type})
     }
 
+        //Download the website as PDF
+        downloadPdf=async(arg)=>{
+            // let source=document.getElementById('codeDisplayInnerHtml')
+            // let pdf = new jsPDF('p', 'pt', 'a4');
+            // let images=source.getElementsByTagName('img')
+            // for(let node of images){        //Fetch all images from the local server
+            //     if(node.getAttribute('src').match(/^http:/g)){
+            //         let data=await fetch(node.getAttribute('src'),{
+            //             method:"get",
+            //             credentials:"include"
+            //         })
+            //             data=await data.blob()
+            //             let reader = new FileReader() ;
+            //             reader.onload = function(){ 
+            //                 node.setAttribute('src',this.result)
+            //             } 
+            //             reader.readAsDataURL(data) ;
+            //     }
+            // }
+            // let name=this.state.name
+            // pdf.addHTML(source,function() {
+            //     pdf.save(name+'.pdf');
+            // });
+
+            let source=document.createElement('div')
+            source.innerHTML=arg
+            let pdf = new jsPDF('p', 'pt', 'a4');
+            pdf.addHTML(arg,function() {
+                        pdf.save('tc.pdf');
+                    });
+        }
+
     userMenu(){
         let btnStyle={}
         // if()
@@ -292,7 +324,11 @@ class Menu extends Component {
                                                         window.open(`${serverEndPoint}/publish/code?siteID=60b774d3a4333149bcdff619`,'_blank');
                                                       }}
                                             >Publish to Github</Button>
-                                            <Button  color="secondary" startIcon={<SaveIcon />}>Download as PDF</Button>
+                                            <Button  color="secondary" startIcon={<SaveIcon />}
+                                                    onClick={()=>{
+                                                        this.downloadPdf(deployDisplayHtml)
+                                                    }}
+                                            >Download as PDF</Button>
                                         </ButtonGroup>
                                     </div>
 
@@ -310,7 +346,7 @@ class Menu extends Component {
                                     </div>
                                     <div className="templateViewScrollBottom codeDisplayTemplate" style={{border:"1px solid white", backgroundColor:"white"}}>
                                         <div className="templateActualView" >
-                                                <div dangerouslySetInnerHTML={{__html:deployDisplayHtml}} id="codeDisplayInnerHtml">
+                                                <div dangerouslySetInnerHTML={{__html:deployDisplayHtml}} id="codeDisplayInnerHtmlDownload">
                                                 </div>
                                         </div>
                                     </div>
@@ -397,45 +433,6 @@ class Menu extends Component {
 
                         {/* To be edited */}
                         <div className="blueBgCenterTarget" style={{padding:"20px",height:"100vh"}}>
-                            <div className="mt-5 parentCenterTarget ">
-                                <div className="d-flex flex-lg-row flex-column  justify-content-center">
-                                <div className="mt-5 col-lg-5 col-12 templateViewDivCenter d-flex flex-column  mb-5" >
-                                    <h1 className="mainPageHeaderBig row mainPageResponsiveHeader" style={{color:"white"}}>Publish your site to github in one click.</h1>
-                                    <h3 className="row float-left normalLandingText" style={{color:"white"}}>HTML, CSS and JS file of your site will be pushed to your github pages.</h3>
-                                    <h5 className="row float-left normalLandingText mt-3" style={{fontWeight:"bold", color:"white"}}>Try deploying this sample site to your git.</h5>
-                                    <div className="col-12 mt-5">
-                                        <ButtonGroup variant="contained" color="primary" className="d-flex flex-column">
-                                            <Button  color="secondary" className="mb-4" startIcon={<PublishIcon />}
-                                                     onClick={async()=>{ 
-                                                        window.open(`${serverEndPoint}/publish/code?siteID=60b774d3a4333149bcdff619`,'_blank');
-                                                      }}
-                                            >Publish to Github</Button>
-                                            <Button  color="secondary" startIcon={<SaveIcon />}>Download as PDF</Button>
-                                        </ButtonGroup>
-                                    </div>
-
-                                </div>
-                                <div className="mt-lg -5 col-lg-7 col-12 mt-lg-5 mb-5 " style={{height:"100%"}}>
-                                    <div className="templateViewScrollTop mb-n2" >
-                                        <div className="templateViewScrollTopButtons">
-                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ff6059"}}>
-                                            </div>
-                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#ffbe2f"}}>
-                                            </div>
-                                            <div className="templateViewScrollTopButton" style={{backgroundColor:"#2aca41"}}>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="templateViewScrollBottom codeDisplayTemplate" style={{border:"1px solid white", backgroundColor:"white"}}>
-                                        <div className="templateActualView" >
-                                                <div dangerouslySetInnerHTML={{__html:deployDisplayHtml}} id="codeDisplayInnerHtml">
-                                                </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                </div>
-                            </div>
                         </div>
 
 

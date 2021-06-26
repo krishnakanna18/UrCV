@@ -1037,7 +1037,7 @@ class Template extends Component {
 
                 <div className="d-flex flex-lg-row flex-column">
                     <div className="ml-n2 container-fluid row " id="editorScroll" style={{display:"none", width:"20%"}} id="editor">
-                        <div className="position-fixed col ml-n2 " style={{overflowY:"scroll",bottom: "0%", top: "52px", border:"2px solid white",width:"20%"}}>
+                        <div className="position-fixed col ml-n2 editorScrollInner" style={{overflowY:"auto",bottom: "0%", top: "52px",width:"20%"}}>
                             {this.state.editor.enabled===1?
                                 this.editorDisplay()
                             :""}

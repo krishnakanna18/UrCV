@@ -143,6 +143,7 @@ class Autocomplete extends Component {
     changeInput(e){
 
         // console.log(e.target.value)
+        console.log("Retrieved")
         let filtered_list=this.state.trie.retrieve(e.target.value)
         filtered_list=filtered_list.slice(0,Math.min(filtered_list.length,7))
         this.setState({input:e.target.value,

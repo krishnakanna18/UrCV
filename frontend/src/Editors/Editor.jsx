@@ -153,7 +153,7 @@ class Editor extends Component {
  
                         <div className="d-flex col justify-content-end" >
                             <div className="dropdown">
-                                <button className="btn " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button className="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img className="img-fluid" alt="Alt" src="/icons/more.png"/>
                                 </button>
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -200,7 +200,7 @@ class Editor extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="font-weight-bold"  style={{marginLeft:"", marginTop:"3%"}}>
+                        <div className="font-weight-bold"  style={{marginLeft:"0%", marginTop:"3%"}}>
                             <button type="button" className="close" aria-label="Close"  onClick={()=>this.props.disableEditor()}>
                                 <span aria-hidden="true">&times;</span>
                             </button>
