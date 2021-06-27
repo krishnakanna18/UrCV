@@ -163,7 +163,6 @@ app.post('/user/signup',notLoggedin,async(req,res)=>{
             return
       }
       let password=await bcrypt.hash(req.body.password,10);
-      let user;
       try{
       user=await User.create({
             name,

@@ -4,6 +4,7 @@ import {
     Link,
   } from "react-router-dom";
 import Template from './Template.jsx'
+import Menu from './menuNormal'
 import '../css/viewTemplates.css'
 
 class Templates extends Component {
@@ -21,6 +22,7 @@ class Templates extends Component {
         
         return (
             <React.Fragment>
+                <Menu loggedin={this.props.loggedin} user={this.props.user} logoutUser={this.props.logoutUser}></Menu>
                 <div className="mb-5">
                     <div className="pt-4 d-flex flex-row justify-content-between align-items-center intro" style={{backgroundColor:"white"}}>
                         <div className="row ml-5 pt-1 pb-1">

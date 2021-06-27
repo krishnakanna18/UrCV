@@ -5,6 +5,7 @@ import {
     Link,BrowserRouter as Router,Route
   } from "react-router-dom";
 import {serverEndPoint, clientEndPoint} from '../config'
+import Menu from './menuNormal'
 class Profile extends Component {
 
     constructor(){
@@ -182,7 +183,7 @@ class Profile extends Component {
 
             <React.Fragment>
          
-
+                    <Menu loggedin={this.props.loggedin} user={this.props.user} logoutUser={this.props.logoutUser}></Menu>
                     <div className="pt-4 d-flex flex-row justify-content-around align-items-center intro" style={{backgroundColor:"white"}}>
                         <div className="row">
                             <div className="d-flex flex-column">
