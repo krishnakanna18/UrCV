@@ -83,7 +83,7 @@ class Navbar extends Component {
                 <Router>
                     <Switch>
                         <Route exact path='/' component={()=><Home loggedin={this.state.loggedin} user={this.state.user} templates={this.state.templates} logoutUser={this.logoutUser}></Home> } ></Route>
-                        <Route exact path="/user/login" component={()=><LogIn loginUser={this.loginUser}></LogIn>}></Route>
+                        <Route exact path="/user/login" component={()=><LogIn loginUser={this.loginUser} ></LogIn>}></Route>
                         <Route exact path="/user/profile" component={()=><Profile loggedin={this.state.loggedin} updateUser={this.updateUser} user={this.state.user}  logoutUser={this.logoutUser}></Profile>}></Route>
                         <Route exact path='/template/view' component={()=><Templates templates={this.state.templates} user={this.state.user} loggedin={this.state.loggedin} updateUser={this.updateUser} loginUser={this.loginUser} logoutUser={this.logoutUser}></Templates>}></Route>
                         <Route exact path='/template/edit' component={(props)=><TemplateEditor {...props} loggedin={this.state.loggedin} logoutUser={this.logoutUser}></TemplateEditor>}></Route>

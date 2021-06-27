@@ -3,6 +3,12 @@ import { Redirect } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 import {serverEndPoint} from '../config'
 import '../css/login.css'
+import {
+    BrowserRouter as Router,
+    Route,
+    Link,
+    Switch
+  } from "react-router-dom";
 class LogIn extends Component {
 
 
@@ -73,80 +79,112 @@ class LogIn extends Component {
         
 
     }
+    
 
 
     // componentWillUnmount(){
     //     console.log("Unmounted Login")
     // }
+    
 
     render(){
         return(
+            <div style={{overflowY:"hidden"}}>
+                <div style={{backgroundColor:"#4a154b  "}}>
+                    <nav className="container-lg transparent navbar navbar-dark navbar-expand-lg" id="navTopBg" >
+                        
+                        <Link className="navbar-brand bold " to='/' >
+                            <span id="logoMenuPg" style={{color:'white', fontSize:"30px",fontFamily: 'ANNIHILATOR', fontWeight:"bolder"}}>UrCV</span>
+                        </Link>
 
-            <div className="loginPageTopBar">
+                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon" style={{color:'white'}}></span>
+                        </button>
 
-                <div className="loginPageCentreComponent">
-                    
-                    <div className="d-flex flex-row">
+                        <div className="collapse navbar-collapse  " id="navbarSupportedContent">
+                            <ul className="navbar-nav mr-auto align-items-center">
+                                <li className="nav-item mr-3 ml-3 activeItem" >
+                                    <Link to='/' className="nav-link"><span className="headerMenuPage" style={{fontSize:"15px"}}>Home</span></Link>
+                                </li>
+                                <li className="nav-item mr-3 ml-3" >
+                                    <Link to='/template/view' className="nav-link"><span className="headerMenuPage" style={{fontSize:"15px"}}>Design</span></Link>
+                                </li>
 
-                        {/* Login */}
-                        <div className="col-6 loginInnerComp p-5" style={{borderRight:"1px solid #4a154b"}}> 
-
-                            <div className="d-flex flex-column align-items-center mt-5 mb-5">
-
-                                <h5 className="col" style={{textAlign:"center"}}>Sign in</h5>
-
-                                <div className="cont col">
-                                    <input className="mt-5 loginInp" placeholder="  Username" id="login_username"></input>
-                                </div>
-
-                                <div className="cont col">
-                                    <input className="mt-3 loginInp" type="password" placeholder="  Password" id="login_password"></input>
-                                </div>
-
-                                <p className="col" id="loginErrMsg" style={{color:"red"}}></p>
-
-                                <button className="btn lbtn mt-4" onClick={async()=>{await this.signin(0)}}>
-                                        Login
-                                </button>
-
-                            </div>
-                           
-                        </div>
-
-                        {/* Register */}
-                        <div className="col-6 loginInnerComp p-5" style={{borderLeft:"1px solid #4a154b"}}>
-
-                            <div className="d-flex flex-column align-items-center mt-5 mb-5 ml-2 mr-2">
-
-                                <h5 className="col" style={{textAlign:"center"}}>Register</h5>
-
-                                <div className="cont col">
-                                    <input className="mt-5 loginInp" placeholder="  Name" id="reg_name"></input>
-                                </div>
-
-                                <div className="cont col">
-                                    <input className="mt-3 loginInp" placeholder="  Username" id="reg_username"></input>
-                                </div>
-
-                                <div className="cont col">
-                                    <input className="mt-3 loginInp" type="password" placeholder="  Password" id="reg_password"></input>
-                                </div>
-
-                                <p className="col" id="regErrMsg" style={{color:"red"}}></p>
-
-                                <button className="btn lbtn mt-4" onClick={async()=>{await this.signin(1)}}>
-                                        Register
-                                </button>
-
-                            </div>
+                            </ul>
 
                         </div>
 
-                    </div>
+                    </nav>
+                </div>
+               
+                <div className="loginPageTopBar">
+
+
+                    <div className="loginPageCentreComponent">
+                        
+                        <div className="d-flex flex-row">
+
+                            {/* Login */}
+                            <div className="col-6 loginInnerComp p-5" style={{borderRight:"1px solid #4a154b"}}> 
+
+                                <div className="d-flex flex-column align-items-center mt-5 mb-5">
+
+                                    <h5 className="col" style={{textAlign:"center"}}>Sign in</h5>
+
+                                    <div className="cont col">
+                                        <input className="mt-5 loginInp" placeholder="  Username" id="login_username"></input>
+                                    </div>
+
+                                    <div className="cont col">
+                                        <input className="mt-3 loginInp" type="password" placeholder="  Password" id="login_password"></input>
+                                    </div>
+
+                                    <p className="col" id="loginErrMsg" style={{color:"red"}}></p>
+
+                                    <button className="btn lbtn mt-4" onClick={async()=>{await this.signin(0)}}>
+                                            Login
+                                    </button>
+
+                                </div>
+                            
+                            </div>
+
+                            {/* Register */}
+                            <div className="col-6 loginInnerComp p-5" style={{borderLeft:"1px solid #4a154b"}}>
+
+                                <div className="d-flex flex-column align-items-center mt-5 mb-5 ml-2 mr-2">
+
+                                    <h5 className="col" style={{textAlign:"center"}}>Register</h5>
+
+                                    <div className="cont col">
+                                        <input className="mt-5 loginInp" placeholder="  Name" id="reg_name"></input>
+                                    </div>
+
+                                    <div className="cont col">
+                                        <input className="mt-3 loginInp" placeholder="  Username" id="reg_username"></input>
+                                    </div>
+
+                                    <div className="cont col">
+                                        <input className="mt-3 loginInp" type="password" placeholder="  Password" id="reg_password"></input>
+                                    </div>
+
+                                    <p className="col" id="regErrMsg" style={{color:"red"}}></p>
+
+                                    <button className="btn lbtn mt-4" onClick={async()=>{await this.signin(1)}}>
+                                            Register
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            </div>
+
+                        </div>
 
                 </div>
-
             </div>
+            
 
             // <div>
             //     <button className="btn btn-drak"

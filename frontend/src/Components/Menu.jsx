@@ -230,6 +230,7 @@ class Menu extends Component {
                                     <li className="nav-item mr-3 ml-3" >
                                         <Link to='/template/view' className="nav-link"><span className="headerMenuPage" style={{fontSize:"15px"}}>Design</span></Link>
                                     </li>
+
                                 </ul>
 
 
@@ -428,7 +429,28 @@ class Menu extends Component {
                         </div>
 
                         {/* To be edited */}
-                        <div className="blueBgCenterTarget" style={{padding:"20px",height:"20vh"}}>
+                        <div className="blueBgCenterTarget" style={{padding:"0px",height:"20vh"}}>
+                           <div className="d-flex flex-column ml-1">
+                                <div className="mt-4 d-flex flex-row align-items-center justify-content-center container">
+                                    <div className="col-2">
+                                        <a href="https://github.com/krishnakanna18" target="_blank"><img  src="/images/github.png" style={{width:"40px", height:"40px"}}></img></a>    
+                                    </div>
+                                   
+                                    <div className="col-2">
+                                        <a href="mailto:krishnakanna562@gmail.com" target="_blank"><img src="/images/gmail.png" style={{width:"40px", height:"40px"}}></img> </a>      
+                                    </div>
+
+                                    <div className="col-2">
+                                        <a href="https://github.com/krishnakanna18/UrCV" target="_blank" title="Contribute"><img src="/images/os.png" style={{width:"40px", height:"40px"}}></img> </a>      
+                                    </div>
+                                </div>
+
+                                <div className="mt-5 d-flex flex-column align-items-center justify-content-center container" style={{color:"white"}}>
+                                    <span style={{color:"white", fontWeight:"bolder"}}>Krishnakumar K</span>
+                                    <span className="mt-1">All rights reserved. Powered with love by UrCV</span>
+                                </div>
+                               
+                           </div>
                         </div>
 
 
