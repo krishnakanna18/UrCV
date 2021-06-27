@@ -445,7 +445,7 @@ class Menu extends Component {
                                     </div>
                                 </div>
 
-                                <div className="ml-n1 mt-5 d-flex flex-column align-items-center justify-content-center container" style={{color:"white"}}>
+                                <div className="mt-5 d-flex flex-column align-items-center justify-content-center container" style={{color:"white"}}>
                                     <span style={{color:"white", fontWeight:"bolder"}}>Krishnakumar K</span>
                                     <span className="mt-1">All rights reserved. Powered with love by UrCV</span>
                                 </div>
