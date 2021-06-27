@@ -230,10 +230,6 @@ class Menu extends Component {
                                     <li className="nav-item mr-3 ml-3" >
                                         <Link to='/template/view' className="nav-link"><span className="headerMenuPage" style={{fontSize:"15px"}}>Design</span></Link>
                                     </li>
-                                    <li className="nav-item mr-3 ml-3" >
-                                        <Link to='/template/view' className="nav-link"><span className="headerMenuPage" style={{fontSize:"15px"}}>About</span></Link>
-                                    </li>
-
                                 </ul>
 
 
@@ -432,7 +428,7 @@ class Menu extends Component {
                         </div>
 
                         {/* To be edited */}
-                        <div className="blueBgCenterTarget" style={{padding:"20px",height:"100vh"}}>
+                        <div className="blueBgCenterTarget" style={{padding:"20px",height:"20vh"}}>
                         </div>
 
 
