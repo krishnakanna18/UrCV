@@ -9,8 +9,15 @@ let convertToHtml=(component)=>{
     let cur=document.createElement(component.tag)
 
     if(component.classlist && component.classlist.length>0)
-        for(let cls of component.classlist) 
-        if(cls) cur.classList.add(cls)
+        for(let cls of component.classlist) {
+            try{
+                if(cls) 
+                    cur.classList.add(cls)
+            }
+            catch(e){
+                continue
+            }
+        }
 
     if(component.styles!==undefined)
         Object.keys(component.styles).forEach(styl=>{
