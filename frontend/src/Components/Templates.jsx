@@ -1,4 +1,3 @@
-import { toPairs } from 'lodash-es';
 import React, { Component } from 'react';
 import {
     Link,
