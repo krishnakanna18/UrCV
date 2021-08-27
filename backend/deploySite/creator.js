@@ -15,7 +15,10 @@ let convertToHtml=(component)=>{
                     cur.classList.add(cls)
             }
             catch(e){
-                continue
+                for(let styledClass of cls.split(' ')){
+                    if(styledClass && styledClass.length>0)
+                        cur.classList.add(styledClass)
+                }
             }
         }
 

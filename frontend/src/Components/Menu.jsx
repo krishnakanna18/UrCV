@@ -253,7 +253,7 @@ class Menu extends Component {
 
                         <div className="container-lg mt-5 mb-5 templateViewScroll dynamicInnerContent" style={{ position: "-webkit-sticky",position: "sticky"}}>
                             <div className="templateViewScrollBottom " >
-                                <video autoPlay={true} muted={true} src="/videos/screen-capture.mp4" className="screenCaptureVid"></video>
+                                <video loop autoPlay={true} muted={true} src="/videos/screen-capture-small.mp4" className="screenCaptureVid"></video>
                             </div>
                         </div>
 
