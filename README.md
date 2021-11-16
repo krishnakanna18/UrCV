@@ -1,4 +1,4 @@
-# <a href="https://urcv.netlify.app/" > UrCV </a>
+<!-- # <a href="https://urcv.netlify.app/" > UrCV </a> -->
 UrCV is a portfolio website builder, made using React, Node and MongoDB. It aims to make portfolio website building easier for computer science students / engineers.
 Users can edit custom templates and deploy the created site to their github pages.
 <br>
