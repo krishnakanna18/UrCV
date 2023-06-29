@@ -19,7 +19,7 @@ const Container = require("./Schemas/containerSchema");
 const {serverEndPoint, clientEndPoint, connectionUri}=require("./config")
 
 app.set('trust proxy',1);
-app.use(cors({credentials:true, origin:["http://localhost:3000","http://urcv.netlify.app","http://192.168.0.13:3000","https://api.github.com",`${clientEndPoint}`]}));
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://urcv.netlify.app","http://192.168.0.13:3000", "https://master--festive-elion-e0d0e8.netlify.app","https://api.github.com",`${clientEndPoint}`]}));
 
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
